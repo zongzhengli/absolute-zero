@@ -26,7 +26,7 @@ namespace AbsoluteZero {
         }
 
         public static Int32 Create(Position position, Int32 from, Int32 to, Int32 special = Piece.Empty) {
-            return from | (to << ToShift) | (position.Element[from] << PieceShift) | (position.Element[to] << CaptureShift) | (special << SpecialShift);
+            return from | (to << ToShift) | (position.Square[from] << PieceShift) | (position.Square[to] << CaptureShift) | (special << SpecialShift);
         }
 
         public static Int32 GetFrom(Int32 move) {

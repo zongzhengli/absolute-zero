@@ -62,13 +62,13 @@ namespace AbsoluteZero {
                 while (true) {
                     //Perft.Iterate(position, 5);
 
-                    IPlayer player = position.Colour == Piece.White ? White : Black;
+                    IPlayer player = position.SideToMove == Piece.White ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
 
                     //*/ adjudication
                     if (legalMoves.Count <= 0) {
-                        if (position.InCheck(position.Colour)) {
-                            message = "Checkmate. " + Identify.Colour(1 - position.Colour) + " wins!";
+                        if (position.InCheck(position.SideToMove)) {
+                            message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
                             state = player.Equals(White) ? GameState.BlackWon : GameState.WhiteWon;
                         } else {
                             message = "Stalemate. It's a draw!";

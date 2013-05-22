@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// The interface component of the Absolute Zero chess engine. 
+    /// </summary>
     partial class Zero : IEngine {
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {

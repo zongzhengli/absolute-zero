@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The search component of the main chess engine. 
+    /// The search component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero {
         
@@ -24,7 +24,7 @@ namespace AbsoluteZero {
             
             // Initialize variables and determine time limits. The time limits only 
             // apply when playing under time controls. 
-            Int32 colour = position.Colour;
+            Int32 colour = position.SideToMove;
             Int32 depthLimit = Math.Min(DepthLimit, Restrictions.Depth);
             timeLimit = Restrictions.MoveTime;
             timeExtension = 0;
@@ -172,10 +172,10 @@ namespace AbsoluteZero {
                 }
             }
 
-            Int32 colour = position.Colour;
+            Int32 colour = position.SideToMove;
 
             // Apply null move heuristic. 
-            if (allowNull && !inCheck && position.BitField[colour | Piece.All] != (position.BitField[colour | Piece.King] | position.BitField[colour | Piece.Pawn])) {
+            if (allowNull && !inCheck && position.Bitboard[colour | Piece.All] != (position.Bitboard[colour | Piece.King] | position.Bitboard[colour | Piece.Pawn])) {
                 position.MakeNull();
                 Int32 reduction = NullMoveReduction + (depth >= NullMoveAggressiveDepth ? depth / NullMoveAggressiveDivisor : 0);
                 Int32 value = -Search(position, depth - 1 - reduction, ply + 1, -beta, -beta + 1, false, false);
@@ -228,7 +228,7 @@ namespace AbsoluteZero {
             Int32 irreducibleMoves = 1;
             while (moveValues[irreducibleMoves] > 0)
                 irreducibleMoves++;
-            UInt64 preventionField = PassedPawnPreventionField(position);
+            UInt64 preventionBitboard = PassedPawnPreventionBitboard(position);
             Int32 bestType = HashEntry.Alpha;
             Int32 bestMove = moves[0];
 
@@ -239,7 +239,7 @@ namespace AbsoluteZero {
                 // position. 
                 Int32 move = moves[i];
                 Boolean causesCheck = position.CausesCheck(move);
-                Boolean dangerous = inCheck || causesCheck || alpha < -NearCheckmateValue || IsDangerousPawnAdvance(move, preventionField);
+                Boolean dangerous = inCheck || causesCheck || alpha < -NearCheckmateValue || IsDangerousPawnAdvance(move, preventionBitboard);
                 Boolean reducible = i + 1 > irreducibleMoves;
 
                 // Perform futility pruning. 
@@ -322,7 +322,7 @@ namespace AbsoluteZero {
             
             // Initialize variables and generate the pseudo-legal moves to be 
             // considered. Perform basic move ordering and sort the moves. 
-            Int32 colour = position.Colour;
+            Int32 colour = position.SideToMove;
             Int32[] moves = generatedMoves[ply];
             Int32 movesCount = position.PseudoQuiescenceMoves(moves);
             for (Int32 i = 0; i < movesCount; i++)
@@ -381,10 +381,10 @@ namespace AbsoluteZero {
         /// in which no enemy pawns can threaten or block it. 
         /// </summary>
         /// <param name="move">The move to consider. </param>
-        /// <param name="passedPawnPreventionField">A bit field giving the long term attack possibilities of the enemy pawns. </param>
+        /// <param name="passedPawnPreventionBitboard">A bitboard giving the long term attack possibilities of the enemy pawns. </param>
         /// <returns>Whether the given move is a dangerous pawn advance. </returns>
-        private Boolean IsDangerousPawnAdvance(Int32 move, UInt64 passedPawnPreventionField) {
-            return Move.IsPawnAdvance(move) && ((1UL << Move.GetTo(move)) & passedPawnPreventionField) == 0;
+        private Boolean IsDangerousPawnAdvance(Int32 move, UInt64 passedPawnPreventionBitboard) {
+            return Move.IsPawnAdvance(move) && ((1UL << Move.GetTo(move)) & passedPawnPreventionBitboard) == 0;
         }
 
         /// <summary>
@@ -403,26 +403,26 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns a bit field giving the long term attack possibilities of the enemy pawns. 
+        /// Returns a bitboard giving the long term attack possibilities of the enemy pawns. 
         /// </summary>
         /// <param name="position">The position to consider. </param>
-        /// <returns>A bit field giving the longer term attack possibilites of the enemy pawns. </returns>
-        private static UInt64 PassedPawnPreventionField(Position position) {
-            UInt64 pawnblockField = position.BitField[(1 - position.Colour) | Piece.Pawn];
-            if (position.Colour == Piece.White) {
-                pawnblockField |= pawnblockField << 8;
-                pawnblockField |= pawnblockField << 16;
-                pawnblockField |= pawnblockField << 32;
-                pawnblockField |= (pawnblockField & NotAFileField) << 7;
-                pawnblockField |= (pawnblockField & NotHFileField) << 9;
+        /// <returns>A bitboard giving the longer term attack possibilites of the enemy pawns. </returns>
+        private static UInt64 PassedPawnPreventionBitboard(Position position) {
+            UInt64 pawnblockBitboard = position.Bitboard[(1 - position.SideToMove) | Piece.Pawn];
+            if (position.SideToMove == Piece.White) {
+                pawnblockBitboard |= pawnblockBitboard << 8;
+                pawnblockBitboard |= pawnblockBitboard << 16;
+                pawnblockBitboard |= pawnblockBitboard << 32;
+                pawnblockBitboard |= (pawnblockBitboard & NotAFileBitboard) << 7;
+                pawnblockBitboard |= (pawnblockBitboard & NotHFileBitboard) << 9;
             } else {
-                pawnblockField |= pawnblockField >> 8;
-                pawnblockField |= pawnblockField >> 16;
-                pawnblockField |= pawnblockField >> 32;
-                pawnblockField |= (pawnblockField & NotAFileField) >> 9;
-                pawnblockField |= (pawnblockField & NotHFileField) >> 7;
+                pawnblockBitboard |= pawnblockBitboard >> 8;
+                pawnblockBitboard |= pawnblockBitboard >> 16;
+                pawnblockBitboard |= pawnblockBitboard >> 32;
+                pawnblockBitboard |= (pawnblockBitboard & NotAFileBitboard) >> 9;
+                pawnblockBitboard |= (pawnblockBitboard & NotHFileBitboard) >> 7;
             }
-            return pawnblockField;
+            return pawnblockBitboard;
         }
  
         /// <summary>

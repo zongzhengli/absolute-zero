@@ -71,66 +71,66 @@
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Source\Agents\Zero\Main.cs" />
-    <Compile Include="Source\Agents\Zero\Search.cs" />
-    <Compile Include="Source\Agents\IEngine.cs" />
-    <Compile Include="Source\Agents\Zero\HashTable.cs" />
+    <Compile Include="Source\Engine\Main.cs" />
+    <Compile Include="Source\Engine\Search.cs" />
+    <Compile Include="Source\Gameplay\IEngine.cs" />
+    <Compile Include="Source\Engine\HashTable.cs" />
     <Compile Include="Source\Utilities\Elo.cs" />
     <Compile Include="Source\Testing\Match.cs" />
     <Compile Include="Source\Framework\Zobrist.cs" />
     <Compile Include="Source\Visuals\VisualPiece.cs" />
     <Compile Include="Source\Testing\Tournament.cs" />
     <Compile Include="Source\Gameplay\Restrictions.cs" />
-    <Compile Include="Source\Interactive\Universal.cs" />
+    <Compile Include="Source\Interface\Universal.cs" />
     <Compile Include="Source\Framework\Attack.cs" />
     <Compile Include="Source\Testing\Perft.cs" />
     <Compile Include="Source\Testing\TestSuite.cs" />
     <Compile Include="Source\Utilities\Bit.cs" />
     <Compile Include="Source\Framework\Position.cs" />
-    <Compile Include="Source\Agents\Zero\Evaluation.cs" />
-    <Compile Include="Source\Interactive\Launch.cs" />
+    <Compile Include="Source\Engine\Evaluation.cs" />
+    <Compile Include="Source\Interface\Launch.cs" />
     <Compile Include="Source\Utilities\Identify.cs" />
     <Compile Include="Source\Utilities\Format.cs" />
     <Compile Include="Source\Utilities\Native.cs" />
     <Compile Include="Source\Framework\Piece.cs" />
-    <Compile Include="Source\Interactive\SelectionBox.cs">
+    <Compile Include="Source\Interface\SelectionBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\Interactive\SelectionBox.Designer.cs">
+    <Compile Include="Source\Interface\SelectionBox.Designer.cs">
       <DependentUpon>SelectionBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\Agents\Zero\HashEntry.cs" />
-    <Compile Include="Source\Interactive\InputBox.cs">
+    <Compile Include="Source\Engine\HashEntry.cs" />
+    <Compile Include="Source\Interface\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\Interactive\InputBox.Designer.cs">
+    <Compile Include="Source\Interface\InputBox.Designer.cs">
       <DependentUpon>InputBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Utilities\Log.cs" />
     <Compile Include="Source\Visuals\VisualPosition.cs" />
-    <Compile Include="Source\Interactive\Window.cs">
+    <Compile Include="Source\Interface\Window.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\Interactive\Window.Designer.cs">
+    <Compile Include="Source\Interface\Window.Designer.cs">
       <DependentUpon>Window.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Gameplay\Game.cs" />
-    <Compile Include="Source\Agents\Human.cs" />
+    <Compile Include="Source\Gameplay\Human.cs" />
     <Compile Include="Source\Framework\Move.cs" />
-    <Compile Include="Source\Agents\IPlayer.cs" />
+    <Compile Include="Source\Gameplay\IPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Interactive\Settings.cs">
+    <Compile Include="Source\Interface\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\Interactive\Settings.Designer.cs">
+    <Compile Include="Source\Interface\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Utilities\Random.cs" />
-    <Compile Include="Source\Agents\Zero\Declarations.cs" />
-    <EmbeddedResource Include="Source\Interactive\SelectionBox.resx">
+    <Compile Include="Source\Engine\Declarations.cs" />
+    <EmbeddedResource Include="Source\Interface\SelectionBox.resx">
       <DependentUpon>SelectionBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\Interactive\InputBox.resx">
+    <EmbeddedResource Include="Source\Interface\InputBox.resx">
       <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -143,10 +143,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Source\Interactive\Settings.resx">
+    <EmbeddedResource Include="Source\Interface\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\Interactive\Window.resx">
+    <EmbeddedResource Include="Source\Interface\Window.resx">
       <DependentUpon>Window.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />

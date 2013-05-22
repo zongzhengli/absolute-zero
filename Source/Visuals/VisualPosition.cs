@@ -31,9 +31,9 @@ namespace AbsoluteZero {
         public static void Set(Position position) {
             lock (ElementLock) {
                 element.Clear();
-                for (Int32 square = 0; square < position.Element.Length; square++)
-                    if (position.Element[square] != Piece.Empty)
-                        element.Add(new VisualPiece(position.Element[square], Position.File(square) * SquareWidth, Position.Rank(square) * SquareWidth));
+                for (Int32 square = 0; square < position.Square.Length; square++)
+                    if (position.Square[square] != Piece.Empty)
+                        element.Add(new VisualPiece(position.Square[square], Position.File(square) * SquareWidth, Position.Rank(square) * SquareWidth));
             }
         }
 

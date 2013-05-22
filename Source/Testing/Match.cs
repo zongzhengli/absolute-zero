@@ -26,11 +26,11 @@ namespace AbsoluteZero {
                 halfMovesLimit = Int32.MaxValue;
 
             while (true) {
-                IPlayer player = position.Colour == Piece.White ? white : black;
+                IPlayer player = position.SideToMove == Piece.White ? white : black;
                 position.Make(player.GetMove(position));
 
                 if (position.LegalMoves().Count <= 0)
-                    if (position.InCheck(position.Colour))
+                    if (position.InCheck(position.SideToMove))
                         return player.Equals(white) ? MatchResult.Win : MatchResult.Loss;
                     else
                         return MatchResult.Draw;

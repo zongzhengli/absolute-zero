@@ -10,11 +10,11 @@ namespace AbsoluteZero {
         public const Int32 HalfMovesLimit = 1024;
         public const Int32 InvalidSquare = -1;
 
-        public Int32[] Element = new Int32[64];
-        public UInt64[] BitField = new UInt64[16];
-        public UInt64 OccupiedField = 0;
+        public Int32[] Square = new Int32[64];
+        public UInt64[] Bitboard = new UInt64[16];
+        public UInt64 OccupiedBitboard = 0;
         public Int32[] Material = new Int32[2];
-        public Int32 Colour = 0;
+        public Int32 SideToMove = 0;
         public Int32 HalfMoves = 0;
         public Int32[] CastleKingside = new Int32[2];
         public Int32[] CastleQueenside = new Int32[2];
@@ -36,7 +36,7 @@ namespace AbsoluteZero {
         }
 
         private void ParseFen(String fen) {
-            Array.Clear(Element, 0, Element.Length);
+            Array.Clear(Square, 0, Square.Length);
             String[] terms = fen.Trim().Split(' ');
             Int32 file = 0;
             Int32 rank = 0;
@@ -52,26 +52,26 @@ namespace AbsoluteZero {
                         rank++;
                         break;
                     case 'K':
-                        Element[file++ + rank * 8] = colour | Piece.King;
+                        Square[file++ + rank * 8] = colour | Piece.King;
                         break;
                     case 'Q':
-                        Element[file++ + rank * 8] = colour | Piece.Queen;
+                        Square[file++ + rank * 8] = colour | Piece.Queen;
                         break;
                     case 'R':
-                        Element[file++ + rank * 8] = colour | Piece.Rook;
+                        Square[file++ + rank * 8] = colour | Piece.Rook;
                         break;
                     case 'B':
-                        Element[file++ + rank * 8] = colour | Piece.Bishop;
+                        Square[file++ + rank * 8] = colour | Piece.Bishop;
                         break;
                     case 'N':
-                        Element[file++ + rank * 8] = colour | Piece.Knight;
+                        Square[file++ + rank * 8] = colour | Piece.Knight;
                         break;
                     case 'P':
-                        Element[file++ + rank * 8] = colour | Piece.Pawn;
+                        Square[file++ + rank * 8] = colour | Piece.Pawn;
                         break;
                 }
             }
-            Colour = terms[1] == "w" ? Piece.White : Piece.Black;
+            SideToMove = terms[1] == "w" ? Piece.White : Piece.Black;
             if (terms.Length > 2) {
                 if (terms[2].Contains("Q"))
                     CastleQueenside[0] = 1;
@@ -84,11 +84,11 @@ namespace AbsoluteZero {
             }
             if (terms.Length > 3)
                 if (terms[3] != "-")
-                    EnPassantSquare = Square(terms[3]);
+                    EnPassantSquare = SquareAt(terms[3]);
             if (terms.Length > 5) {
                 FiftyMovesClock = Int32.Parse(terms[4]);
                 Int32 moveNumber = Int32.Parse(terms[5]);
-                HalfMoves = 2 * (moveNumber - 1) + Colour;
+                HalfMoves = 2 * (moveNumber - 1) + SideToMove;
                 HalfMoves = Math.Max(0, HalfMoves);
                 FiftyMovesClock = Math.Min(FiftyMovesClock, HalfMoves);
             }
@@ -97,297 +97,298 @@ namespace AbsoluteZero {
                 EnPassantHistory[i] = InvalidSquare;
             EnPassantHistory[HalfMoves] = EnPassantSquare;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
-            for (Int32 square = 0; square < Element.Length; square++)
-                if (Element[square] != Piece.Empty) {
-                    Int32 colour = Element[square] & Piece.Colour;
-                    BitField[Element[square]] |= 1UL << square;
-                    BitField[colour | Piece.All] |= 1UL << square;
-                    OccupiedField |= 1UL << square;
-                    if ((Element[square] & Piece.Type) != Piece.King)
-                        Material[colour] += Zero.PieceValue[Element[square]];
+            for (Int32 square = 0; square < Square.Length; square++)
+                if (Square[square] != Piece.Empty) {
+                    Int32 colour = Square[square] & Piece.Colour;
+                    Bitboard[Square[square]] |= 1UL << square;
+                    Bitboard[colour | Piece.All] |= 1UL << square;
+                    OccupiedBitboard |= 1UL << square;
+                    if ((Square[square] & Piece.Type) != Piece.King)
+                        Material[colour] += Zero.PieceValue[Square[square]];
                 }
             ZobristKey = GenerateZobristKey();
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
 
         public Int32 LegalMoves(Int32[] moves) {
-            UInt64 bishopQueenField = BitField[(1 - Colour) | Piece.Bishop] | BitField[(1 - Colour) | Piece.Queen];
-            UInt64 rookQueenField = BitField[(1 - Colour) | Piece.Rook] | BitField[(1 - Colour) | Piece.Queen];
-            UInt64 checkField = 0;
-            UInt64 pinField = 0;
-            Int32 kingSquare = Bit.Read(BitField[Colour | Piece.King]);
+            UInt64 bishopQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Bishop] | Bitboard[(1 - SideToMove) | Piece.Queen];
+            UInt64 rookQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Rook] | Bitboard[(1 - SideToMove) | Piece.Queen];
+            UInt64 checkBitboard = 0;
+            UInt64 pinBitboard = 0;
+            Int32 kingSquare = Bit.Read(Bitboard[SideToMove | Piece.King]);
 
-            checkField |= BitField[(1 - Colour) | Piece.Knight] & Attack.Knight(kingSquare);
-            checkField |= BitField[(1 - Colour) | Piece.Pawn] & Attack.Pawn(kingSquare, Colour);
-            if ((bishopQueenField & Attack.Diagonals[kingSquare]) > 0) {
-                checkField |= bishopQueenField & Attack.Bishop(kingSquare, OccupiedField);
+            checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Knight] & Attack.Knight(kingSquare);
+            checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Pawn] & Attack.Pawn(kingSquare, SideToMove);
+            if ((bishopQueenBitboard & Attack.Diagonals[kingSquare]) > 0) {
+                checkBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
 
-                UInt64 occupiedFieldCopy = OccupiedField;
-                UInt64 pinnedField = Attack.RayNE[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.ScanReverse(pinnedField);
-                pinnedField = Attack.RayNW[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.ScanReverse(pinnedField);
-                pinnedField = Attack.RaySE[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.Scan(pinnedField);
-                pinnedField = Attack.RaySW[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.Scan(pinnedField);
+                UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                UInt64 pinnedBitboard = Attack.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                pinnedBitboard = Attack.RayNW[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                pinnedBitboard = Attack.RaySE[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                pinnedBitboard = Attack.RaySW[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
 
-                pinField |= bishopQueenField & Attack.Bishop(kingSquare, OccupiedField);
-                OccupiedField = occupiedFieldCopy;
+                pinBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
+                OccupiedBitboard = occupiedBitboardCopy;
             }
-            if ((rookQueenField & Attack.Axes[kingSquare]) > 0) {
-                checkField |= rookQueenField & Attack.Rook(kingSquare, OccupiedField);
+            if ((rookQueenBitboard & Attack.Axes[kingSquare]) > 0) {
+                checkBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
 
-                UInt64 occupiedFieldCopy = OccupiedField;
-                UInt64 pinnedField = Attack.RayN[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.ScanReverse(pinnedField);
-                pinnedField = Attack.RayE[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.Scan(pinnedField);
-                pinnedField = Attack.RayS[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.Scan(pinnedField);
-                pinnedField = Attack.RayW[kingSquare] & BitField[Colour | Piece.All];
-                if (pinnedField > 0)
-                    OccupiedField ^= 1UL << Bit.ScanReverse(pinnedField);
+                UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                UInt64 pinnedBitboard = Attack.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                pinnedBitboard = Attack.RayE[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                pinnedBitboard = Attack.RayS[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                pinnedBitboard = Attack.RayW[kingSquare] & Bitboard[SideToMove | Piece.All];
+                if (pinnedBitboard > 0)
+                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
 
-                pinField |= rookQueenField & Attack.Rook(kingSquare, OccupiedField);
-                OccupiedField = occupiedFieldCopy;
+                pinBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
+                OccupiedBitboard = occupiedBitboardCopy;
             }
 
             Int32 index = 0;
 
-            // castling is always fully checked
-            if (checkField <= 0) {
-                Int32 rank = -56 * Colour + 56;
-                if (CastleQueenside[Colour] > 0 && (Element[1 + rank] | Element[2 + rank] | Element[3 + rank]) == Piece.Empty)
-                    if (!IsAttacked(Colour, 3 + rank) && !IsAttacked(Colour, 2 + rank))
-                        moves[index++] = Move.Create(this, kingSquare, 2 + rank, Colour | Piece.King);
-                if (CastleKingside[Colour] > 0 && (Element[5 + rank] | Element[6 + rank]) == Piece.Empty)
-                    if (!IsAttacked(Colour, 5 + rank) && !IsAttacked(Colour, 6 + rank))
-                        moves[index++] = Move.Create(this, kingSquare, 6 + rank, Colour | Piece.King);
+            // Castling is always fully tested for legality. 
+            if (checkBitboard <= 0) {
+                Int32 rank = -56 * SideToMove + 56;
+                if (CastleQueenside[SideToMove] > 0 && (Square[1 + rank] | Square[2 + rank] | Square[3 + rank]) == Piece.Empty)
+                    if (!IsAttacked(SideToMove, 3 + rank) && !IsAttacked(SideToMove, 2 + rank))
+                        moves[index++] = Move.Create(this, kingSquare, 2 + rank, SideToMove | Piece.King);
+                if (CastleKingside[SideToMove] > 0 && (Square[5 + rank] | Square[6 + rank]) == Piece.Empty)
+                    if (!IsAttacked(SideToMove, 5 + rank) && !IsAttacked(SideToMove, 6 + rank))
+                        moves[index++] = Move.Create(this, kingSquare, 6 + rank, SideToMove | Piece.King);
             }
 
-            UInt64 opponentField = BitField[(1 - Colour) | Piece.All];
-            UInt64 targetField = ~BitField[Colour | Piece.All];
-            UInt64 enPassantField = 0;
-            UInt64 enPassantPawnField = 0;
+            UInt64 opponentBitboard = Bitboard[(1 - SideToMove) | Piece.All];
+            UInt64 targetBitboard = ~Bitboard[SideToMove | Piece.All];
+            UInt64 enPassantBitboard = 0;
+            UInt64 enPassantPawnBitboard = 0;
             if (EnPassantSquare != InvalidSquare) {
-                enPassantField = 1UL << EnPassantSquare;
-                enPassantPawnField = Move.Pawn(EnPassantSquare, 1 - Colour);
+                enPassantBitboard = 1UL << EnPassantSquare;
+                enPassantPawnBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
             }
 
-            // not in check and no pinned pieces; almost all moves are legal
-            if (checkField <= 0 & pinField <= 0) {
-                UInt64 pieceField = BitField[Colour | Piece.Pawn];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    Int32 to = from + 16 * Colour - 8;
-                    UInt64 moveField = ~OccupiedField & (1UL << to);
-                    if (moveField > 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
-                        moveField |= ~OccupiedField & (1UL << (from + 32 * Colour - 16));
-                    UInt64 attackField = Attack.Pawn(from, Colour);
-                    moveField |= opponentField & attackField;
-                    while (moveField > 0) {
-                        to = Bit.Pop(ref moveField);
+            // Case 1. If we are not in check and there are no pinned pieces, we don't need to test normal moves for legality. 
+            if (checkBitboard <= 0 & pinBitboard <= 0) {
+                UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    Int32 to = from + 16 * SideToMove - 8;
+                    UInt64 moveBitboard = ~OccupiedBitboard & (1UL << to);
+                    if (moveBitboard > 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
+                        moveBitboard |= ~OccupiedBitboard & (1UL << (from + 32 * SideToMove - 16));
+                    UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
+                    moveBitboard |= opponentBitboard & attackBitboard;
+                    while (moveBitboard > 0) {
+                        to = Bit.Pop(ref moveBitboard);
                         if ((to - 8) * (to - 55) > 0) {
-                            moves[index++] = Move.Create(this, from, to, Colour | Piece.Queen);
-                            moves[index++] = Move.Create(this, from, to, Colour | Piece.Knight);
-                            moves[index++] = Move.Create(this, from, to, Colour | Piece.Rook);
-                            moves[index++] = Move.Create(this, from, to, Colour | Piece.Bishop);
+                            moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Queen);
+                            moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Knight);
+                            moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Rook);
+                            moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Bishop);
                         } else
                             moves[index++] = Move.Create(this, from, to);
                     }
 
-                    // en passant is always fully checked
-                    if ((enPassantField & attackField) > 0) {
-                        BitField[(1 - Colour) | Piece.Pawn] ^= enPassantPawnField;
-                        OccupiedField ^= enPassantPawnField;
-                        OccupiedField ^= (1UL << from) | enPassantField;
-                        if (!IsAttacked(Colour, kingSquare))
-                            moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - Colour) | Piece.Pawn);
-                        BitField[(1 - Colour) | Piece.Pawn] ^= enPassantPawnField;
-                        OccupiedField ^= enPassantPawnField;
-                        OccupiedField ^= (1UL << from) | enPassantField;
+                    // En passant is always fully tested for legality. 
+                    if ((enPassantBitboard & attackBitboard) > 0) {
+                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
+                        if (!IsAttacked(SideToMove, kingSquare))
+                            moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - SideToMove) | Piece.Pawn);
+                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Knight];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Knight(from);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
+                pieceBitboard = Bitboard[SideToMove | Piece.Knight];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Knight(from);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Bishop];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Bishop(from, OccupiedField);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
+                pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Queen];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Queen(from, OccupiedField);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
+                pieceBitboard = Bitboard[SideToMove | Piece.Queen];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Rook];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Rook(from, OccupiedField);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
+                pieceBitboard = Bitboard[SideToMove | Piece.Rook];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
             }
 
-            // single check or pieces are pinned; all moves are fully checked
-            else if ((checkField & (checkField - 1)) <= 0) {
-                UInt64 pieceField = BitField[Colour | Piece.Pawn];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    Int32 to = from + 16 * Colour - 8;
-                    UInt64 moveField = ~OccupiedField & (1UL << to);
-                    if (moveField > 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
-                        moveField |= ~OccupiedField & (1UL << (from + 32 * Colour - 16));
-                    UInt64 attackField = Attack.Pawn(from, Colour);
-                    moveField |= opponentField & attackField;
-                    while (moveField > 0) {
-                        to = Bit.Pop(ref moveField);
-                        UInt64 occupiedFieldCopy = OccupiedField;
-                        Int32 capture = Element[to];
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField ^= 1UL << from;
-                        OccupiedField |= 1UL << to;
-                        if (!IsAttacked(Colour, kingSquare))
+            // Case 2. There are pinned pieces or a single check, so all moves are tested for legality. 
+            else if ((checkBitboard & (checkBitboard - 1)) <= 0) {
+                UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    Int32 to = from + 16 * SideToMove - 8;
+                    UInt64 moveBitboard = ~OccupiedBitboard & (1UL << to);
+                    if (moveBitboard > 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
+                        moveBitboard |= ~OccupiedBitboard & (1UL << (from + 32 * SideToMove - 16));
+                    UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
+                    moveBitboard |= opponentBitboard & attackBitboard;
+                    while (moveBitboard > 0) {
+                        to = Bit.Pop(ref moveBitboard);
+                        UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                        Int32 capture = Square[to];
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard ^= 1UL << from;
+                        OccupiedBitboard |= 1UL << to;
+                        if (!IsAttacked(SideToMove, kingSquare))
                             if ((to - 8) * (to - 55) > 0) {
-                                moves[index++] = Move.Create(this, from, to, Colour | Piece.Queen);
-                                moves[index++] = Move.Create(this, from, to, Colour | Piece.Knight);
-                                moves[index++] = Move.Create(this, from, to, Colour | Piece.Rook);
-                                moves[index++] = Move.Create(this, from, to, Colour | Piece.Bishop);
+                                moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Queen);
+                                moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Knight);
+                                moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Rook);
+                                moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Bishop);
                             } else
                                 moves[index++] = Move.Create(this, from, to);
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField = occupiedFieldCopy;
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard = occupiedBitboardCopy;
                     }
-                    if ((enPassantField & attackField) > 0) {
-                        BitField[(1 - Colour) | Piece.Pawn] ^= enPassantPawnField;
-                        OccupiedField ^= enPassantPawnField;
-                        OccupiedField ^= (1UL << from) | enPassantField;
-                        if (!IsAttacked(Colour, kingSquare))
-                            moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - Colour) | Piece.Pawn);
-                        BitField[(1 - Colour) | Piece.Pawn] ^= enPassantPawnField;
-                        OccupiedField ^= enPassantPawnField;
-                        OccupiedField ^= (1UL << from) | enPassantField;
+
+                    // Generate en passant moves. 
+                    if ((enPassantBitboard & attackBitboard) > 0) {
+                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
+                        if (!IsAttacked(SideToMove, kingSquare))
+                            moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - SideToMove) | Piece.Pawn);
+                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= enPassantPawnBitboard;
+                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
                     }
                 }
 
-                // en passant is always fully checked
-                pieceField = BitField[Colour | Piece.Knight];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Knight(from);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
-                        UInt64 occupiedFieldCopy = OccupiedField;
-                        Int32 capture = Element[to];
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField ^= 1UL << from;
-                        OccupiedField |= 1UL << to;
-                        if (!IsAttacked(Colour, kingSquare))
+                pieceBitboard = Bitboard[SideToMove | Piece.Knight];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Knight(from);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
+                        UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                        Int32 capture = Square[to];
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard ^= 1UL << from;
+                        OccupiedBitboard |= 1UL << to;
+                        if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField = occupiedFieldCopy;
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard = occupiedBitboardCopy;
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Bishop];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Bishop(from, OccupiedField);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
-                        UInt64 occupiedFieldCopy = OccupiedField;
-                        Int32 capture = Element[to];
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField ^= 1UL << from;
-                        OccupiedField |= 1UL << to;
-                        if (!IsAttacked(Colour, kingSquare))
+                pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
+                        UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                        Int32 capture = Square[to];
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard ^= 1UL << from;
+                        OccupiedBitboard |= 1UL << to;
+                        if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField = occupiedFieldCopy;
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard = occupiedBitboardCopy;
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Queen];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Queen(from, OccupiedField);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
-                        UInt64 occupiedFieldCopy = OccupiedField;
-                        Int32 capture = Element[to];
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField ^= 1UL << from;
-                        OccupiedField |= 1UL << to;
-                        if (!IsAttacked(Colour, kingSquare))
+                pieceBitboard = Bitboard[SideToMove | Piece.Queen];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
+                        UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                        Int32 capture = Square[to];
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard ^= 1UL << from;
+                        OccupiedBitboard |= 1UL << to;
+                        if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField = occupiedFieldCopy;
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard = occupiedBitboardCopy;
                     }
                 }
 
-                pieceField = BitField[Colour | Piece.Rook];
-                while (pieceField > 0) {
-                    Int32 from = Bit.Pop(ref pieceField);
-                    UInt64 moveField = targetField & Attack.Rook(from, OccupiedField);
-                    while (moveField > 0) {
-                        Int32 to = Bit.Pop(ref moveField);
-                        UInt64 occupiedFieldCopy = OccupiedField;
-                        Int32 capture = Element[to];
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField ^= 1UL << from;
-                        OccupiedField |= 1UL << to;
-                        if (!IsAttacked(Colour, kingSquare))
+                pieceBitboard = Bitboard[SideToMove | Piece.Rook];
+                while (pieceBitboard > 0) {
+                    Int32 from = Bit.Pop(ref pieceBitboard);
+                    UInt64 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
+                    while (moveBitboard > 0) {
+                        Int32 to = Bit.Pop(ref moveBitboard);
+                        UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                        Int32 capture = Square[to];
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard ^= 1UL << from;
+                        OccupiedBitboard |= 1UL << to;
+                        if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
-                        BitField[capture] ^= 1UL << to;
-                        OccupiedField = occupiedFieldCopy;
+                        Bitboard[capture] ^= 1UL << to;
+                        OccupiedBitboard = occupiedBitboardCopy;
                     }
                 }
             }
 
-            // king moves are always fully checked
+            // King moves are always tested for legality. 
             {
                 Int32 from = kingSquare;
-                UInt64 moveField = targetField & Attack.King(from);
-                while (moveField > 0) {
-                    Int32 to = Bit.Pop(ref moveField);
-                    UInt64 occupiedFieldCopy = OccupiedField;
-                    Int32 capture = Element[to];
-                    BitField[capture] ^= 1UL << to;
-                    OccupiedField ^= 1UL << from;
-                    OccupiedField |= 1UL << to;
-                    if (!IsAttacked(Colour, to))
+                UInt64 moveBitboard = targetBitboard & Attack.King(from);
+                while (moveBitboard > 0) {
+                    Int32 to = Bit.Pop(ref moveBitboard);
+                    UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                    Int32 capture = Square[to];
+                    Bitboard[capture] ^= 1UL << to;
+                    OccupiedBitboard ^= 1UL << from;
+                    OccupiedBitboard |= 1UL << to;
+                    if (!IsAttacked(SideToMove, to))
                         moves[index++] = Move.Create(this, from, to);
-                    BitField[capture] ^= 1UL << to;
-                    OccupiedField = occupiedFieldCopy;
+                    Bitboard[capture] ^= 1UL << to;
+                    OccupiedBitboard = occupiedBitboardCopy;
                 }
             }
             return index;
@@ -395,68 +396,68 @@ namespace AbsoluteZero {
 
         public Int32 PseudoQuiescenceMoves(Int32[] moves) {
             Int32 index = 0;
-            UInt64 targetField = BitField[(1 - Colour) | Piece.All];
+            UInt64 targetBitboard = Bitboard[(1 - SideToMove) | Piece.All];
 
-            UInt64 pieceField = BitField[Colour | Piece.King];
-            Int32 from = Bit.Read(pieceField);
-            UInt64 moveField = targetField & Attack.King(from);
-            while (moveField > 0) {
-                Int32 to = Bit.Pop(ref moveField);
+            UInt64 pieceBitboard = Bitboard[SideToMove | Piece.King];
+            Int32 from = Bit.Read(pieceBitboard);
+            UInt64 moveBitboard = targetBitboard & Attack.King(from);
+            while (moveBitboard > 0) {
+                Int32 to = Bit.Pop(ref moveBitboard);
                 moves[index++] = Move.Create(this, from, to);
             }
 
-            pieceField = BitField[Colour | Piece.Queen];
-            while (pieceField > 0) {
-                from = Bit.Pop(ref pieceField);
-                moveField = targetField & Attack.Queen(from, OccupiedField);
-                while (moveField > 0) {
-                    Int32 to = Bit.Pop(ref moveField);
+            pieceBitboard = Bitboard[SideToMove | Piece.Queen];
+            while (pieceBitboard > 0) {
+                from = Bit.Pop(ref pieceBitboard);
+                moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
+                while (moveBitboard > 0) {
+                    Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
-            pieceField = BitField[Colour | Piece.Rook];
-            while (pieceField > 0) {
-                from = Bit.Pop(ref pieceField);
-                moveField = targetField & Attack.Rook(from, OccupiedField);
-                while (moveField > 0) {
-                    Int32 to = Bit.Pop(ref moveField);
+            pieceBitboard = Bitboard[SideToMove | Piece.Rook];
+            while (pieceBitboard > 0) {
+                from = Bit.Pop(ref pieceBitboard);
+                moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
+                while (moveBitboard > 0) {
+                    Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
-            pieceField = BitField[Colour | Piece.Knight];
-            while (pieceField > 0) {
-                from = Bit.Pop(ref pieceField);
-                moveField = targetField & Attack.Knight(from);
-                while (moveField > 0) {
-                    Int32 to = Bit.Pop(ref moveField);
+            pieceBitboard = Bitboard[SideToMove | Piece.Knight];
+            while (pieceBitboard > 0) {
+                from = Bit.Pop(ref pieceBitboard);
+                moveBitboard = targetBitboard & Attack.Knight(from);
+                while (moveBitboard > 0) {
+                    Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
-            pieceField = BitField[Colour | Piece.Bishop];
-            while (pieceField > 0) {
-                from = Bit.Pop(ref pieceField);
-                moveField = targetField & Attack.Bishop(from, OccupiedField);
-                while (moveField > 0) {
-                    Int32 to = Bit.Pop(ref moveField);
+            pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
+            while (pieceBitboard > 0) {
+                from = Bit.Pop(ref pieceBitboard);
+                moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
+                while (moveBitboard > 0) {
+                    Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
-            pieceField = BitField[Colour | Piece.Pawn];
-            while (pieceField > 0) {
-                from = Bit.Pop(ref pieceField);
-                moveField = targetField & Attack.Pawn(from, Colour);
-                Int32 to = from + 16 * Colour - 8;
+            pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
+            while (pieceBitboard > 0) {
+                from = Bit.Pop(ref pieceBitboard);
+                moveBitboard = targetBitboard & Attack.Pawn(from, SideToMove);
+                Int32 to = from + 16 * SideToMove - 8;
                 Boolean promotion = (to - 8) * (to - 55) > 0;
                 if (promotion)
-                    moveField |= ~OccupiedField & (1UL << to);
-                while (moveField > 0) {
-                    to = Bit.Pop(ref moveField);
+                    moveBitboard |= ~OccupiedBitboard & (1UL << to);
+                while (moveBitboard > 0) {
+                    to = Bit.Pop(ref moveBitboard);
                     if (promotion)
-                        moves[index++] = Move.Create(this, from, to, Colour | Piece.Queen);
+                        moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Queen);
                     else
                         moves[index++] = Move.Create(this, from, to);
                 }
@@ -480,11 +481,11 @@ namespace AbsoluteZero {
             Int32 capture = Move.GetCapture(move);
             Int32 special = Move.GetSpecial(move);
 
-            Element[to] = piece;
-            Element[from] = Piece.Empty;
-            BitField[piece] ^= (1UL << from) | (1UL << to);
-            BitField[Colour | Piece.All] ^= (1UL << from) | (1UL << to);
-            OccupiedField ^= (1UL << from) | (1UL << to);
+            Square[to] = piece;
+            Square[from] = Piece.Empty;
+            Bitboard[piece] ^= (1UL << from) | (1UL << to);
+            Bitboard[SideToMove | Piece.All] ^= (1UL << from) | (1UL << to);
+            OccupiedBitboard ^= (1UL << from) | (1UL << to);
             ZobristKey ^= Zobrist.PiecePosition[piece][from] ^ Zobrist.PiecePosition[piece][to];
             ZobristKey ^= Zobrist.Colour;
 
@@ -498,19 +499,19 @@ namespace AbsoluteZero {
                 case Piece.Empty:
                     break;
                 case Piece.Rook:
-                    if ((Colour == Piece.White && to == 0) || (Colour == Piece.Black && to == 56)) {
-                        if (CastleQueenside[1 - Colour]-- > 0)
-                            ZobristKey ^= Zobrist.CastleQueenside[1 - Colour];
-                    } else if ((Colour == Piece.White && to == 7) || (Colour == Piece.Black && to == 63))
-                        if (CastleKingside[1 - Colour]-- > 0)
-                            ZobristKey ^= Zobrist.CastleKingside[1 - Colour];
+                    if ((SideToMove == Piece.White && to == 0) || (SideToMove == Piece.Black && to == 56)) {
+                        if (CastleQueenside[1 - SideToMove]-- > 0)
+                            ZobristKey ^= Zobrist.CastleQueenside[1 - SideToMove];
+                    } else if ((SideToMove == Piece.White && to == 7) || (SideToMove == Piece.Black && to == 63))
+                        if (CastleKingside[1 - SideToMove]-- > 0)
+                            ZobristKey ^= Zobrist.CastleKingside[1 - SideToMove];
                     goto default;
                 default:
-                    BitField[capture] ^= 1UL << to;
-                    BitField[(1 - Colour) | Piece.All] ^= 1UL << to;
-                    OccupiedField |= 1UL << to;
+                    Bitboard[capture] ^= 1UL << to;
+                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << to;
+                    OccupiedBitboard |= 1UL << to;
                     ZobristKey ^= Zobrist.PiecePosition[capture][to];
-                    Material[1 - Colour] -= Zero.PieceValue[capture];
+                    Material[1 - SideToMove] -= Zero.PieceValue[capture];
                     FiftyMovesClock = 0;
                     break;
             }
@@ -525,26 +526,26 @@ namespace AbsoluteZero {
                             }
                             break;
                         case Piece.Rook:
-                            if ((Colour == Piece.White && from == 56) || (Colour == Piece.Black && from == 0)) {
-                                if (CastleQueenside[Colour]-- > 0)
-                                    ZobristKey ^= Zobrist.CastleQueenside[Colour];
-                            } else if ((Colour == Piece.White && from == 63) || (Colour == Piece.Black && from == 7))
-                                if (CastleKingside[Colour]-- > 0)
-                                    ZobristKey ^= Zobrist.CastleKingside[Colour];
+                            if ((SideToMove == Piece.White && from == 56) || (SideToMove == Piece.Black && from == 0)) {
+                                if (CastleQueenside[SideToMove]-- > 0)
+                                    ZobristKey ^= Zobrist.CastleQueenside[SideToMove];
+                            } else if ((SideToMove == Piece.White && from == 63) || (SideToMove == Piece.Black && from == 7))
+                                if (CastleKingside[SideToMove]-- > 0)
+                                    ZobristKey ^= Zobrist.CastleKingside[SideToMove];
                             break;
                         case Piece.King:
-                            if (CastleQueenside[Colour]-- > 0)
-                                ZobristKey ^= Zobrist.CastleQueenside[Colour];
-                            if (CastleKingside[Colour]-- > 0)
-                                ZobristKey ^= Zobrist.CastleKingside[Colour];
+                            if (CastleQueenside[SideToMove]-- > 0)
+                                ZobristKey ^= Zobrist.CastleQueenside[SideToMove];
+                            if (CastleKingside[SideToMove]-- > 0)
+                                ZobristKey ^= Zobrist.CastleKingside[SideToMove];
                             break;
                     }
                     break;
                 case Piece.King:
-                    if (CastleQueenside[Colour]-- > 0)
-                        ZobristKey ^= Zobrist.CastleQueenside[Colour];
-                    if (CastleKingside[Colour]-- > 0)
-                        ZobristKey ^= Zobrist.CastleKingside[Colour];
+                    if (CastleQueenside[SideToMove]-- > 0)
+                        ZobristKey ^= Zobrist.CastleQueenside[SideToMove];
+                    if (CastleKingside[SideToMove]-- > 0)
+                        ZobristKey ^= Zobrist.CastleKingside[SideToMove];
                     Int32 rookFrom;
                     Int32 rookTo;
                     if (to < from) {
@@ -554,32 +555,32 @@ namespace AbsoluteZero {
                         rookFrom = 7 + Rank(to) * 8;
                         rookTo = 5 + Rank(to) * 8;
                     }
-                    BitField[Colour | Piece.Rook] ^= (1UL << rookFrom) | (1UL << rookTo);
-                    BitField[Colour | Piece.All] ^= (1UL << rookFrom) | (1UL << rookTo);
-                    OccupiedField ^= (1UL << rookFrom) | (1UL << rookTo);
-                    ZobristKey ^= Zobrist.PiecePosition[Colour | Piece.Rook][rookFrom];
-                    ZobristKey ^= Zobrist.PiecePosition[Colour | Piece.Rook][rookTo];
-                    Element[rookFrom] = Piece.Empty;
-                    Element[rookTo] = Colour | Piece.Rook;
+                    Bitboard[SideToMove | Piece.Rook] ^= (1UL << rookFrom) | (1UL << rookTo);
+                    Bitboard[SideToMove | Piece.All] ^= (1UL << rookFrom) | (1UL << rookTo);
+                    OccupiedBitboard ^= (1UL << rookFrom) | (1UL << rookTo);
+                    ZobristKey ^= Zobrist.PiecePosition[SideToMove | Piece.Rook][rookFrom];
+                    ZobristKey ^= Zobrist.PiecePosition[SideToMove | Piece.Rook][rookTo];
+                    Square[rookFrom] = Piece.Empty;
+                    Square[rookTo] = SideToMove | Piece.Rook;
                     break;
                 case Piece.Pawn:
-                    Element[File(to) + Rank(from) * 8] = Piece.Empty;
-                    BitField[special] ^= 1UL << (File(to) + Rank(from) * 8);
-                    BitField[(1 - Colour) | Piece.All] ^= 1UL << (File(to) + Rank(from) * 8);
-                    OccupiedField ^= 1UL << (File(to) + Rank(from) * 8);
+                    Square[File(to) + Rank(from) * 8] = Piece.Empty;
+                    Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
+                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << (File(to) + Rank(from) * 8);
+                    OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     ZobristKey ^= Zobrist.PiecePosition[special][File(to) + Rank(from) * 8];
-                    Material[1 - Colour] -= Zero.PieceValue[special];
+                    Material[1 - SideToMove] -= Zero.PieceValue[special];
                     break;
                 default:
-                    BitField[piece] ^= 1UL << to;
-                    BitField[special] ^= 1UL << to;
+                    Bitboard[piece] ^= 1UL << to;
+                    Bitboard[special] ^= 1UL << to;
                     ZobristKey ^= Zobrist.PiecePosition[piece][to];
                     ZobristKey ^= Zobrist.PiecePosition[special][to];
-                    Material[Colour] += Zero.PieceValue[special] - Zero.PieceValue[piece];
-                    Element[to] = special;
+                    Material[SideToMove] += Zero.PieceValue[special] - Zero.PieceValue[piece];
+                    Square[to] = special;
                     break;
             }
-            Colour = 1 - Colour;
+            SideToMove = 1 - SideToMove;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
@@ -591,12 +592,12 @@ namespace AbsoluteZero {
             Int32 capture = Move.GetCapture(move);
             Int32 special = Move.GetSpecial(move);
 
-            Colour = 1 - Colour;
-            Element[from] = piece;
-            Element[to] = capture;
-            BitField[piece] ^= (1UL << from) | (1UL << to);
-            BitField[Colour | Piece.All] ^= (1UL << from) | (1UL << to);
-            OccupiedField ^= (1UL << from) | (1UL << to);
+            SideToMove = 1 - SideToMove;
+            Square[from] = piece;
+            Square[to] = capture;
+            Bitboard[piece] ^= (1UL << from) | (1UL << to);
+            Bitboard[SideToMove | Piece.All] ^= (1UL << from) | (1UL << to);
+            OccupiedBitboard ^= (1UL << from) | (1UL << to);
             ZobristKey = ZobristKeyHistory[HalfMoves - 1];
 
             EnPassantHistory[HalfMoves] = InvalidSquare;
@@ -607,36 +608,36 @@ namespace AbsoluteZero {
                 case Piece.Empty:
                     break;
                 case Piece.Rook:
-                    if ((Colour == Piece.White && to == 0) || (Colour == Piece.Black && to == 56)) {
-                        CastleQueenside[1 - Colour]++;
-                    } else if ((Colour == Piece.White && to == 7) || (Colour == Piece.Black && to == 63))
-                        CastleKingside[1 - Colour]++;
+                    if ((SideToMove == Piece.White && to == 0) || (SideToMove == Piece.Black && to == 56)) {
+                        CastleQueenside[1 - SideToMove]++;
+                    } else if ((SideToMove == Piece.White && to == 7) || (SideToMove == Piece.Black && to == 63))
+                        CastleKingside[1 - SideToMove]++;
                     goto default;
                 default:
-                    BitField[capture] ^= 1UL << to;
-                    BitField[(1 - Colour) | Piece.All] ^= 1UL << to;
-                    OccupiedField |= 1UL << to;
-                    Material[1 - Colour] += Zero.PieceValue[capture];
+                    Bitboard[capture] ^= 1UL << to;
+                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << to;
+                    OccupiedBitboard |= 1UL << to;
+                    Material[1 - SideToMove] += Zero.PieceValue[capture];
                     break;
             }
             switch (special & Piece.Type) {
                 case Piece.Empty:
                     switch (piece & Piece.Type) {
                         case Piece.Rook:
-                            if ((Colour == Piece.White && from == 56) || (Colour == Piece.Black && from == 0)) {
-                                CastleQueenside[Colour]++;
-                            } else if ((Colour == Piece.White && from == 63) || (Colour == Piece.Black && from == 7))
-                                CastleKingside[Colour]++;
+                            if ((SideToMove == Piece.White && from == 56) || (SideToMove == Piece.Black && from == 0)) {
+                                CastleQueenside[SideToMove]++;
+                            } else if ((SideToMove == Piece.White && from == 63) || (SideToMove == Piece.Black && from == 7))
+                                CastleKingside[SideToMove]++;
                             break;
                         case Piece.King:
-                            CastleQueenside[Colour]++;
-                            CastleKingside[Colour]++;
+                            CastleQueenside[SideToMove]++;
+                            CastleKingside[SideToMove]++;
                             break;
                     }
                     break;
                 case Piece.King:
-                    CastleQueenside[Colour]++;
-                    CastleKingside[Colour]++;
+                    CastleQueenside[SideToMove]++;
+                    CastleKingside[SideToMove]++;
                     Int32 rookFrom;
                     Int32 rookTo;
                     if (to < from) {
@@ -646,23 +647,23 @@ namespace AbsoluteZero {
                         rookFrom = 7 + Rank(to) * 8;
                         rookTo = 5 + Rank(to) * 8;
                     }
-                    BitField[Colour | Piece.Rook] ^= (1UL << rookFrom) | (1UL << rookTo);
-                    BitField[Colour | Piece.All] ^= (1UL << rookFrom) | (1UL << rookTo);
-                    OccupiedField ^= (1UL << rookFrom) | (1UL << rookTo);
-                    Element[rookFrom] = Colour | Piece.Rook;
-                    Element[rookTo] = Piece.Empty;
+                    Bitboard[SideToMove | Piece.Rook] ^= (1UL << rookFrom) | (1UL << rookTo);
+                    Bitboard[SideToMove | Piece.All] ^= (1UL << rookFrom) | (1UL << rookTo);
+                    OccupiedBitboard ^= (1UL << rookFrom) | (1UL << rookTo);
+                    Square[rookFrom] = SideToMove | Piece.Rook;
+                    Square[rookTo] = Piece.Empty;
                     break;
                 case Piece.Pawn:
-                    Element[File(to) + Rank(from) * 8] = special;
-                    BitField[special] ^= 1UL << (File(to) + Rank(from) * 8);
-                    BitField[(1 - Colour) | Piece.All] ^= 1UL << (File(to) + Rank(from) * 8);
-                    OccupiedField ^= 1UL << (File(to) + Rank(from) * 8);
-                    Material[1 - Colour] += Zero.PieceValue[special];
+                    Square[File(to) + Rank(from) * 8] = special;
+                    Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
+                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << (File(to) + Rank(from) * 8);
+                    OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
+                    Material[1 - SideToMove] += Zero.PieceValue[special];
                     break;
                 default:
-                    BitField[piece] ^= 1UL << to;
-                    BitField[special] ^= 1UL << to;
-                    Material[Colour] -= Zero.PieceValue[special] - Zero.PieceValue[piece];
+                    Bitboard[piece] ^= 1UL << to;
+                    Bitboard[special] ^= 1UL << to;
+                    Material[SideToMove] -= Zero.PieceValue[special] - Zero.PieceValue[piece];
                     break;
             }
         }
@@ -673,7 +674,7 @@ namespace AbsoluteZero {
                 ZobristKey ^= Zobrist.EnPassant[EnPassantSquare];
                 EnPassantSquare = InvalidSquare;
             }
-            Colour = 1 - Colour;
+            SideToMove = 1 - SideToMove;
             FiftyMovesClock++;
             HalfMoves++;
             ZobristKeyHistory[HalfMoves] = ZobristKey;
@@ -682,19 +683,19 @@ namespace AbsoluteZero {
         public void UnmakeNull() {
             ZobristKey = ZobristKeyHistory[HalfMoves - 1];
             EnPassantSquare = EnPassantHistory[HalfMoves - 1];
-            Colour = 1 - Colour;
+            SideToMove = 1 - SideToMove;
             FiftyMovesClock--;
             HalfMoves--;
         }
 
         public UInt64 GenerateZobristKey() {
             UInt64 key = 0;
-            for (Int32 square = 0; square < Element.Length; square++)
-                if (Element[square] != Piece.Empty)
-                    key ^= Zobrist.PiecePosition[Element[square]][square];
+            for (Int32 square = 0; square < Square.Length; square++)
+                if (Square[square] != Piece.Empty)
+                    key ^= Zobrist.PiecePosition[Square[square]][square];
             if (EnPassantSquare != InvalidSquare)
                 key ^= Zobrist.EnPassant[EnPassantSquare];
-            if (Colour != Piece.White)
+            if (SideToMove != Piece.White)
                 key ^= Zobrist.Colour;
             for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) {
                 if (CastleQueenside[colour] > 0)
@@ -706,87 +707,87 @@ namespace AbsoluteZero {
         }
 
         public Boolean InCheck(Int32 colour) {
-            return IsAttacked(colour, Bit.Read(BitField[colour | Piece.King]));
+            return IsAttacked(colour, Bit.Read(Bitboard[colour | Piece.King]));
         }
 
         public Boolean IsAttacked(Int32 colour, Int32 square) {
-            if ((BitField[(1 - colour) | Piece.Knight] & Attack.Knight(square)) > 0)
+            if ((Bitboard[(1 - colour) | Piece.Knight] & Attack.Knight(square)) > 0)
                 return true;
-            if ((BitField[(1 - colour) | Piece.Pawn] & Attack.Pawn(square, colour)) > 0)
+            if ((Bitboard[(1 - colour) | Piece.Pawn] & Attack.Pawn(square, colour)) > 0)
                 return true;
-            if ((BitField[(1 - colour) | Piece.King] & Attack.King(square)) > 0)
+            if ((Bitboard[(1 - colour) | Piece.King] & Attack.King(square)) > 0)
                 return true;
-            UInt64 bishopQueenField = BitField[(1 - colour) | Piece.Bishop] | BitField[(1 - colour) | Piece.Queen];
-            if ((bishopQueenField & Attack.Diagonals[square]) > 0)
-                if ((bishopQueenField & Attack.Bishop(square, OccupiedField)) > 0)
+            UInt64 bishopQueenBitboard = Bitboard[(1 - colour) | Piece.Bishop] | Bitboard[(1 - colour) | Piece.Queen];
+            if ((bishopQueenBitboard & Attack.Diagonals[square]) > 0)
+                if ((bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) > 0)
                     return true;
-            UInt64 rookQueenField = BitField[(1 - colour) | Piece.Rook] | BitField[(1 - colour) | Piece.Queen];
-            if ((rookQueenField & Attack.Axes[square]) > 0)
-                if ((rookQueenField & Attack.Rook(square, OccupiedField)) > 0)
+            UInt64 rookQueenBitboard = Bitboard[(1 - colour) | Piece.Rook] | Bitboard[(1 - colour) | Piece.Queen];
+            if ((rookQueenBitboard & Attack.Axes[square]) > 0)
+                if ((rookQueenBitboard & Attack.Rook(square, OccupiedBitboard)) > 0)
                     return true;
             return false;
         }
 
         public Boolean CausesCheck(Int32 move) {
-            UInt64 fromField = 1UL << Move.GetFrom(move);
-            UInt64 toField = 1UL << Move.GetTo(move);
+            UInt64 fromBitboard = 1UL << Move.GetFrom(move);
+            UInt64 toBitboard = 1UL << Move.GetTo(move);
             Int32 piece = Move.GetPiece(move);
             Int32 special = Move.GetSpecial(move);
-            UInt64 occupiedFieldCopy = OccupiedField;
+            UInt64 occupiedBitboardCopy = OccupiedBitboard;
 
             Boolean value = false;
             switch (special & Piece.Type) {
                 case Piece.Empty:
-                    BitField[piece] ^= fromField | toField;
-                    OccupiedField ^= fromField;
-                    OccupiedField |= toField;
-                    value = InCheck(1 - Colour);
-                    BitField[piece] ^= fromField | toField;
-                    OccupiedField = occupiedFieldCopy;
+                    Bitboard[piece] ^= fromBitboard | toBitboard;
+                    OccupiedBitboard ^= fromBitboard;
+                    OccupiedBitboard |= toBitboard;
+                    value = InCheck(1 - SideToMove);
+                    Bitboard[piece] ^= fromBitboard | toBitboard;
+                    OccupiedBitboard = occupiedBitboardCopy;
                     break;
                 case Piece.King:
-                    Int32 rookToField = (toField < fromField ? 3 : 5) + Rank(Move.GetTo(move)) * 8;
-                    BitField[Colour | Piece.Rook] ^= 1UL << rookToField;
-                    value = InCheck(1 - Colour);
-                    BitField[Colour | Piece.Rook] ^= 1UL << rookToField;
+                    Int32 rookToBitboard = (toBitboard < fromBitboard ? 3 : 5) + Rank(Move.GetTo(move)) * 8;
+                    Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
+                    value = InCheck(1 - SideToMove);
+                    Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
                     break;
                 case Piece.Pawn:
-                    UInt64 enPassantPawnField = Move.Pawn(EnPassantSquare, 1 - Colour);
-                    BitField[piece] ^= fromField | toField;
-                    OccupiedField ^= fromField | toField | enPassantPawnField;
-                    value = InCheck(1 - Colour);
-                    BitField[piece] ^= fromField | toField;
-                    OccupiedField = occupiedFieldCopy;
+                    UInt64 enPassantPawnBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
+                    Bitboard[piece] ^= fromBitboard | toBitboard;
+                    OccupiedBitboard ^= fromBitboard | toBitboard | enPassantPawnBitboard;
+                    value = InCheck(1 - SideToMove);
+                    Bitboard[piece] ^= fromBitboard | toBitboard;
+                    OccupiedBitboard = occupiedBitboardCopy;
                     break;
                 default:
-                    BitField[Colour | Piece.Pawn] ^= fromField;
-                    BitField[special] ^= toField;
-                    OccupiedField ^= fromField;
-                    OccupiedField |= toField;
-                    value = InCheck(1 - Colour);
-                    BitField[Colour | Piece.Pawn] ^= fromField;
-                    BitField[special] ^= toField;
-                    OccupiedField = occupiedFieldCopy;
+                    Bitboard[SideToMove | Piece.Pawn] ^= fromBitboard;
+                    Bitboard[special] ^= toBitboard;
+                    OccupiedBitboard ^= fromBitboard;
+                    OccupiedBitboard |= toBitboard;
+                    value = InCheck(1 - SideToMove);
+                    Bitboard[SideToMove | Piece.Pawn] ^= fromBitboard;
+                    Bitboard[special] ^= toBitboard;
+                    OccupiedBitboard = occupiedBitboardCopy;
                     break;
             }
             return value;
         }
 
         public Boolean InsufficientMaterial() {
-            Int32 pieces = Bit.Count(OccupiedField);
+            Int32 pieces = Bit.Count(OccupiedBitboard);
             if (pieces > 4)
                 return false;
             if (pieces <= 2)
                 return true;
             if (pieces <= 3)
                 for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
-                    if ((BitField[colour | Piece.Knight] | BitField[colour | Piece.Bishop]) > 0)
+                    if ((Bitboard[colour | Piece.Knight] | Bitboard[colour | Piece.Bishop]) > 0)
                         return true;
             for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
-                if (Bit.CountSparse(BitField[colour | Piece.Knight]) >= 2)
+                if (Bit.CountSparse(Bitboard[colour | Piece.Knight]) >= 2)
                     return true;
-            if (BitField[Piece.White | Piece.Bishop] > 0 && BitField[Piece.Black | Piece.Bishop] > 0)
-                return (BitField[Piece.White | Piece.Bishop] & Bit.LightSquares) > 0 == (BitField[Piece.Black | Piece.Bishop] & Bit.LightSquares) > 0;
+            if (Bitboard[Piece.White | Piece.Bishop] > 0 && Bitboard[Piece.Black | Piece.Bishop] > 0)
+                return (Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) > 0 == (Bitboard[Piece.Black | Piece.Bishop] & Bit.LightSquares) > 0;
             return false;
         }
 
@@ -808,7 +809,7 @@ namespace AbsoluteZero {
                 return false;
             if (Material != other.Material)
                 return false;
-            if (Colour != other.Colour)
+            if (SideToMove != other.SideToMove)
                 return false;
             if (EnPassantSquare != other.EnPassantSquare)
                 return false;
@@ -818,26 +819,26 @@ namespace AbsoluteZero {
                 if (CastleQueenside[colour] != other.CastleQueenside[colour])
                     return false;
             }
-            for (Int32 piece = 0; piece < BitField.Length; piece++)
-                if (BitField[piece] != other.BitField[piece])
+            for (Int32 piece = 0; piece < Bitboard.Length; piece++)
+                if (Bitboard[piece] != other.Bitboard[piece])
                     return false;
-            for (Int32 square = 0; square < Element.Length; square++)
-                if (Element[square] != other.Element[square])
+            for (Int32 square = 0; square < Square.Length; square++)
+                if (Square[square] != other.Square[square])
                     return false;
             return true;
         }
 
         public Position Clone() {
             return new Position() {
-                Element = this.Element.Clone() as Int32[],
-                BitField = this.BitField.Clone() as UInt64[],
-                OccupiedField = this.OccupiedField,
+                Square = this.Square.Clone() as Int32[],
+                Bitboard = this.Bitboard.Clone() as UInt64[],
+                OccupiedBitboard = this.OccupiedBitboard,
                 CastleKingside = this.CastleKingside.Clone() as Int32[],
                 CastleQueenside = this.CastleQueenside.Clone() as Int32[],
                 EnPassantHistory = this.EnPassantHistory.Clone() as Int32[],
                 EnPassantSquare = this.EnPassantSquare,
                 Material = this.Material,
-                Colour = this.Colour,
+                SideToMove = this.SideToMove,
                 HalfMoves = this.HalfMoves,
                 FiftyMovesHistory = this.FiftyMovesHistory.Clone() as Int32[],
                 FiftyMovesClock = this.FiftyMovesClock,
@@ -852,15 +853,15 @@ namespace AbsoluteZero {
                 Int32 space = 0;
                 for (Int32 file = 0; file < 8; file++) {
                     Int32 square = file + rank * 8;
-                    if (Element[square] == Piece.Empty)
+                    if (Square[square] == Piece.Empty)
                         space++;
                     else {
                         if (space > 0) {
                             fen.Append(space);
                             space = 0;
                         }
-                        String piece = Identify.PieceInitial(Element[square]);
-                        if ((Element[square] & Piece.Colour) == Piece.Black)
+                        String piece = Identify.PieceInitial(Square[square]);
+                        if ((Square[square] & Piece.Colour) == Piece.Black)
                             piece = piece.ToLowerInvariant();
                         fen.Append(piece);
                     }
@@ -871,7 +872,7 @@ namespace AbsoluteZero {
                     fen.Append('/');
             }
             fen.Append(' ');
-            fen.Append(Colour == Piece.White ? 'w' : 'b');
+            fen.Append(SideToMove == Piece.White ? 'w' : 'b');
             fen.Append(' ');
             if (CastleKingside[Piece.White] > 0)
                 fen.Append('K');
@@ -911,7 +912,7 @@ namespace AbsoluteZero {
                 result.Append(8 - rank);
                 result.Append(" |");
                 for (Int32 file = 0; file < 8; file++) {
-                    Int32 piece = Element[file + rank * 8];
+                    Int32 piece = Square[file + rank * 8];
                     if (piece != Piece.Empty) {
                         result.Append((piece & Piece.Colour) == Piece.White ? '<' : '[');
                         result.Append(Identify.PieceInitial(piece));
@@ -943,7 +944,7 @@ namespace AbsoluteZero {
             return square >> 3;
         }
 
-        public static Int32 Square(Point e) {
+        public static Int32 SquareAt(Point e) {
             Int32 file = e.X / VisualPosition.SquareWidth;
             Int32 rank = (e.Y - Window.MenuHeight) / VisualPosition.SquareWidth;
             if (VisualPosition.Rotated)
@@ -951,7 +952,7 @@ namespace AbsoluteZero {
             return file + rank * 8;
         }
 
-        public static Int32 Square(String name) {
+        public static Int32 SquareAt(String name) {
             return (Int32)(name[0] - 97 + (56 - name[1]) * 8);
         }
     }

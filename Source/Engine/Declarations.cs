@@ -4,16 +4,22 @@ using System.Diagnostics;
 using System.Reflection;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Declarations file for the Absolute Zero chess engine. 
+    /// </summary>
     partial class Zero {
-        // misc constants
+
+        // Miscellaneous constants. 
         public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
         public Boolean NewFeature = false;
 
+        // Formatting constants. 
         private const Int32 SingleVariationDepth = 5;
         private const Int32 DepthWidth = 8;
         private const Int32 ValueWidth = 9;
 
-        // search constants
+        // Search constants. 
         public const Int32 DepthLimit = 64;
         public const Int32 PlyLimit = DepthLimit + 64;
         public const Int32 MovesLimit = 256;
@@ -46,7 +52,7 @@ namespace AbsoluteZero {
         private const Double TimeControlsLossThreshold = .8;
         private static readonly Double[] TimeControlsLossExtension = { 0, .1, .2, .4, .8, .9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.4 };
 
-        // evaluation constants
+        // Evaluation constants. 
         public Int32 KingOnOpenFileValue = -58;
         public Int32 KingAdjacentToOpenFileValue = -42;
 
@@ -73,19 +79,19 @@ namespace AbsoluteZero {
         public static readonly Int32[] PieceValue = new Int32[14];
         public Int32 TempoValue = 6;
 
-        private static readonly UInt64[] PawnShieldField = new UInt64[64];
-        private static readonly UInt64[] ShortAdjacentFilesField = new UInt64[64];
-        private static readonly UInt64[][] PawnBlockadeField = { new UInt64[64], new UInt64[64] };
-        private static readonly UInt64[][] ShortForwardFileField = { new UInt64[64], new UInt64[64] };
-        private const UInt64 NotAFileField = 18374403900871474942UL;
-        private const UInt64 NotHFileField = 9187201950435737471UL;
+        private static readonly UInt64[] PawnShieldBitboard = new UInt64[64];
+        private static readonly UInt64[] ShortAdjacentFilesBitboard = new UInt64[64];
+        private static readonly UInt64[][] PawnBlockadeBitboard = { new UInt64[64], new UInt64[64] };
+        private static readonly UInt64[][] ShortForwardFileBitboard = { new UInt64[64], new UInt64[64] };
+        private const UInt64 NotAFileBitboard = 18374403900871474942UL;
+        private const UInt64 NotHFileBitboard = 9187201950435737471UL;
 
         private static readonly Int32[][] RectilinearDistance = new Int32[64][];
         private static readonly Int32[][] ChebyshevDistance = new Int32[64][];
         private static readonly Int32[][] KnightMoveDistance = new Int32[64][];
         private static readonly Single PhaseCoefficient;
 
-        // search variables
+        // Search variables. 
         private HashTable table = new HashTable(HashAllocation);
         private Int32[][] generatedMoves = new Int32[PlyLimit][];
         private Int32[][] pvMoves = new Int32[PlyLimit][];
@@ -106,13 +112,14 @@ namespace AbsoluteZero {
         private Int64 hashProbes;
         private Int64 hashCutoffs;
 
-        // evaluation variables
-        private static readonly UInt64[] minorAttackField = new UInt64[2];
-        private static readonly UInt64[] pawnAttackField = new UInt64[2];
+        // Evaluation variables. 
+        private static readonly UInt64[] minorAttackBitboard = new UInt64[2];
+        private static readonly UInt64[] pawnAttackBitboard = new UInt64[2];
         private static readonly Int32[] kingSquare = new Int32[2];
 
         static Zero() {
-            // piece value table
+
+            // Initialize piece values. 
             PieceValue[Piece.White | Piece.King] = 3000;
             PieceValue[Piece.White | Piece.Queen] = 1025;
             PieceValue[Piece.White | Piece.Rook] = 575;
@@ -131,7 +138,8 @@ namespace AbsoluteZero {
             PhaseCoefficient = 1 / PhaseCoefficient;
 
             for (Int32 square = 0; square < 64; square++) {
-                // piece square tables
+
+                // Initialize piece square tables. 
                 Int32 reflected = Position.File(square) + (7 - Position.Rank(square)) * 8;
                 KingOpeningPositionValue[Piece.Black][square] = -KingOpeningPositionValue[Piece.White][reflected];
                 KingEndgamePositionValue[Piece.Black][square] = -KingEndgamePositionValue[Piece.White][reflected];
@@ -142,54 +150,54 @@ namespace AbsoluteZero {
                 PawnPositionValue[Piece.Black][square] = -PawnPositionValue[Piece.White][reflected];
                 PassedPawnEndgamePositionValue[Piece.Black][square] = -PassedPawnEndgamePositionValue[Piece.White][reflected];
 
-                // pawn shield table
-                PawnShieldField[square] = Bit.File[square];
+                // Initialize pawn shield bitboard table. 
+                PawnShieldBitboard[square] = Bit.File[square];
                 if (Position.File(square) > 0)
-                    PawnShieldField[square] |= Bit.File[square - 1];
+                    PawnShieldBitboard[square] |= Bit.File[square - 1];
                 if (Position.File(square) < 7)
-                    PawnShieldField[square] |= Bit.File[square + 1];
-                PawnShieldField[square] &= Bit.FloodFill(square, 2);
+                    PawnShieldBitboard[square] |= Bit.File[square + 1];
+                PawnShieldBitboard[square] &= Bit.FloodFill(square, 2);
 
-                // short adjacent files table
+                // Initialize short adjacent files bitboard table. 
                 if (Position.File(square) > 0)
-                    ShortAdjacentFilesField[square] |= Bit.File[square - 1] & Bit.FloodFill(square - 1, 3);
+                    ShortAdjacentFilesBitboard[square] |= Bit.File[square - 1] & Bit.FloodFill(square - 1, 3);
                 if (Position.File(square) < 7)
-                    ShortAdjacentFilesField[square] |= Bit.File[square + 1] & Bit.FloodFill(square + 1, 3);
+                    ShortAdjacentFilesBitboard[square] |= Bit.File[square + 1] & Bit.FloodFill(square + 1, 3);
 
-                // pawn blockade table
-                PawnBlockadeField[Piece.White][square] = Attack.RayN[square];
+                // Initialize pawn blockade bitboard table. 
+                PawnBlockadeBitboard[Piece.White][square] = Attack.RayN[square];
                 if (Position.File(square) > 0)
-                    PawnBlockadeField[Piece.White][square] |= Attack.RayN[square - 1];
+                    PawnBlockadeBitboard[Piece.White][square] |= Attack.RayN[square - 1];
                 if (Position.File(square) < 7)
-                    PawnBlockadeField[Piece.White][square] |= Attack.RayN[square + 1];
-                PawnBlockadeField[Piece.Black][square] = Attack.RayS[square];
+                    PawnBlockadeBitboard[Piece.White][square] |= Attack.RayN[square + 1];
+                PawnBlockadeBitboard[Piece.Black][square] = Attack.RayS[square];
                 if (Position.File(square) > 0)
-                    PawnBlockadeField[Piece.Black][square] |= Attack.RayS[square - 1];
+                    PawnBlockadeBitboard[Piece.Black][square] |= Attack.RayS[square - 1];
                 if (Position.File(square) < 7)
-                    PawnBlockadeField[Piece.Black][square] |= Attack.RayS[square + 1];
+                    PawnBlockadeBitboard[Piece.Black][square] |= Attack.RayS[square + 1];
 
-                // short forward file table
-                ShortForwardFileField[Piece.White][square] = Attack.RayN[square] & Bit.FloodFill(square, 3);
-                ShortForwardFileField[Piece.Black][square] = Attack.RayS[square] & Bit.FloodFill(square, 3);
+                // Initialize short forward file bitboard table.
+                ShortForwardFileBitboard[Piece.White][square] = Attack.RayN[square] & Bit.FloodFill(square, 3);
+                ShortForwardFileBitboard[Piece.Black][square] = Attack.RayS[square] & Bit.FloodFill(square, 3);
 
-                // rectilinear distance table
+                // Initialize rectilinear distance table.
                 RectilinearDistance[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
                     RectilinearDistance[square][to] = Math.Abs(Position.File(square) - Position.File(to)) + Math.Abs(Position.Rank(square) - Position.Rank(to));
 
-                // chebyshev distance table
+                // Initialize chebyshev distance table. 
                 ChebyshevDistance[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
                     ChebyshevDistance[square][to] = Math.Max(Math.Abs(Position.File(square) - Position.File(to)), Math.Abs(Position.Rank(square) - Position.Rank(to)));
 
-                // knight distance table
+                // Initialize knight move distance table. 
                 KnightMoveDistance[square] = new Int32[64];
                 for (Int32 i = 0; i < KnightMoveDistance[square].Length; i++)
                     KnightMoveDistance[square][i] = 6;
                 for (Int32 moves = 1; moves <= 5; moves++) {
-                    UInt64 moveField = Attack.KnightFill(square, moves);
+                    UInt64 moveBitboard = Attack.KnightFill(square, moves);
                     for (Int32 to = 0; to < 64; to++)
-                        if ((moveField & (1UL << to)) > 0)
+                        if ((moveBitboard & (1UL << to)) > 0)
                             if (moves < KnightMoveDistance[square][to])
                                 KnightMoveDistance[square][to] = moves;
 
@@ -206,18 +214,20 @@ namespace AbsoluteZero {
                 killerMoves[i] = new Int32[KillerMovesAllocation];
 
             for (Int32 square = 0; square < 64; square++) {
-                // queen to enemy king spatial value table
+
+                // Initialize queen to enemy king spatial value table. 
                 QueenToEnemyKingSpatialValue[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
                     QueenToEnemyKingSpatialValue[square][to] = QueenDistanceToEnemyKingValue_[ChebyshevDistance[square][to]];
 
-                // knight to enemy king spatial value table
+                // Initialize knight to enemy king spatial value table. 
                 KnightToEnemyKingSpatialValue[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
                     KnightToEnemyKingSpatialValue[square][to] = KnightDistanceToEnemyKingValue_[RectilinearDistance[square][to]] + KnightMovesToEnemyKingValue_[KnightMoveDistance[square][to]];
             }
         }
 
+        // Piece square tables. 
         private static readonly Int32[][] KingOpeningPositionValue =
         {
             new Int32[]

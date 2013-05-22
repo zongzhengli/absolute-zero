@@ -111,7 +111,7 @@ namespace AbsoluteZero {
 
             String check = String.Empty;
             position.Make(move);
-            if (position.InCheck(position.Colour))
+            if (position.InCheck(position.SideToMove))
                 check = position.LegalMoves(new Int32[256]) > 0 ? "+" : "#";
             position.Unmake(move);
 
@@ -125,7 +125,7 @@ namespace AbsoluteZero {
             Int32 halfMoves = 0;
             if (options == IdentificationOptions.Proper) {
                 halfMoves = position.HalfMoves;
-                if (position.Colour == Piece.Black) {
+                if (position.SideToMove == Piece.Black) {
                     sequence.Append(halfMoves / 2 + 1);
                     sequence.Append("... ");
                 }
