@@ -21,7 +21,7 @@ namespace AbsoluteZero {
             Double score = (wins + .5 * draws) / totalGames;
             Double drawProportion = draws / totalGames;
             Double margin = Sigma * Math.Sqrt((score * (1 - score) - .25 * drawProportion) / totalGames);
-            if (margin <= 0)
+            if (margin == 0)
                 return GetError(wins + 1, losses + 1, draws);
             return GetDifference(.5 + margin);
         }

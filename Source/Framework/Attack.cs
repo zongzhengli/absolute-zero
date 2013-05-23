@@ -44,19 +44,19 @@ namespace AbsoluteZero {
                 Int32 file = Position.File(square);
                 Int32 rank = Position.Rank(square);
 
-                // king
+                // Initialize king attack table. 
                 for (Int32 a = -1; a <= 1; a++)
                     for (Int32 b = -1; b <= 1; b++)
                         if (a != 0 || b != 0)
                             KingAttack[square] ^= TryGetBitboard(file + a, rank + b);
 
-                // knight
+                // Initialize knight attack table. 
                 for (Int32 a = -2; a <= 2; a++)
                     for (Int32 b = -2; b <= 2; b++)
                         if (Math.Abs(a) + Math.Abs(b) == 3)
                             KnightAttack[square] ^= TryGetBitboard(file + a, rank + b);
 
-                // pawn
+                // Initialize pawn attack table. 
                 PawnAttack[Piece.White][square] ^= TryGetBitboard(file - 1, rank - 1);
                 PawnAttack[Piece.White][square] ^= TryGetBitboard(file + 1, rank - 1);
                 PawnAttack[Piece.Black][square] ^= TryGetBitboard(file - 1, rank + 1);

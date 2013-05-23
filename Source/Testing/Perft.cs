@@ -7,8 +7,6 @@ namespace AbsoluteZero {
         private const Int32 DepthLimit = 64;
         private const Int32 MovesLimit = 256;
 
-        public static UInt64[] StartingValue = { 1, 20, 400, 8902, 197281, 4865609, 119060324, 3195901860, 84998978956, 2439530234167, 69352859712417, 2097651003696806, 62854969236701747, 1981066775000396239 };
-
         private static Int32[][] moves = new Int32[DepthLimit][];
 
         static Perft() {
@@ -59,7 +57,7 @@ namespace AbsoluteZero {
             if (depth <= 0)
                 return 1;
             Int32 movesCount = position.LegalMoves(moves[depth]);
-            if (depth <= 1)
+            if (depth == 1)
                 return movesCount;
             Int64 nodes = 0;
             for (Int32 i = 0; i < movesCount; i++) {

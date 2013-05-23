@@ -31,6 +31,8 @@ namespace AbsoluteZero {
         }
 
         public void Start(String fen = Position.StartingFEN) {
+            // This is a convenient place to put test positions for quick and dirty testing. 
+
             //fen = "q/n2BNp/5k1P/1p5P/1p2RP/1K w";// zugzwang mate in 6 (hard)
             //fen = "r2qb1nr/pp1n3p/4k1p/1P1pPpP/1B3P1P/2R/3Q/R3KB w"; Restrictions.MoveTime = 10000;// olithink mate in 7 (hard)
             //fen = "r2qb1nr/pp1n3p/6p/1P1kPpP/1B3P1P/2R//R3KB w"; Restrictions.MoveTime = 10000;// olithink mate in 6 (hard)
@@ -46,6 +48,8 @@ namespace AbsoluteZero {
             //fen = "/7K/////R/7k w";// distance pruning mate in 8
             //fen = "2KQ///////k w";// custom mate in 7
             //fen = "5k//4pPp/3pP1P/2pP/2P3K w";// pawn endgame mate in 19
+            //Perft.Iterate(new Position(fen), 5);
+
             Start(new Position(fen));
         }
 
@@ -60,13 +64,11 @@ namespace AbsoluteZero {
                 VisualPosition.Set(position);
                 state = GameState.Ingame;
                 while (true) {
-                    //Perft.Iterate(position, 5);
-
                     IPlayer player = position.SideToMove == Piece.White ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
 
-                    //*/ adjudication
-                    if (legalMoves.Count <= 0) {
+                    //*/ Adjudicate game. 
+                    if (legalMoves.Count == 0) {
                         if (position.InCheck(position.SideToMove)) {
                             message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
                             state = player.Equals(White) ? GameState.BlackWon : GameState.WhiteWon;

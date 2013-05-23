@@ -125,19 +125,18 @@ namespace AbsoluteZero {
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
                 UInt64 pinnedBitboard = Attack.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
                 pinnedBitboard = Attack.RayNW[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
                 pinnedBitboard = Attack.RaySE[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
                 pinnedBitboard = Attack.RaySW[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
 
-                pinBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
-                OccupiedBitboard = occupiedBitboardCopy;
+                pinBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, occupiedBitboardCopy);
             }
             if ((rookQueenBitboard & Attack.Axes[kingSquare]) > 0) {
                 checkBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
@@ -145,25 +144,24 @@ namespace AbsoluteZero {
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
                 UInt64 pinnedBitboard = Attack.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
                 pinnedBitboard = Attack.RayE[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
                 pinnedBitboard = Attack.RayS[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.Scan(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
                 pinnedBitboard = Attack.RayW[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard > 0)
-                    OccupiedBitboard ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
 
-                pinBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
-                OccupiedBitboard = occupiedBitboardCopy;
+                pinBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, occupiedBitboardCopy);
             }
 
             Int32 index = 0;
 
             // Castling is always fully tested for legality. 
-            if (checkBitboard <= 0) {
+            if (checkBitboard == 0) {
                 Int32 rank = -56 * SideToMove + 56;
                 if (CastleQueenside[SideToMove] > 0 && (Square[1 + rank] | Square[2 + rank] | Square[3 + rank]) == Piece.Empty)
                     if (!IsAttacked(SideToMove, 3 + rank) && !IsAttacked(SideToMove, 2 + rank))
@@ -183,7 +181,7 @@ namespace AbsoluteZero {
             }
 
             // Case 1. If we are not in check and there are no pinned pieces, we don't need to test normal moves for legality. 
-            if (checkBitboard <= 0 & pinBitboard <= 0) {
+            if (checkBitboard == 0 & pinBitboard == 0) {
                 UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
                 while (pieceBitboard > 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
@@ -259,7 +257,7 @@ namespace AbsoluteZero {
             }
 
             // Case 2. There are pinned pieces or a single check, so all moves are tested for legality. 
-            else if ((checkBitboard & (checkBitboard - 1)) <= 0) {
+            else if ((checkBitboard & (checkBitboard - 1)) == 0) {
                 UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
                 while (pieceBitboard > 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);

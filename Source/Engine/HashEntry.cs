@@ -21,8 +21,20 @@ namespace AbsoluteZero {
 
             public const Int32 Size = 16;
 
+            /// <summary>
+            /// The zobrist key of the position associated with the hash entry. 
+            /// </summary>
             public UInt64 Key;
+
+            /// <summary>
+            /// The best move for the position associated with the hash entry. 
+            /// </summary>
             public Int32 Move;
+
+            /// <summary>
+            /// Contains the entry type, search depth, and search value associated with the hash entry. 
+            /// The properties are rolled into a single value to save space. 
+            /// </summary>
             public Int32 Misc;
 
             public HashEntry(Position position, Int32 depth, Int32 ply, Int32 move, Int32 value, Int32 type) {

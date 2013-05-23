@@ -60,7 +60,7 @@ namespace AbsoluteZero {
         }
 
         public static String Moves(List<Int32> moves) {
-            if (moves.Count <= 0)
+            if (moves.Count == 0)
                 return String.Empty;
             StringBuilder sequence = new StringBuilder(6 * moves.Count);
             foreach (Int32 move in moves) {
@@ -112,14 +112,14 @@ namespace AbsoluteZero {
             String check = String.Empty;
             position.Make(move);
             if (position.InCheck(position.SideToMove))
-                check = position.LegalMoves(new Int32[256]) > 0 ? "+" : "#";
+                check = position.LegalMoves().Count > 0 ? "+" : "#";
             position.Unmake(move);
 
             return piece + disambiguation + capture + square + promotion + check;
         }
 
         public static String MovesAlgebraically(Position position, List<Int32> moves, IdentificationOptions options = IdentificationOptions.None) {
-            if (moves.Count <= 0)
+            if (moves.Count == 0)
                 return String.Empty;
             StringBuilder sequence = new StringBuilder(5 * moves.Count);
             Int32 halfMoves = 0;
@@ -132,7 +132,7 @@ namespace AbsoluteZero {
             }
 
             foreach (Int32 move in moves) {
-                if ((halfMoves++ & 1) <= 0) {
+                if ((halfMoves++ % 2) == 0) {
                     sequence.Append(halfMoves / 2 + 1);
                     sequence.Append('.');
                     if (options == IdentificationOptions.Proper)

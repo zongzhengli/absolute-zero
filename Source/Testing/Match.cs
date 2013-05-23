@@ -29,7 +29,7 @@ namespace AbsoluteZero {
                 IPlayer player = position.SideToMove == Piece.White ? white : black;
                 position.Make(player.GetMove(position));
 
-                if (position.LegalMoves().Count <= 0)
+                if (position.LegalMoves().Count == 0)
                     if (position.InCheck(position.SideToMove))
                         return player.Equals(white) ? MatchResult.Win : MatchResult.Loss;
                     else

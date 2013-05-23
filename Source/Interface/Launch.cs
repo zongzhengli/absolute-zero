@@ -6,7 +6,7 @@ namespace AbsoluteZero {
         [STAThread]
         public static void Main(String[] args) {
             Log.Initialize();
-            if (args.Length <= 0) {
+            if (args.Length == 0) {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new Settings());

@@ -54,7 +54,7 @@ namespace AbsoluteZero {
                     // window, it is re-searched with an open window. Subsequent moves are  
                     // searched with a zero window search. If the result is better than the best 
                     // value so far, it is re-searched with a wider window. 
-                    if (i <= 0) {
+                    if (i == 0) {
                         value = -Search(position, depth - 1, 1, -rootAlpha - AspirationWindow, -rootAlpha + AspirationWindow, causesCheck);
                         if (value <= rootAlpha - AspirationWindow || value >= rootAlpha + AspirationWindow) {
                             TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
@@ -187,14 +187,14 @@ namespace AbsoluteZero {
             // Generate legal moves and perform basic move ordering. 
             Int32[] moves = generatedMoves[ply];
             Int32 movesCount = position.LegalMoves(moves);
-            if (movesCount <= 0)
+            if (movesCount == 0)
                 return inCheck ? -(CheckmateValue - ply) : drawValue;
             for (Int32 i = 0; i < movesCount; i++)
                 moveValues[i] = MoveOrderingValue(moves[i]);
             moveValues[movesCount] = -Infinity;
 
             // Apply single reply and check extensions. 
-            if (movesCount <= 1 || inCheck)
+            if (movesCount == 1 || inCheck)
                 depth++;
 
             // Perform killer move ordering. 

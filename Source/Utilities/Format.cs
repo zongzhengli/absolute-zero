@@ -3,6 +3,7 @@ using System.Text;
 
 namespace AbsoluteZero {
     static class Format {
+
         public static String Pad(Int32 length, Char character = ' ') {
             Char[] pad = new Char[length];
             for (Int32 i = 0; i < pad.Length; i++)
