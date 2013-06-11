@@ -40,10 +40,10 @@ namespace AbsoluteZero {
 
                 // Evaluate bishops. 
                 UInt64 pieceBitboard = bitboard[colour | Piece.Bishop];
-                if ((pieceBitboard & (pieceBitboard - 1)) > 0)
+                if ((pieceBitboard & (pieceBitboard - 1)) != 0)
                     value += BishopPairValue * sign;
                 minorAttackBitboard[colour] = 0;
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += BishopPositionValue[colour][square];
                     UInt64 pseudoMoveBitboard = Attack.Bishop(square, position.OccupiedBitboard);
@@ -51,9 +51,9 @@ namespace AbsoluteZero {
                     value += BishopMobilityValue[Bit.Count(targetBitboard & pseudoMoveBitboard)] * sign;
                 }
 
-                // Evaluate knights
+                // Evaluate knights. 
                 pieceBitboard = bitboard[colour | Piece.Knight];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += opening * KnightOpeningPositionValue[colour][square];
                     value += endgame * KnightToEnemyKingSpatialValue[square][kingSquare[1 - colour]] * sign;
@@ -64,7 +64,7 @@ namespace AbsoluteZero {
 
                 // Evaluate queens. 
                 pieceBitboard = bitboard[colour | Piece.Queen];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += opening * QueenOpeningPositionValue[colour][square];
                     value += endgame * QueenToEnemyKingSpatialValue[square][kingSquare[1 - colour]] * sign;
@@ -72,7 +72,7 @@ namespace AbsoluteZero {
 
                 // Evaluate rooks. 
                 pieceBitboard = bitboard[colour | Piece.Rook];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += RookPositionValue[colour][square];
                 }
@@ -80,10 +80,10 @@ namespace AbsoluteZero {
                 // Evaluate pawns.
                 Int32 pawns = 0;
                 pieceBitboard = bitboard[colour | Piece.Pawn];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += PawnPositionValue[colour][square];
-                    if ((ShortForwardFileBitboard[colour][square] & pawnBitboard) > 0)
+                    if ((ShortForwardFileBitboard[colour][square] & pawnBitboard) != 0)
                         value += DoubledPawnValue * sign;
                     else if ((PawnBlockadeBitboard[colour][square] & enemyBitboard) == 0)
                         value += (PassedPawnValue + endgame * PassedPawnEndgamePositionValue[colour][square]) * sign;
@@ -111,27 +111,27 @@ namespace AbsoluteZero {
                 Int32 sign = -2 * colour + 1;
 
                 // Pawn takes queen.
-                if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) > 0)
+                if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
                     value += (PieceValue[Piece.Queen] - PieceValue[Piece.Pawn]) * sign;
 
                 // Minor takes queen. 
-                else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) > 0)
+                else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
                     value += (PieceValue[Piece.Queen] - PieceValue[Piece.Bishop]) * sign;
 
                 // Pawn takes rook. 
-                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) > 0)
+                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
                     value += (PieceValue[Piece.Rook] - PieceValue[Piece.Pawn]) * sign;
 
                 // Pawn takes bishop. 
-                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Bishop]) > 0)
+                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Bishop]) != 0)
                     value += (PieceValue[Piece.Bishop] - PieceValue[Piece.Pawn]) * sign;
 
                 // Pawn takes knight. 
-                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Knight]) > 0)
+                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Knight]) != 0)
                     value += (PieceValue[Piece.Knight] - PieceValue[Piece.Pawn]) * sign;
 
                 // Minor takes rook. 
-                else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) > 0)
+                else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
                     value += (PieceValue[Piece.Rook] - PieceValue[Piece.Bishop]) * sign;
             }
             return (Int32)value * (-2 * position.SideToMove + 1) + TempoValue;
@@ -185,41 +185,41 @@ namespace AbsoluteZero {
 
         public static Int32 SmallestAttackerSquare(Position position, Int32 colour, Int32 square) {
             UInt64 sourceBitboard = position.Bitboard[colour | Piece.Pawn] & Attack.Pawn(square, 1 - colour);
-            if (sourceBitboard > 0)
+            if (sourceBitboard != 0)
                 return Bit.Scan(sourceBitboard);
 
             sourceBitboard = position.Bitboard[colour | Piece.Knight] & Attack.Knight(square);
-            if (sourceBitboard > 0)
+            if (sourceBitboard != 0)
                 return Bit.Scan(sourceBitboard);
 
             UInt64 bishopAttackBitboard = UInt64.MaxValue;
-            if ((position.Bitboard[colour | Piece.Bishop] & Attack.Diagonals[square]) > 0) {
+            if ((position.Bitboard[colour | Piece.Bishop] & Attack.Diagonals[square]) != 0) {
                 bishopAttackBitboard = Attack.Bishop(square, position.OccupiedBitboard);
                 sourceBitboard = position.Bitboard[colour | Piece.Bishop] & bishopAttackBitboard;
-                if (sourceBitboard > 0)
+                if (sourceBitboard != 0)
                     return Bit.Scan(sourceBitboard);
             }
 
             UInt64 rookAttackBitboard = UInt64.MaxValue;
-            if ((position.Bitboard[colour | Piece.Rook] & Attack.Axes[square]) > 0) {
+            if ((position.Bitboard[colour | Piece.Rook] & Attack.Axes[square]) != 0) {
                 rookAttackBitboard = Attack.Rook(square, position.OccupiedBitboard);
                 sourceBitboard = position.Bitboard[colour | Piece.Rook] & rookAttackBitboard;
-                if (sourceBitboard > 0)
+                if (sourceBitboard != 0)
                     return Bit.Scan(sourceBitboard);
             }
 
-            if ((position.Bitboard[colour | Piece.Queen] & (Attack.Diagonals[square] | Attack.Axes[square])) > 0) {
+            if ((position.Bitboard[colour | Piece.Queen] & (Attack.Diagonals[square] | Attack.Axes[square])) != 0) {
                 if (bishopAttackBitboard == UInt64.MaxValue)
                     bishopAttackBitboard = Attack.Bishop(square, position.OccupiedBitboard);
                 if (rookAttackBitboard == UInt64.MaxValue)
                     rookAttackBitboard = Attack.Rook(square, position.OccupiedBitboard);
                 sourceBitboard = position.Bitboard[colour | Piece.Queen] & (bishopAttackBitboard | rookAttackBitboard);
-                if (sourceBitboard > 0)
+                if (sourceBitboard != 0)
                     return Bit.Scan(sourceBitboard);
             }
 
             sourceBitboard = position.Bitboard[colour | Piece.King] & Attack.King(square);
-            if (sourceBitboard > 0)
+            if (sourceBitboard != 0)
                 return Bit.Read(sourceBitboard);
             return Position.InvalidSquare;
         }

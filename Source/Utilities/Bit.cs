@@ -68,7 +68,7 @@ namespace AbsoluteZero {
 
         public static Int32 CountSparse(UInt64 bitboard) {
             Int32 count = 0;
-            while (bitboard > 0) {
+            while (bitboard != 0) {
                 count++;
                 bitboard &= bitboard - 1;
             }

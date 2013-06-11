@@ -119,40 +119,40 @@ namespace AbsoluteZero {
 
             checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Knight] & Attack.Knight(kingSquare);
             checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Pawn] & Attack.Pawn(kingSquare, SideToMove);
-            if ((bishopQueenBitboard & Attack.Diagonals[kingSquare]) > 0) {
+            if ((bishopQueenBitboard & Attack.Diagonals[kingSquare]) != 0) {
                 checkBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
 
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
                 UInt64 pinnedBitboard = Attack.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
                 pinnedBitboard = Attack.RayNW[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
                 pinnedBitboard = Attack.RaySE[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
                 pinnedBitboard = Attack.RaySW[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
 
                 pinBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, occupiedBitboardCopy);
             }
-            if ((rookQueenBitboard & Attack.Axes[kingSquare]) > 0) {
+            if ((rookQueenBitboard & Attack.Axes[kingSquare]) != 0) {
                 checkBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
 
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
                 UInt64 pinnedBitboard = Attack.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
                 pinnedBitboard = Attack.RayE[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
                 pinnedBitboard = Attack.RayS[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
                 pinnedBitboard = Attack.RayW[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard > 0)
+                if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
 
                 pinBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, occupiedBitboardCopy);
@@ -183,15 +183,15 @@ namespace AbsoluteZero {
             // Case 1. If we are not in check and there are no pinned pieces, we don't need to test normal moves for legality. 
             if (checkBitboard == 0 & pinBitboard == 0) {
                 UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     Int32 to = from + 16 * SideToMove - 8;
                     UInt64 moveBitboard = ~OccupiedBitboard & (1UL << to);
-                    if (moveBitboard > 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
+                    if (moveBitboard != 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
                         moveBitboard |= ~OccupiedBitboard & (1UL << (from + 32 * SideToMove - 16));
                     UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
                     moveBitboard |= opponentBitboard & attackBitboard;
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         to = Bit.Pop(ref moveBitboard);
                         if ((to - 8) * (to - 55) > 0) {
                             moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Queen);
@@ -203,7 +203,7 @@ namespace AbsoluteZero {
                     }
 
                     // En passant is always fully tested for legality. 
-                    if ((enPassantBitboard & attackBitboard) > 0) {
+                    if ((enPassantBitboard & attackBitboard) != 0) {
                         Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
                         OccupiedBitboard ^= enPassantPawnBitboard;
                         OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
@@ -216,40 +216,40 @@ namespace AbsoluteZero {
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Knight];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Knight(from);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Queen];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Rook];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
                     }
@@ -259,15 +259,15 @@ namespace AbsoluteZero {
             // Case 2. There are pinned pieces or a single check, so all moves are tested for legality. 
             else if ((checkBitboard & (checkBitboard - 1)) == 0) {
                 UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     Int32 to = from + 16 * SideToMove - 8;
                     UInt64 moveBitboard = ~OccupiedBitboard & (1UL << to);
-                    if (moveBitboard > 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
+                    if (moveBitboard != 0 && (from - 16) * (from - 47) > 0 && (to - 8) * (to - 55) < 0)
                         moveBitboard |= ~OccupiedBitboard & (1UL << (from + 32 * SideToMove - 16));
                     UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
                     moveBitboard |= opponentBitboard & attackBitboard;
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         to = Bit.Pop(ref moveBitboard);
                         UInt64 occupiedBitboardCopy = OccupiedBitboard;
                         Int32 capture = Square[to];
@@ -300,10 +300,10 @@ namespace AbsoluteZero {
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Knight];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Knight(from);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         UInt64 occupiedBitboardCopy = OccupiedBitboard;
                         Int32 capture = Square[to];
@@ -318,10 +318,10 @@ namespace AbsoluteZero {
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         UInt64 occupiedBitboardCopy = OccupiedBitboard;
                         Int32 capture = Square[to];
@@ -336,10 +336,10 @@ namespace AbsoluteZero {
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Queen];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         UInt64 occupiedBitboardCopy = OccupiedBitboard;
                         Int32 capture = Square[to];
@@ -354,10 +354,10 @@ namespace AbsoluteZero {
                 }
 
                 pieceBitboard = Bitboard[SideToMove | Piece.Rook];
-                while (pieceBitboard > 0) {
+                while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
-                    while (moveBitboard > 0) {
+                    while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         UInt64 occupiedBitboardCopy = OccupiedBitboard;
                         Int32 capture = Square[to];
@@ -376,7 +376,7 @@ namespace AbsoluteZero {
             {
                 Int32 from = kingSquare;
                 UInt64 moveBitboard = targetBitboard & Attack.King(from);
-                while (moveBitboard > 0) {
+                while (moveBitboard != 0) {
                     Int32 to = Bit.Pop(ref moveBitboard);
                     UInt64 occupiedBitboardCopy = OccupiedBitboard;
                     Int32 capture = Square[to];
@@ -399,60 +399,60 @@ namespace AbsoluteZero {
             UInt64 pieceBitboard = Bitboard[SideToMove | Piece.King];
             Int32 from = Bit.Read(pieceBitboard);
             UInt64 moveBitboard = targetBitboard & Attack.King(from);
-            while (moveBitboard > 0) {
+            while (moveBitboard != 0) {
                 Int32 to = Bit.Pop(ref moveBitboard);
                 moves[index++] = Move.Create(this, from, to);
             }
 
             pieceBitboard = Bitboard[SideToMove | Piece.Queen];
-            while (pieceBitboard > 0) {
+            while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
                 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
-                while (moveBitboard > 0) {
+                while (moveBitboard != 0) {
                     Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
             pieceBitboard = Bitboard[SideToMove | Piece.Rook];
-            while (pieceBitboard > 0) {
+            while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
                 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
-                while (moveBitboard > 0) {
+                while (moveBitboard != 0) {
                     Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
             pieceBitboard = Bitboard[SideToMove | Piece.Knight];
-            while (pieceBitboard > 0) {
+            while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
                 moveBitboard = targetBitboard & Attack.Knight(from);
-                while (moveBitboard > 0) {
+                while (moveBitboard != 0) {
                     Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
             pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
-            while (pieceBitboard > 0) {
+            while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
                 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
-                while (moveBitboard > 0) {
+                while (moveBitboard != 0) {
                     Int32 to = Bit.Pop(ref moveBitboard);
                     moves[index++] = Move.Create(this, from, to);
                 }
             }
 
             pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
-            while (pieceBitboard > 0) {
+            while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
                 moveBitboard = targetBitboard & Attack.Pawn(from, SideToMove);
                 Int32 to = from + 16 * SideToMove - 8;
                 Boolean promotion = (to - 8) * (to - 55) > 0;
                 if (promotion)
                     moveBitboard |= ~OccupiedBitboard & (1UL << to);
-                while (moveBitboard > 0) {
+                while (moveBitboard != 0) {
                     to = Bit.Pop(ref moveBitboard);
                     if (promotion)
                         moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Queen);
@@ -709,19 +709,19 @@ namespace AbsoluteZero {
         }
 
         public Boolean IsAttacked(Int32 colour, Int32 square) {
-            if ((Bitboard[(1 - colour) | Piece.Knight] & Attack.Knight(square)) > 0)
+            if ((Bitboard[(1 - colour) | Piece.Knight] & Attack.Knight(square)) != 0)
                 return true;
-            if ((Bitboard[(1 - colour) | Piece.Pawn] & Attack.Pawn(square, colour)) > 0)
+            if ((Bitboard[(1 - colour) | Piece.Pawn] & Attack.Pawn(square, colour)) != 0)
                 return true;
-            if ((Bitboard[(1 - colour) | Piece.King] & Attack.King(square)) > 0)
+            if ((Bitboard[(1 - colour) | Piece.King] & Attack.King(square)) != 0)
                 return true;
             UInt64 bishopQueenBitboard = Bitboard[(1 - colour) | Piece.Bishop] | Bitboard[(1 - colour) | Piece.Queen];
-            if ((bishopQueenBitboard & Attack.Diagonals[square]) > 0)
-                if ((bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) > 0)
+            if ((bishopQueenBitboard & Attack.Diagonals[square]) != 0)
+                if ((bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) != 0)
                     return true;
             UInt64 rookQueenBitboard = Bitboard[(1 - colour) | Piece.Rook] | Bitboard[(1 - colour) | Piece.Queen];
-            if ((rookQueenBitboard & Attack.Axes[square]) > 0)
-                if ((rookQueenBitboard & Attack.Rook(square, OccupiedBitboard)) > 0)
+            if ((rookQueenBitboard & Attack.Axes[square]) != 0)
+                if ((rookQueenBitboard & Attack.Rook(square, OccupiedBitboard)) != 0)
                     return true;
             return false;
         }
@@ -779,13 +779,14 @@ namespace AbsoluteZero {
                 return true;
             if (pieces <= 3)
                 for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
-                    if ((Bitboard[colour | Piece.Knight] | Bitboard[colour | Piece.Bishop]) > 0)
+                    if ((Bitboard[colour | Piece.Knight] | Bitboard[colour | Piece.Bishop]) != 0)
                         return true;
             for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
                 if (Bit.CountSparse(Bitboard[colour | Piece.Knight]) >= 2)
                     return true;
-            if (Bitboard[Piece.White | Piece.Bishop] > 0 && Bitboard[Piece.Black | Piece.Bishop] > 0)
-                return (Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) > 0 == (Bitboard[Piece.Black | Piece.Bishop] & Bit.LightSquares) > 0;
+            if (Bitboard[Piece.White | Piece.Bishop] != 0 && Bitboard[Piece.Black | Piece.Bishop] != 0)
+                return ((Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) != 0) 
+                       == ((Bitboard[Piece.Black | Piece.Bishop] & Bit.LightSquares) != 0);
             return false;
         }
 
@@ -916,7 +917,7 @@ namespace AbsoluteZero {
                         result.Append(Identify.PieceInitial(piece));
                         result.Append((piece & Piece.Colour) == Piece.White ? '>' : ']');
                     } else
-                        result.Append((file + rank) % 2 > 0 ? ":::" : "   ");
+                        result.Append((file + rank) % 2 == 1 ? ":::" : "   ");
                 }
                 result.Append("| ");
                 if (index < comments.Length)

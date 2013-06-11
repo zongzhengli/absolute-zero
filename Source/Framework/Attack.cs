@@ -86,24 +86,24 @@ namespace AbsoluteZero {
             if ((cachedRookAttack[square] & occupiedBitboard) != cachedRookBlock[square]) {
                 UInt64 attackBitboard = RayN[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     attackBitboard ^= RayN[Bit.ScanReverse(blockBitboard)];
 
                 UInt64 partialBitboard = RayE[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     partialBitboard ^= RayE[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
                 partialBitboard = RayS[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     partialBitboard ^= RayS[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
                 partialBitboard = RayW[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     partialBitboard ^= RayW[Bit.ScanReverse(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
@@ -117,24 +117,24 @@ namespace AbsoluteZero {
             if ((cachedBishopAttack[square] & occupiedBitboard) != cachedBishopBlock[square]) {
                 UInt64 attackBitboard = RayNE[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     attackBitboard ^= RayNE[Bit.ScanReverse(blockBitboard)];
 
                 UInt64 partialBitboard = RayNW[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     partialBitboard ^= RayNW[Bit.ScanReverse(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
                 partialBitboard = RaySE[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     partialBitboard ^= RaySE[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
                 partialBitboard = RaySW[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard > 0)
+                if (blockBitboard != 0)
                     partialBitboard ^= RaySW[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
@@ -157,7 +157,7 @@ namespace AbsoluteZero {
                 return 0;
             UInt64 Bitboard = Knight(square);
             UInt64 copy = Bitboard;
-            while (copy > 0)
+            while (copy != 0)
                 Bitboard |= KnightFill(Bit.Pop(ref copy), moves - 1);
             return Bitboard;
         }
