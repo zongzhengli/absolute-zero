@@ -38,8 +38,8 @@ namespace AbsoluteZero {
         }
 
         public static void Make(Int32 move) {
-            Int32 from = Move.GetFrom(move);
-            Int32 to = Move.GetTo(move);
+            Int32 from = Move.From(move);
+            Int32 to = Move.To(move);
             Point initial = new Point(Position.File(from) * SquareWidth, Position.Rank(from) * SquareWidth);
             Point final = new Point(Position.File(to) * SquareWidth, Position.Rank(to) * SquareWidth);
 
@@ -52,7 +52,7 @@ namespace AbsoluteZero {
                     }
 
             // perform special moves
-            switch (Move.GetSpecial(move) & Piece.Type) {
+            switch (Move.Special(move) & Piece.Type) {
                 case Piece.King:
                     Point rookInitial = new Point(7 * (Position.File(to) - 2) / 4 * SquareWidth, Position.Rank(to) * SquareWidth);
                     Point rookFinal = new Point((Position.File(to) / 2 + 2) * SquareWidth, Position.Rank(to) * SquareWidth);
@@ -82,7 +82,7 @@ namespace AbsoluteZero {
             new Thread(new ThreadStart(delegate {
                 piece.MoveTo(final);
                 if (Move.IsPromotion(move))
-                    piece.Promote(Move.GetSpecial(move));
+                    piece.Promote(Move.Special(move));
             })) {
                 IsBackground = true
             }.Start();

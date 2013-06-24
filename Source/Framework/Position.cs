@@ -5,6 +5,10 @@ using System.IO;
 using System.Text;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Represents a complete chess position. This class is geared towards speed. 
+    /// </summary>
     class Position : IEquatable<Position> {
         public const String StartingFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         public const Int32 HalfMovesLimit = 1024;
@@ -41,11 +45,11 @@ namespace AbsoluteZero {
             Int32 file = 0;
             Int32 rank = 0;
             foreach (Char c in terms[0]) {
-                Char upperChar = Char.ToUpperInvariant(c);
-                Int32 colour = c == upperChar ? Piece.White : Piece.Black;
-                switch (upperChar) {
+                Char upperC = Char.ToUpperInvariant(c);
+                Int32 colour = (c == upperC) ? Piece.White : Piece.Black;
+                switch (upperC) {
                     default:
-                        file += upperChar - 48;
+                        file += upperC - '0';
                         break;
                     case '/':
                         file = 0;
@@ -473,11 +477,11 @@ namespace AbsoluteZero {
         }
 
         public void Make(Int32 move) {
-            Int32 from = Move.GetFrom(move);
-            Int32 to = Move.GetTo(move);
-            Int32 piece = Move.GetPiece(move);
-            Int32 capture = Move.GetCapture(move);
-            Int32 special = Move.GetSpecial(move);
+            Int32 from = Move.From(move);
+            Int32 to = Move.To(move);
+            Int32 piece = Move.Piece(move);
+            Int32 capture = Move.Capture(move);
+            Int32 special = Move.Special(move);
 
             Square[to] = piece;
             Square[from] = Piece.Empty;
@@ -584,11 +588,11 @@ namespace AbsoluteZero {
         }
 
         public void Unmake(Int32 move) {
-            Int32 from = Move.GetFrom(move);
-            Int32 to = Move.GetTo(move);
-            Int32 piece = Move.GetPiece(move);
-            Int32 capture = Move.GetCapture(move);
-            Int32 special = Move.GetSpecial(move);
+            Int32 from = Move.From(move);
+            Int32 to = Move.To(move);
+            Int32 piece = Move.Piece(move);
+            Int32 capture = Move.Capture(move);
+            Int32 special = Move.Special(move);
 
             SideToMove = 1 - SideToMove;
             Square[from] = piece;
@@ -727,10 +731,10 @@ namespace AbsoluteZero {
         }
 
         public Boolean CausesCheck(Int32 move) {
-            UInt64 fromBitboard = 1UL << Move.GetFrom(move);
-            UInt64 toBitboard = 1UL << Move.GetTo(move);
-            Int32 piece = Move.GetPiece(move);
-            Int32 special = Move.GetSpecial(move);
+            UInt64 fromBitboard = 1UL << Move.From(move);
+            UInt64 toBitboard = 1UL << Move.To(move);
+            Int32 piece = Move.Piece(move);
+            Int32 special = Move.Special(move);
             UInt64 occupiedBitboardCopy = OccupiedBitboard;
 
             Boolean value = false;
@@ -744,7 +748,7 @@ namespace AbsoluteZero {
                     OccupiedBitboard = occupiedBitboardCopy;
                     break;
                 case Piece.King:
-                    Int32 rookToBitboard = (toBitboard < fromBitboard ? 3 : 5) + Rank(Move.GetTo(move)) * 8;
+                    Int32 rookToBitboard = (toBitboard < fromBitboard ? 3 : 5) + Rank(Move.To(move)) * 8;
                     Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
                     value = InCheck(1 - SideToMove);
                     Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
@@ -785,7 +789,7 @@ namespace AbsoluteZero {
                 if (Bit.CountSparse(Bitboard[colour | Piece.Knight]) >= 2)
                     return true;
             if (Bitboard[Piece.White | Piece.Bishop] != 0 && Bitboard[Piece.Black | Piece.Bishop] != 0)
-                return ((Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) != 0) 
+                return ((Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) != 0)
                        == ((Bitboard[Piece.Black | Piece.Bishop] & Bit.LightSquares) != 0);
             return false;
         }
@@ -827,7 +831,7 @@ namespace AbsoluteZero {
             return true;
         }
 
-        public Position Clone() {
+        public Position DeepClone() {
             return new Position() {
                 Square = this.Square.Clone() as Int32[],
                 Bitboard = this.Bitboard.Clone() as UInt64[],

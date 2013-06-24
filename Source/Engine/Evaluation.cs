@@ -138,10 +138,10 @@ namespace AbsoluteZero {
         }
 
         private static Int32 EvaluateStaticExchange(Position position, Int32 move) {
-            Int32 from = Move.GetFrom(move);
-            Int32 to = Move.GetTo(move);
-            Int32 piece = Move.GetPiece(move);
-            Int32 capture = Move.GetCapture(move);
+            Int32 from = Move.From(move);
+            Int32 to = Move.To(move);
+            Int32 piece = Move.Piece(move);
+            Int32 capture = Move.Capture(move);
 
             position.Bitboard[piece] ^= 1UL << from;
             position.OccupiedBitboard ^= 1UL << from;
@@ -149,7 +149,7 @@ namespace AbsoluteZero {
 
             Int32 value = 0;
             if (Move.IsPromotion(move)) {
-                Int32 promotion = Move.GetSpecial(move);
+                Int32 promotion = Move.Special(move);
                 position.Square[to] = promotion;
                 value += PieceValue[promotion] - PieceValue[Piece.Pawn];
             }

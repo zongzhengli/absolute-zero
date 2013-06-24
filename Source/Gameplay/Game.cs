@@ -55,7 +55,7 @@ namespace AbsoluteZero {
 
         public void Start(Position position) {
             date = DateTime.Now.ToString("yyyy.MM.dd");
-            initialPosition = position.Clone();
+            initialPosition = position.DeepClone();
             Play(position);
         }
 
@@ -64,7 +64,7 @@ namespace AbsoluteZero {
                 VisualPosition.Set(position);
                 state = GameState.Ingame;
                 while (true) {
-                    IPlayer player = position.SideToMove == Piece.White ? White : Black;
+                    IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
 
                     //*/ Adjudicate game. 
@@ -97,7 +97,7 @@ namespace AbsoluteZero {
                     }
                     //*/
 
-                    Position copy = position.Clone();
+                    Position copy = position.DeepClone();
                     Int32 move = Move.Invalid;
                     while (!legalMoves.Contains(move))
                         move = player.GetMove(copy);
@@ -169,14 +169,14 @@ namespace AbsoluteZero {
                 }
             moves.RemoveRange(length, moves.Count - length);
             types.RemoveRange(length, types.Count - length);
-            Position position = initialPosition.Clone();
+            Position position = initialPosition.DeepClone();
             foreach (Int32 move in moves)
                 position.Make(move);
             Play(position);
         }
 
         public String GetFEN() {
-            Position position = initialPosition.Clone();
+            Position position = initialPosition.DeepClone();
             moves.ForEach(move => {
                 position.Make(move);
             });

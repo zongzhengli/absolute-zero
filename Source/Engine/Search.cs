@@ -51,15 +51,17 @@ namespace AbsoluteZero {
                     // Apply principal variation search with aspiration windows. The first move 
                     // is searched with a window centered around the best value found from the 
                     // most recent preceding search. If the result does not lie within the 
-                    // window, it is re-searched with an open window. Subsequent moves are  
-                    // searched with a zero window search. If the result is better than the best 
-                    // value so far, it is re-searched with a wider window. 
+                    // window, a re-search is initiated with an open window. 
                     if (i == 0) {
                         value = -Search(position, depth - 1, 1, -rootAlpha - AspirationWindow, -rootAlpha + AspirationWindow, causesCheck);
                         if (value <= rootAlpha - AspirationWindow || value >= rootAlpha + AspirationWindow) {
                             TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
                             value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
                         }
+
+                    // Subsequent moves are searched with a zero window search. If the result is 
+                    // better than the best value so far, a re-search is initiated with a wider 
+                    // window. 
                     } else {
                         value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
                         if (value > alpha)
@@ -244,7 +246,7 @@ namespace AbsoluteZero {
 
                 // Perform futility pruning. 
                 if (futileNode && !dangerous)
-                    if (futilityValue + PieceValue[Move.GetCapture(move) & Piece.Type] <= alpha)
+                    if (futilityValue + PieceValue[Move.Capture(move) & Piece.Type] <= alpha)
                         continue;
 
                 // Make the move and initialize its value. 
@@ -335,7 +337,7 @@ namespace AbsoluteZero {
                 
                 // Consider the move only if it doesn't immediately lose material. This 
                 // improves efficiency. 
-                if ((Move.GetPiece(move) & Piece.Type) <= (Move.GetCapture(move) & Piece.Type) || EvaluateStaticExchange(position, move) >= 0) {
+                if ((Move.Piece(move) & Piece.Type) <= (Move.Capture(move) & Piece.Type) || EvaluateStaticExchange(position, move) >= 0) {
 
                     // Make the move. 
                     position.Make(move);
@@ -384,7 +386,7 @@ namespace AbsoluteZero {
         /// <param name="passedPawnPreventionBitboard">A bitboard giving the long term attack possibilities of the enemy pawns. </param>
         /// <returns>Whether the given move is a dangerous pawn advance. </returns>
         private Boolean IsDangerousPawnAdvance(Int32 move, UInt64 passedPawnPreventionBitboard) {
-            return Move.IsPawnAdvance(move) && ((1UL << Move.GetTo(move)) & passedPawnPreventionBitboard) == 0;
+            return Move.IsPawnAdvance(move) && ((1UL << Move.To(move)) & passedPawnPreventionBitboard) == 0;
         }
 
         /// <summary>
@@ -396,7 +398,7 @@ namespace AbsoluteZero {
         /// <param name="move">The move to consider. </param>
         /// <returns>A value for the given move that is useful for move ordering. </returns>
         private Single MoveOrderingValue(Int32 move) {
-            Single value = PieceValue[Move.GetCapture(move) & Piece.Type] / (Single)PieceValue[Move.GetPiece(move) & Piece.Type];
+            Single value = PieceValue[Move.Capture(move) & Piece.Type] / (Single)PieceValue[Move.Piece(move) & Piece.Type];
             if (Move.IsQueenPromotion(move))
                 value += QueenPromotionMoveValue;
             return value;

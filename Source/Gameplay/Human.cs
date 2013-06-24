@@ -44,8 +44,8 @@ namespace AbsoluteZero {
 
         private Int32 CreateMove(Position position, Int32 from, Int32 to) {
             foreach (Int32 move in position.LegalMoves())
-                if (from == Move.GetFrom(move) && to == Move.GetTo(move)) {
-                    Int32 special = Move.GetSpecial(move);
+                if (from == Move.From(move) && to == Move.To(move)) {
+                    Int32 special = Move.Special(move);
                     if (Move.IsPromotion(move))
                         switch (SelectionBox.Show("What piece would you like to promote to?", "Queen", "Rook", "Bishop", "Knight")) {
                             case "Queen":

@@ -44,8 +44,8 @@ namespace AbsoluteZero {
         }
 
         public static String Move(Int32 move) {
-            String coordinates = Identify.Square(MoveClass.GetFrom(move)) + Identify.Square(MoveClass.GetTo(move));
-            switch (MoveClass.GetSpecial(move) & PieceClass.Type) {
+            String coordinates = Identify.Square(MoveClass.From(move)) + Identify.Square(MoveClass.To(move));
+            switch (MoveClass.Special(move) & PieceClass.Type) {
                 default:
                     return coordinates;
                 case PieceClass.Queen:
@@ -72,43 +72,55 @@ namespace AbsoluteZero {
 
         public static String MoveAlgebraically(Position position, Int32 move) {
             if (MoveClass.IsCastle(move))
-                return MoveClass.GetTo(move) < MoveClass.GetFrom(move) ? "O-O-O" : "O-O";
-
-            String piece = PieceInitial(MoveClass.GetPiece(move));
+                return MoveClass.To(move) < MoveClass.From(move) ? "O-O-O" : "O-O";
+            
+            // Determine the piece associated with the move. Pawns are not explicitly 
+            // identified. 
+            String piece = PieceInitial(MoveClass.Piece(move));
             if (piece == "P")
                 piece = String.Empty;
-
+   
+            // Determine the necessary disambiguation property for the move. If two or 
+            // more pieces of the same type are moving to the same square, disambiguate 
+            // with the square that it is moving from's file, rank, or both, in that 
+            // order. 
             String disambiguation = String.Empty;
             List<Int32> alternatives = new List<Int32>();
-            foreach (Int32 m in position.LegalMoves())
-                if (MoveClass.GetFrom(m) != MoveClass.GetFrom(move) && MoveClass.GetPiece(m) == MoveClass.GetPiece(move) && MoveClass.GetTo(m) == MoveClass.GetTo(move))
-                    alternatives.Add(m);
+            foreach (Int32 alt in position.LegalMoves())
+                if (alt != move && MoveClass.Piece(alt) == MoveClass.Piece(move) && MoveClass.To(alt) == MoveClass.To(move))
+                    alternatives.Add(alt);
             if (alternatives.Count > 0) {
                 Boolean uniqueFile = true;
                 Boolean uniqueRank = true;
-                foreach (Int32 m in alternatives) {
-                    if (Position.File(MoveClass.GetFrom(m)) == Position.File(MoveClass.GetFrom(move)))
+                foreach (Int32 alt in alternatives) {
+                    if (Position.File(MoveClass.From(alt)) == Position.File(MoveClass.From(move)))
                         uniqueFile = false;
-                    if (Position.Rank(MoveClass.GetFrom(m)) == Position.Rank(MoveClass.GetFrom(move)))
+                    if (Position.Rank(MoveClass.From(alt)) == Position.Rank(MoveClass.From(move)))
                         uniqueRank = false;
                 }
                 if (uniqueFile)
-                    disambiguation = File(MoveClass.GetFrom(move));
+                    disambiguation = File(MoveClass.From(move));
                 else if (uniqueRank)
-                    disambiguation = Rank(MoveClass.GetFrom(move));
+                    disambiguation = Rank(MoveClass.From(move));
                 else
-                    disambiguation = Square(MoveClass.GetFrom(move));
+                    disambiguation = Square(MoveClass.From(move));
             }
-
+ 
+            // Determine if the capture flag is necessary for the move. If the capturing 
+            // piece is a pawn, it is identified by the file it is moving from. 
             Boolean isCapture = MoveClass.IsCapture(move) || MoveClass.IsEnPassant(move);
             String capture = isCapture ? "x" : String.Empty;
-            if ((MoveClass.GetPiece(move) & Piece.Type) == Piece.Pawn && isCapture)
+            if ((MoveClass.Piece(move) & Piece.Type) == Piece.Pawn && isCapture)
                 if (disambiguation == String.Empty)
-                    disambiguation = File(MoveClass.GetFrom(move));
+                    disambiguation = File(MoveClass.From(move));
 
-            String square = Square(MoveClass.GetTo(move));
-            String promotion = MoveClass.IsPromotion(move) ? "=" + PieceInitial(MoveClass.GetSpecial(move)) : String.Empty;
+            // Determine the square property for the move. 
+            String square = Square(MoveClass.To(move));
 
+            // Determine the necessary promotion property for the move. 
+            String promotion = MoveClass.IsPromotion(move) ? "=" + PieceInitial(MoveClass.Special(move)) : String.Empty;
+
+            // Determine the necessary check property for the move. 
             String check = String.Empty;
             position.Make(move);
             if (position.InCheck(position.SideToMove))
