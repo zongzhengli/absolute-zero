@@ -55,19 +55,26 @@ namespace AbsoluteZero {
 
         public void Start(Position position) {
             date = DateTime.Now.ToString("yyyy.MM.dd");
-            initialPosition = position.DeepClone();
+            initialPosition = position;
             Play(position);
         }
 
-        private void Play(Position position) {
+        /// <summary>
+        /// Facilitates a game between the two players. This method is non-blocking 
+        /// and does not modify the given position. 
+        /// </summary>
+        /// <param name="position">The position to start playing from.</param>
+        private void Play(Position pos) {
+            Position position = pos.DeepClone();
+            VisualPosition.Set(position);
+            state = GameState.Ingame;
+
             thread = new Thread(new ThreadStart(delegate {
-                VisualPosition.Set(position);
-                state = GameState.Ingame;
                 while (true) {
                     IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
 
-                    //*/ Adjudicate game. 
+                    // Adjudicate game end by checkmate or stalemate. 
                     if (legalMoves.Count == 0) {
                         if (position.InCheck(position.SideToMove)) {
                             message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
@@ -78,6 +85,8 @@ namespace AbsoluteZero {
                         }
                         return;
                     }
+
+                    // Adjudicate game end by draw.  
                     if (position.InsufficientMaterial()) {
                         message = "Draw by insufficient material!";
                         state = GameState.Draw;
@@ -95,8 +104,8 @@ namespace AbsoluteZero {
                             return;
                         }
                     }
-                    //*/
 
+                    // Get move from player. 
                     Position copy = position.DeepClone();
                     Int32 move = Move.Invalid;
                     while (!legalMoves.Contains(move))
@@ -104,6 +113,7 @@ namespace AbsoluteZero {
                     if (!position.Equals(copy))
                         Log.WriteLine("Board modified!");
 
+                    // Make the move. 
                     position.Make(move);
                     VisualPosition.Make(move);
                     moves.Add(move);
@@ -170,8 +180,9 @@ namespace AbsoluteZero {
             moves.RemoveRange(length, moves.Count - length);
             types.RemoveRange(length, types.Count - length);
             Position position = initialPosition.DeepClone();
-            foreach (Int32 move in moves)
+            moves.ForEach(move => {
                 position.Make(move);
+            });
             Play(position);
         }
 
