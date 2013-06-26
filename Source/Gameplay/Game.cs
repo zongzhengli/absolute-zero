@@ -30,6 +30,11 @@ namespace AbsoluteZero {
             Start(fen);
         }
 
+        /// <summary>
+        /// Starts a game between the two players starting from the position with the 
+        /// given FEN. This method is non-blocking. 
+        /// </summary>
+        /// <param name="fen">The FEN of the position to start the game from.</param>
         public void Start(String fen = Position.StartingFEN) {
             // This is a convenient place to put test positions for quick and dirty testing. 
 
@@ -53,6 +58,11 @@ namespace AbsoluteZero {
             Start(new Position(fen));
         }
 
+        /// <summary>
+        /// Starts a game between the two players starting from the given position. 
+        /// This method is non-blocking and does not modify the given position. 
+        /// </summary>
+        /// <param name="position">The position to start the game from.</param>
         public void Start(Position position) {
             date = DateTime.Now.ToString("yyyy.MM.dd");
             initialPosition = position;
@@ -60,8 +70,8 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Facilitates a game between the two players. This method is non-blocking 
-        /// and does not modify the given position. 
+        /// Facilitates play between the two players on the current position for the 
+        /// game. This method is non-blocking and does not modify the given position. 
         /// </summary>
         /// <param name="position">The position to start playing from.</param>
         private void Play(Position pos) {
@@ -125,12 +135,19 @@ namespace AbsoluteZero {
             thread.Start();
         }
 
+        /// <summary>
+        /// Stops play between the two players. 
+        /// </summary>
         public void End() {
             White.Stop();
             Black.Stop();
             thread.Abort();
         }
 
+        /// <summary>
+        /// Resets play between the two players so that the game is restored to the 
+        /// state at which no moves have been played. 
+        /// </summary>
         public void Reset() {
             state = GameState.Default;
             moves.Clear();
