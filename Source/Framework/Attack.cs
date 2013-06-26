@@ -155,11 +155,11 @@ namespace AbsoluteZero {
         public static UInt64 KnightFill(Int32 square, Int32 moves) {
             if (moves <= 0)
                 return 0;
-            UInt64 Bitboard = Knight(square);
-            UInt64 copy = Bitboard;
+            UInt64 bitboard = Knight(square);
+            UInt64 copy = bitboard;
             while (copy != 0)
-                Bitboard |= KnightFill(Bit.Pop(ref copy), moves - 1);
-            return Bitboard;
+                bitboard |= KnightFill(Bit.Pop(ref copy), moves - 1);
+            return bitboard;
         }
     }
 }

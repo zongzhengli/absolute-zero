@@ -44,6 +44,7 @@ namespace AbsoluteZero {
             String[] terms = fen.Trim().Split(' ');
             Int32 file = 0;
             Int32 rank = 0;
+
             foreach (Char c in terms[0]) {
                 Char upperC = Char.ToUpperInvariant(c);
                 Int32 colour = (c == upperC) ? Piece.White : Piece.Black;
@@ -75,20 +76,24 @@ namespace AbsoluteZero {
                         break;
                 }
             }
-            SideToMove = terms[1] == "w" ? Piece.White : Piece.Black;
+
+            SideToMove = (terms[1] == "w") ? Piece.White : Piece.Black;
+
             if (terms.Length > 2) {
                 if (terms[2].Contains("Q"))
-                    CastleQueenside[0] = 1;
+                    CastleQueenside[Piece.White] = 1;
                 if (terms[2].Contains("K"))
-                    CastleKingside[0] = 1;
+                    CastleKingside[Piece.White] = 1;
                 if (terms[2].Contains("q"))
-                    CastleQueenside[1] = 1;
+                    CastleQueenside[Piece.Black] = 1;
                 if (terms[2].Contains("k"))
-                    CastleKingside[1] = 1;
+                    CastleKingside[Piece.Black] = 1;
             }
+
             if (terms.Length > 3)
                 if (terms[3] != "-")
                     EnPassantSquare = SquareAt(terms[3]);
+
             if (terms.Length > 5) {
                 FiftyMovesClock = Int32.Parse(terms[4]);
                 Int32 moveNumber = Int32.Parse(terms[5]);
@@ -101,6 +106,7 @@ namespace AbsoluteZero {
                 EnPassantHistory[i] = InvalidSquare;
             EnPassantHistory[HalfMoves] = EnPassantSquare;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
+
             for (Int32 square = 0; square < Square.Length; square++)
                 if (Square[square] != Piece.Empty) {
                     Int32 colour = Square[square] & Piece.Colour;
@@ -110,6 +116,7 @@ namespace AbsoluteZero {
                     if ((Square[square] & Piece.Type) != Piece.King)
                         Material[colour] += Zero.PieceValue[Square[square]];
                 }
+
             ZobristKey = GenerateZobristKey();
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
@@ -948,7 +955,7 @@ namespace AbsoluteZero {
         }
 
         public static Int32 SquareAt(Point e) {
-            Int32 file = e.X / VisualPosition.SquareWidth;
+            Int32 file = e.X / VisualPosition.SquareWidth; 
             Int32 rank = (e.Y - Window.MenuHeight) / VisualPosition.SquareWidth;
             if (VisualPosition.Rotated)
                 return 7 - file + (7 - rank) * 8;
@@ -956,7 +963,7 @@ namespace AbsoluteZero {
         }
 
         public static Int32 SquareAt(String name) {
-            return (Int32)(name[0] - 97 + (56 - name[1]) * 8);
+            return (Int32)(name[0] - 'a' + ('8' - name[1]) * 8);
         }
     }
 }

@@ -147,8 +147,8 @@ namespace AbsoluteZero {
                 return Infinity;
 
             // Perform draw detection. 
-            Int32 drawValue = (ply & 1) == 0 ? DrawValue : -DrawValue;
-            Int32 drawRepetitions = ply > 2 ? 2 : 3;
+            Int32 drawValue = ((ply & 1) == 0) ? DrawValue : -DrawValue;
+            Int32 drawRepetitions = (ply > 2) ? 2 : 3;
             if (position.FiftyMovesClock >= 100 || position.InsufficientMaterial() || position.HasRepeated(drawRepetitions))
                 return drawValue;
 
