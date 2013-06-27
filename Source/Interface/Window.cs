@@ -197,7 +197,7 @@ namespace AbsoluteZero {
         }
 
         private void AboutClick(Object sender, EventArgs e) {
-            MessageBox.Show("Absolute Zero is a chess engine written in C#, developed for fun and to learn more about AI. Its playing strength has been increasing steadily as more techniques are added to its arsenal. It supports the UCI protocol when ran with command-line parameter \"uci\".\n\nZONGZHENGLI 2012");
+            MessageBox.Show("Absolute Zero is a chess engine written in C#, developed for fun and to learn about game tree searching. Its playing strength has been and will continue to steadily increase as more techniques are added to its arsenal. \n\nIt supports the UCI protocol when ran with command-line parameter \"uci\". While in UCI mode it also accepts commands such as \"perft\". Type \"help\" to see the full list of commands. \n\nZONG ZHENG LI");
         }
     }
 }
