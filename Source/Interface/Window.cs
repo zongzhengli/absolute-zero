@@ -22,12 +22,13 @@ namespace AbsoluteZero {
             FormClosed += delegate {
                 Application.Exit();
             };
-            BackColor = VisualPosition.LightColor;
-            UpdateChecked();
 
+            BackColor = VisualPosition.LightColor;
             new Thread(new ThreadStart(DrawThread)) {
                 IsBackground = true
             }.Start();
+
+            UpdateChecked();
         }
 
         public Window(Game parameter)
@@ -63,23 +64,36 @@ namespace AbsoluteZero {
         }
 
         private void UpdateChecked() {
-            rotateBoardToolStripMenuItem.Checked = VisualPosition.Rotated;
-            animationsToolStripMenuItem.Checked = VisualPosition.Animations;
             Boolean gameIsNotNull = game != null;
-            savePGNToolStripMenuItem.Enabled = gameIsNotNull;
-            enterFENToolStripMenuItem.Enabled = gameIsNotNull;
-            copyFENToolStripMenuItem.Enabled = gameIsNotNull;
-            offerDrawToolStripMenuItem.Enabled = gameIsNotNull;
-            restartToolStripMenuItem.Enabled = gameIsNotNull;
-            undoMoveToolStripMenuItem.Enabled = gameIsNotNull;
+
+            // File menu.
+            savePGNMenuItem.Enabled = gameIsNotNull;
+            enterFENMenuItem.Enabled = gameIsNotNull;
+            copyFENMenuItem.Enabled = gameIsNotNull;
+
+            // Game menu.
+            offerDrawMenuItem.Enabled = gameIsNotNull;
+            restartMenuItem.Enabled = gameIsNotNull;
+            undoMoveMenuItem.Enabled = gameIsNotNull;
+
+            // Display menu.
+            rotateBoardMenuItem.Checked = VisualPosition.Rotated;
+            animationsMenuItem.Checked = VisualPosition.Animations;
+
             if (gameIsNotNull) {
                 Boolean hasHuman = game.White is Human || game.Black is Human;
                 Boolean hasEngine = game.White is IEngine || game.Black is IEngine;
-                saveOuputToolStripMenuItem.Enabled = hasEngine;
-                offerDrawToolStripMenuItem.Enabled = hasHuman && hasEngine;
-                undoMoveToolStripMenuItem.Enabled = hasHuman;
-                searchToolStripMenuItem.Enabled = hasEngine;
-                hashSizeToolStripMenuItem.Enabled = hasEngine;
+
+                // File menu.
+                saveOuputMenuItem.Enabled = hasEngine;
+
+                // Game menu.
+                offerDrawMenuItem.Enabled = hasHuman && hasEngine;
+                undoMoveMenuItem.Enabled = hasHuman;
+
+                // Engine menu.
+                searchMenuItem.Enabled = hasEngine;
+                hashSizeMenuItem.Enabled = hasEngine;
             }
         }
 
@@ -140,7 +154,7 @@ namespace AbsoluteZero {
                 Int32 value;
                 if (Int32.TryParse(input, out value) && value > 0) {
                     Restrictions.MoveTime = value;
-                    return;
+                    break;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
             }
@@ -152,7 +166,7 @@ namespace AbsoluteZero {
                 Int32 value;
                 if (Int32.TryParse(input, out value) && value > 0) {
                     Restrictions.Depth = value;
-                    return;
+                    break;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
             }
@@ -164,7 +178,7 @@ namespace AbsoluteZero {
                 Int64 value;
                 if (Int64.TryParse(input, out value) && value > 0) {
                     Restrictions.Nodes = value;
-                    return;
+                    break;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
             }
@@ -180,7 +194,7 @@ namespace AbsoluteZero {
                     if (game.Black is IEngine)
                         (game.Black as IEngine).AllocateHash(value);
                     hashSize = value;
-                    return;
+                    break;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
             }

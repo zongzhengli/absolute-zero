@@ -6,6 +6,7 @@ namespace AbsoluteZero {
         [STAThread]
         public static void Main(String[] args) {
             Log.Initialize();
+
             if (args.Length == 0) {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -15,6 +16,7 @@ namespace AbsoluteZero {
                 Array.Copy(args, 1, parameters, 0, parameters.Length);
                 for (Int32 i = 0; i < parameters.Length; i++)
                     parameters[i] = parameters[i].ToLowerInvariant();
+
                 switch (args[0]) {
                     default:
                     case "uci":
