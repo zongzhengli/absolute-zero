@@ -955,7 +955,7 @@ namespace AbsoluteZero {
         }
 
         public static Int32 SquareAt(Point e) {
-            Int32 file = e.X / VisualPosition.SquareWidth; 
+            Int32 file = e.X / VisualPosition.SquareWidth;
             Int32 rank = (e.Y - Window.MenuHeight) / VisualPosition.SquareWidth;
             if (VisualPosition.Rotated)
                 return 7 - file + (7 - rank) * 8;

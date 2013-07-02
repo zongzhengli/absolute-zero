@@ -26,7 +26,7 @@ namespace AbsoluteZero {
                 sw.WriteLine(Format.Pad(UpdateInterval) + "     " + Format.PadRightAll(ColumnWidth, "Games", "Wins", "Losses", "Draws", "Elo", "Error"));
                 sw.WriteLine("-----------------------------------------------------------------");
 
-                // tournament loop
+                // Main tournament loop. 
                 for (Int32 games = 1; ; games++) {
                     sw.Flush();
                     experimental.Reset();
@@ -34,7 +34,7 @@ namespace AbsoluteZero {
                     Position position = new Position(epd[Random.Int32(epd.Count - 1)]);
                     MatchResult result = Match.Play(experimental, standard, position, MatchOptions.RandomizeColour);
 
-                    // output
+                    // Output match results. 
                     switch (result) {
                         case MatchResult.Win:
                             sw.Write('1');
@@ -54,16 +54,12 @@ namespace AbsoluteZero {
                             break;
                     }
 
-                    if (games % UpdateInterval == 0)
-                        sw.WriteLine(
-                            "     " +
-                            Format.PadRight(games, ColumnWidth) +
-                            Format.PadRight(wins, ColumnWidth) +
-                            Format.PadRight(losses, ColumnWidth) +
-                            Format.PadRight(draws, ColumnWidth) +
-                            Format.PadRight(Format.PrecisionAndSign(Elo.GetDifference(wins, losses, draws)), ColumnWidth) +
-                            "±" + Math.Round(Elo.GetError(wins, losses, draws))
-                            );
+                    // Output statistics. 
+                    if (games % UpdateInterval == 0) {
+                        String elo = Format.PrecisionAndSign(Elo.GetDifference(wins, losses, draws));
+                        String error = "±" + Math.Round(Elo.GetError(wins, losses, draws));
+                        sw.WriteLine("     " + Format.PadRightAll(ColumnWidth, games, wins, losses, draws, elo, error));
+                    }
                 }
             }
         }
