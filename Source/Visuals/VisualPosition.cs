@@ -43,7 +43,7 @@ namespace AbsoluteZero {
             Point initial = new Point(Position.File(from) * SquareWidth, Position.Rank(from) * SquareWidth);
             Point final = new Point(Position.File(to) * SquareWidth, Position.Rank(to) * SquareWidth);
 
-            // remove captured pieces
+            // Remove captured pieces.
             lock (ElementLock)
                 for (Int32 i = 0; i < element.Count; i++)
                     if (element[i].IsAt(final)) {
@@ -51,7 +51,7 @@ namespace AbsoluteZero {
                         break;
                     }
 
-            // perform special moves
+            // Perform special moves.
             switch (Move.Special(move) & Piece.Type) {
                 case Piece.King:
                     Point rookInitial = new Point(7 * (Position.File(to) - 2) / 4 * SquareWidth, Position.Rank(to) * SquareWidth);

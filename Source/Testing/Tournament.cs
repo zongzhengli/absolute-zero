@@ -10,7 +10,8 @@ namespace AbsoluteZero {
         public String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
 
         public void Start(String[] parameters) {
-            // engine declarations
+
+            // Engine declarations. 
             IEngine experimental = new Zero() {
                 NewFeature = true
             };

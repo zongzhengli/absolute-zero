@@ -6,12 +6,26 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// The code component of the Form for the GUI interface. 
+    /// </summary>
     partial class Window : Form {
+
+        /// <summary>
+        /// The height of the menu bar. 
+        /// </summary>
         public const Int32 MenuHeight = 24;
+
+        /// <summary>
+        /// The target number of milliseconds between draw frames. 
+        /// </summary>
         private const Int32 DrawInterval = 33;
 
+        /// <summary>
+        /// The Game associated and handled by the GUI. 
+        /// </summary>
         private Game game;
-        private Int32 hashSize = Zero.HashAllocation;
 
         public Window() {
             InitializeComponent();
@@ -23,18 +37,27 @@ namespace AbsoluteZero {
                 Application.Exit();
             };
 
+            // Set the background colour to the light colour of the chessboard so we 
+            // don't need to draw the light squares. 
             BackColor = VisualPosition.LightColor;
+
+            // Start draw thread. 
             new Thread(new ThreadStart(DrawThread)) {
                 IsBackground = true
             }.Start();
 
-            UpdateChecked();
+            // Update menu state. 
+            UpdateMenu();
         }
 
+        /// <summary>
+        /// Constructs a Window for the specified Game.
+        /// </summary>
+        /// <param name="parameter"></param>
         public Window(Game parameter)
             : this() {
             game = parameter;
-            UpdateChecked();
+            UpdateMenu();
         }
 
         private void DrawThread() {
@@ -63,7 +86,7 @@ namespace AbsoluteZero {
                 game.MouseUpEvent(e);
         }
 
-        private void UpdateChecked() {
+        private void UpdateMenu() {
             Boolean gameIsNotNull = game != null;
 
             // File menu.
@@ -186,14 +209,13 @@ namespace AbsoluteZero {
 
         private void HashSizeClick(Object sender, EventArgs e) {
             while (true) {
-                String input = InputBox.Show("Please specify the hash size in megabytes.", hashSize.ToString());
+                String input = InputBox.Show("Please specify the hash size in megabytes.", Zero.HashAllocation.ToString());
                 Int32 value;
                 if (Int32.TryParse(input, out value) && value > 0) {
                     if (game.White is IEngine)
                         (game.White as IEngine).AllocateHash(value);
                     if (game.Black is IEngine)
                         (game.Black as IEngine).AllocateHash(value);
-                    hashSize = value;
                     break;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
@@ -202,12 +224,12 @@ namespace AbsoluteZero {
 
         private void RotateBoardClick(Object sender, EventArgs e) {
             VisualPosition.Rotated ^= true;
-            UpdateChecked();
+            UpdateMenu();
         }
 
         private void AnimationsClick(Object sender, EventArgs e) {
             VisualPosition.Animations ^= true;
-            UpdateChecked();
+            UpdateMenu();
         }
 
         private void AboutClick(Object sender, EventArgs e) {

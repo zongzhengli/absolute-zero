@@ -4,7 +4,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Handles the main entry point for the application. 
+    /// Handles the application launch. 
     /// </summary>
     static class Launch {
 
