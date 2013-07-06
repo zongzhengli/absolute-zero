@@ -27,6 +27,10 @@ namespace AbsoluteZero {
         /// </summary>
         private Game game;
 
+        /// <summary>
+        /// Constructs a Window by initializing its properties and starting the draw
+        /// thread. 
+        /// </summary>
         public Window() {
             InitializeComponent();
             Icon = Properties.Resources.Icon;
@@ -42,7 +46,12 @@ namespace AbsoluteZero {
             BackColor = VisualPosition.LightColor;
 
             // Start draw thread. 
-            new Thread(new ThreadStart(DrawThread)) {
+            new Thread(new ThreadStart(delegate {
+                while (true) {
+                    Invalidate();
+                    Thread.Sleep(DrawInterval);
+                }
+            })) {
                 IsBackground = true
             }.Start();
 
@@ -53,26 +62,27 @@ namespace AbsoluteZero {
         /// <summary>
         /// Constructs a Window for the specified Game.
         /// </summary>
-        /// <param name="parameter"></param>
+        /// <param name="parameter">The Game to associate with the Window. </param>
         public Window(Game parameter)
             : this() {
             game = parameter;
             UpdateMenu();
         }
 
-        private void DrawThread() {
-            while (true) {
-                Invalidate();
-                Thread.Sleep(DrawInterval);
-            }
-        }
-
+        /// <summary>
+        /// Draws the Window. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The paint event.</param>
         private void DrawEvent(Object sender, PaintEventArgs e) {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.HighSpeed;
             g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
             g.CompositingQuality = CompositingQuality.HighSpeed;
+
+            // Translate down so the chessboard can be draw from (0, 0). 
             g.TranslateTransform(0, MenuHeight);
+
             if (game != null)
                 game.Draw(g);
             else {
@@ -81,11 +91,19 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles a mouse up event. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The mouse event.</param>
         private void MouseUpEvent(Object sender, MouseEventArgs e) {
             if (game != null)
                 game.MouseUpEvent(e);
         }
 
+        /// <summary>
+        /// Updates which menu components are enabled or checked. 
+        /// </summary>
         private void UpdateMenu() {
             Boolean gameIsNotNull = game != null;
 
@@ -120,6 +138,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Save PGN button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void SavePGNClick(Object sender, EventArgs e) {
             using (SaveFileDialog dialog = new SaveFileDialog()) {
                 dialog.Title = "Save PGN";
@@ -129,6 +152,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Save Output button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void SaveOutputClick(Object sender, EventArgs e) {
             using (SaveFileDialog dialog = new SaveFileDialog()) {
                 dialog.Title = "Save Engine Output";
@@ -138,6 +166,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Enter FEN button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void EnterFENClick(Object sender, EventArgs e) {
             if (game != null) {
                 String fen = InputBox.Show("Please enter the FEN string.");
@@ -149,15 +182,30 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Copy FEN button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void CopyFENClick(Object sender, EventArgs e) {
             Clipboard.SetText(game.GetFEN());
         }
 
+        /// <summary>
+        /// Handles the Offer Draw button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void OfferDrawClick(Object sender, EventArgs e) {
             if (game != null)
                 game.OfferDraw();
         }
 
+        /// <summary>
+        /// Handles the Restart button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void RestartClick(Object sender, EventArgs e) {
             if (game != null) {
                 game.End();
@@ -166,11 +214,21 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Undo Move button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void UndoMoveClick(Object sender, EventArgs e) {
             if (game != null)
                 game.UndoMove();
         }
 
+        /// <summary>
+        /// Handles the Search Time button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void SearchTimeClick(Object sender, EventArgs e) {
             while (true) {
                 String input = InputBox.Show("Please specify the search time in milliseconds.", Restrictions.MoveTime.ToString());
@@ -183,6 +241,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Search Depth button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void SearchDepthClick(Object sender, EventArgs e) {
             while (true) {
                 String input = InputBox.Show("Please specify the search depth.", Restrictions.Depth.ToString());
@@ -195,6 +258,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Search Nodes button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void SearchNodesClick(Object sender, EventArgs e) {
             while (true) {
                 String input = InputBox.Show("Please specify the nodes limit.", Restrictions.Nodes.ToString());
@@ -207,6 +275,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Hash Size button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void HashSizeClick(Object sender, EventArgs e) {
             while (true) {
                 String input = InputBox.Show("Please specify the hash size in megabytes.", Zero.HashAllocation.ToString());
@@ -222,16 +295,31 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Handles the Rotate Board button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void RotateBoardClick(Object sender, EventArgs e) {
             VisualPosition.Rotated ^= true;
             UpdateMenu();
         }
 
+        /// <summary>
+        /// Handles the Animations button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void AnimationsClick(Object sender, EventArgs e) {
             VisualPosition.Animations ^= true;
             UpdateMenu();
         }
 
+        /// <summary>
+        /// Handles the About button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
         private void AboutClick(Object sender, EventArgs e) {
             MessageBox.Show("Absolute Zero is a chess engine written in C#, developed for fun and to learn about game tree searching. Its playing strength has been and will continue to steadily increase as more techniques are added to its arsenal. \n\nIt supports the UCI protocol when ran with command-line parameter \"uci\". While in UCI mode it also accepts commands such as \"perft\". Type \"help\" to see the full list of commands. \n\nZONG ZHENG LI");
         }
