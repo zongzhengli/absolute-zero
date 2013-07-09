@@ -6,7 +6,15 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// The parser for the UCI/command-line mode. 
+    /// </summary>
     static class Universal {
+
+        /// <summary>
+        /// Executes the parsing. 
+        /// </summary>
         public static void Run() {
             Restrictions.Output = OutputType.Universal;
             IEngine engine = new Zero();
@@ -70,15 +78,18 @@ namespace AbsoluteZero {
                                     Restrictions.TimeIncrement[Piece.Black] = Int32.Parse(terms[i + 1]);
                                     Restrictions.UseTimeControls = true;
                                     break;
-                                case "nodes":// <--------------------------
+                                case "nodes":
                                     Restrictions.Nodes = Int32.Parse(terms[i + 1]);
-                                    Restrictions.UseTimeControls = true;
+                                    Restrictions.UseTimeControls = false;
                                     break;
-                                case "ponder":// <--------------------------
+                                case "ponder":
+                                    // TODO: implement command. 
                                     break;
-                                case "mate":// <--------------------------
+                                case "mate":
+                                    // TODO: implement command. 
                                     break;
-                                case "movestogo":// <--------------------------
+                                case "movestogo":
+                                    // TODO: implement command. 
                                     break;
                             }
                         new Thread(new ThreadStart(delegate {
@@ -91,16 +102,17 @@ namespace AbsoluteZero {
                     case "stop":
                         engine.Stop();
                         break;
-                    case "ponderhit":// <--------------------------
+                    case "ponderhit":
+                        // TODO: implement command. 
                         break;
                     case "isready":
                         Log.WriteLine("readyok");
                         break;
-                    case "register":// <--------------------------
+                    case "register":
+                        // TODO: implement command. 
                         break;
                     case "quit":
-                        Environment.Exit(0);
-                        break;
+                        return;
                     case "perft":
                         Perft.Iterate(position, Int32.Parse(terms[1]));
                         break;
