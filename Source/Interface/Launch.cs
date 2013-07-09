@@ -35,13 +35,20 @@ namespace AbsoluteZero {
 
                 switch (args[0]) {
                     default:
-                    case "uci":
+                        Log.WriteLine("Unrecognized command-line parameter. Valid parameters are:");
+                        Log.WriteLine("-u    UCI/command-line mode");
+                        Log.WriteLine("-t    Tournament mode");
+                        Log.WriteLine("-s    Test suite mode");
+                        Log.WriteLine("Press any key to continue . . . ");
+                        Console.ReadKey();
+                        break;
+                    case "-u":
                         Universal.Run();
                         break;
-                    case "tournament":
+                    case "-t":
                         new Tournament().Start(subArgs);
                         break;
-                    case "testsuite":
+                    case "-s":
                         TestSuite.Run(subArgs);
                         break;
                 }
