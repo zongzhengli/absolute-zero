@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Text;
 using System.Diagnostics;
 using System.IO;
 
@@ -8,7 +8,7 @@ namespace AbsoluteZero {
         private const Int32 ConsoleWidth = 82;
         private const Int32 ConsoleHeight = 25;
 
-        private static List<String> text = new List<String>();
+        private static StringBuilder text = new StringBuilder();
 
         public static void Initialize() {
             try {
@@ -17,8 +17,17 @@ namespace AbsoluteZero {
             } catch { }
         }
 
+        public static void Write(String value) {
+            text.Append(value);
+            Console.Write(value);
+        }
+
+        public static void Write(Object value) {
+            Write(value.ToString());
+        }
+
         public static void WriteLine(String value = "") {
-            text.Add(value);
+            text.AppendLine(value);
             Console.WriteLine(value);
         }
 
@@ -32,9 +41,7 @@ namespace AbsoluteZero {
 
         public static void SaveText(String path) {
             using (StreamWriter sw = new StreamWriter(path))
-                text.ForEach(line => {
-                    sw.WriteLine(line);
-                });
+                sw.WriteLine(text.ToString());
         }
 
         public static void HideConsole() {
