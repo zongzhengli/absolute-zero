@@ -39,7 +39,7 @@ namespace AbsoluteZero {
                         Log.WriteLine("-u    UCI/command-line mode");
                         Log.WriteLine("-t    Tournament mode");
                         Log.WriteLine("-s    Test suite mode");
-                        Log.WriteLine("Press any key to continue . . . ");
+                        Log.Write("Press any key to continue . . . ");
                         Console.ReadKey();
                         break;
                     case "-u":
