@@ -30,7 +30,7 @@ namespace AbsoluteZero {
 
                 // If both players are human there's no need for the Engine Output window. 
                 if (white is Human && black is Human)
-                    Log.HideConsole();
+                    EngineConsole.HideConsole();
                 else
                     Restrictions.MoveTime = 3000;
 

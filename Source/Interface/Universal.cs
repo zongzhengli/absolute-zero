@@ -26,12 +26,12 @@ namespace AbsoluteZero {
 
                 switch (terms[0]) {
                     default:
-                        Log.WriteLine("Unknown command. Enter 'help' for assistance.");
+                        EngineConsole.WriteLine("Unknown command. Enter 'help' for assistance.");
                         break;
                     case "uci":
-                        Log.WriteLine("id name Absolute Zero " + Zero.Version);
-                        Log.WriteLine("id author Zong Zheng Li");
-                        Log.WriteLine("uciok");
+                        EngineConsole.WriteLine("id name Absolute Zero " + Zero.Version);
+                        EngineConsole.WriteLine("id author Zong Zheng Li");
+                        EngineConsole.WriteLine("uciok");
                         break;
                     case "ucinewgame":
                         engine.Reset();
@@ -94,7 +94,7 @@ namespace AbsoluteZero {
                             }
                         new Thread(new ThreadStart(delegate {
                             Int32 bestMove = engine.GetMove(position);
-                            Log.WriteLine("bestmove " + Identify.Move(bestMove));
+                            EngineConsole.WriteLine("bestmove " + Identify.Move(bestMove));
                         })) {
                             IsBackground = true
                         }.Start();
@@ -106,7 +106,7 @@ namespace AbsoluteZero {
                         // TODO: implement command. 
                         break;
                     case "isready":
-                        Log.WriteLine("readyok");
+                        EngineConsole.WriteLine("readyok");
                         break;
                     case "register":
                         // TODO: implement command. 
@@ -120,27 +120,27 @@ namespace AbsoluteZero {
                         Perft.Divide(position, Int32.Parse(terms[1]));
                         break;
                     case "draw":
-                        Log.WriteLine(position);
+                        EngineConsole.WriteLine(position);
                         break;
                     case "fen":
-                        Log.WriteLine(position.GetFEN());
+                        EngineConsole.WriteLine(position.GetFEN());
                         break;
                     case "help":
-                        Log.WriteLine("Command          Function");
-                        Log.WriteLine("-----------------------------------------------------------------------");
-                        Log.WriteLine("perft x          Runs perft(x) on the current position.");
-                        Log.WriteLine("divide x         Runs divide(x) on the current position.");
-                        Log.WriteLine("fen              Prints the FEN for the current position.");
-                        Log.WriteLine("draw             Draws the current position.");
-                        Log.WriteLine("-----------------------------------------------------------------------");
-                        Log.WriteLine("position x       Sets the current position. Requires \"startpos\" or");
-                        Log.WriteLine("                 \"fen x\".");
-                        Log.WriteLine("go x             Searches the current position. Optional parameters");
-                        Log.WriteLine("                 include \"movetime x\", \"depth x\", \"nodes x\", \"wtime x\",");
-                        Log.WriteLine("                 \"btime x\", \"winc x\", and \"binc x\".");
-                        Log.WriteLine("stop             Stops an ongoing search.");
-                        Log.WriteLine("quit             Terminates the application.");
-                        Log.WriteLine("-----------------------------------------------------------------------");
+                        EngineConsole.WriteLine("Command          Function");
+                        EngineConsole.WriteLine("-----------------------------------------------------------------------");
+                        EngineConsole.WriteLine("perft x          Runs perft(x) on the current position.");
+                        EngineConsole.WriteLine("divide x         Runs divide(x) on the current position.");
+                        EngineConsole.WriteLine("fen              Prints the FEN for the current position.");
+                        EngineConsole.WriteLine("draw             Draws the current position.");
+                        EngineConsole.WriteLine("-----------------------------------------------------------------------");
+                        EngineConsole.WriteLine("position x       Sets the current position. Requires \"startpos\" or");
+                        EngineConsole.WriteLine("                 \"fen x\".");
+                        EngineConsole.WriteLine("go x             Searches the current position. Optional parameters");
+                        EngineConsole.WriteLine("                 include \"movetime x\", \"depth x\", \"nodes x\", \"wtime x\",");
+                        EngineConsole.WriteLine("                 \"btime x\", \"winc x\", and \"binc x\".");
+                        EngineConsole.WriteLine("stop             Stops an ongoing search.");
+                        EngineConsole.WriteLine("quit             Terminates the application.");
+                        EngineConsole.WriteLine("-----------------------------------------------------------------------");
                         break;
                 }
             }

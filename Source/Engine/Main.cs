@@ -9,8 +9,8 @@ namespace AbsoluteZero {
     partial class Zero : IEngine {
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {
-                Log.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Value", ValueWidth) + "Principal Variation");
-                Log.WriteLine("-----------------------------------------------------------------------");
+                EngineConsole.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Value", ValueWidth) + "Principal Variation");
+                EngineConsole.WriteLine("-----------------------------------------------------------------------");
             }
 
             Prepare();
@@ -20,11 +20,11 @@ namespace AbsoluteZero {
             stopwatch.Stop();
 
             if (Restrictions.Output == OutputType.Standard) {
-                Log.WriteLine("-----------------------------------------------------------------------");
+                EngineConsole.WriteLine("-----------------------------------------------------------------------");
                 Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-                Log.WriteLine("FEN: " + position.GetFEN());
-                Log.WriteLine();
-                Log.WriteLine(position.ToStringAppend(
+                EngineConsole.WriteLine("FEN: " + position.GetFEN());
+                EngineConsole.WriteLine();
+                EngineConsole.WriteLine(position.ToStringAppend(
                     "Absolute Zero " + 8 * IntPtr.Size + "-bit",
                     "Version " + Version,
                     String.Empty,
@@ -37,7 +37,7 @@ namespace AbsoluteZero {
                     "Hash cutoffs: " + Format.Precision(100D * hashCutoffs / hashProbes, 2) + "%",
                     "Static evaluation: " + Format.PrecisionAndSign(.01 * Evaluate(position), 2)
                     ));
-                Log.WriteLine();
+                EngineConsole.WriteLine();
             }
             return move;
         }

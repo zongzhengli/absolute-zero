@@ -121,7 +121,7 @@ namespace AbsoluteZero {
                     while (!legalMoves.Contains(move))
                         move = player.GetMove(copy);
                     if (!position.Equals(copy))
-                        Log.WriteLine("Board modified!");
+                        EngineConsole.WriteLine("Board modified!");
 
                     // Make the move. 
                     position.Make(move);

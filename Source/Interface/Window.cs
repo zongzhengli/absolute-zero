@@ -162,7 +162,7 @@ namespace AbsoluteZero {
                 dialog.Title = "Save Engine Output";
                 dialog.Filter = "Text File|*.txt";
                 if (dialog.ShowDialog() == DialogResult.OK)
-                    Log.SaveText(dialog.FileName);
+                    EngineConsole.SaveText(dialog.FileName);
             }
         }
 
