@@ -7,7 +7,7 @@ using System.Text;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Represents a complete chess position. This class is geared towards speed. 
+    /// Represents a complete chess position. 
     /// </summary>
     class Position : IEquatable<Position> {
         public const String StartingFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";

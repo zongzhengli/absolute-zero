@@ -2,7 +2,12 @@
 using System.Text;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Provides useful bitwise functions. 
+    /// </summary>
     static class Bit {
+
         public static readonly UInt64[] File = new UInt64[64];
         public static readonly UInt64[] Rank = new UInt64[64];
         public const UInt64 LightSquares = 12273903644374837845UL;

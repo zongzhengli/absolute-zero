@@ -1,7 +1,12 @@
 ﻿using System;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Defines piece values. 
+    /// </summary>
     static class Piece {
+
         public const Int32 Type = 14;                   // 1110
         public const Int32 Colour = Black;              // 0001
 
