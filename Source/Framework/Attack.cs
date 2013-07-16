@@ -1,31 +1,127 @@
 ﻿using System;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// The attack bitboard generation module.
+    /// </summary>
     static class Attack {
+        
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly north of the given 
+        /// square.
+        /// </summary>
         public static UInt64[] RayN = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly east of the given 
+        /// square.
+        /// </summary>
         public static UInt64[] RayE = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly south of the given 
+        /// square.
+        /// </summary>
         public static UInt64[] RayS = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly west of the given 
+        /// square.
+        /// </summary>
         public static UInt64[] RayW = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly northeast of the 
+        /// given square.
+        /// </summary>
         public static UInt64[] RayNE = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly northwest of the 
+        /// given square.
+        /// </summary>
         public static UInt64[] RayNW = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly southeast of the 
+        /// given square.
+        /// </summary>
         public static UInt64[] RaySE = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard ray that is strictly southwest of the 
+        /// given square.
+        /// </summary>
         public static UInt64[] RaySW = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard that has all the non-diagonal rays set 
+        /// for a given square.
+        /// </summary>
         public static UInt64[] Axes = new UInt64[64];
+
+        /// <summary>
+        /// The table for getting a bitboard that has all the diagonal rays set for 
+        /// a given square. 
+        /// </summary>
         public static UInt64[] Diagonals = new UInt64[64];
+
+        /// <summary>
+        // The king attack bitboard table. 
+        /// </summary>
         private static UInt64[] KingAttack = new UInt64[64];
+
+        /// <summary>
+        /// The knight attack bitboard table.
+        /// </summary>
         private static UInt64[] KnightAttack = new UInt64[64];
+
+        /// <summary>
+        /// The pawn attack bitboard table.
+        /// </summary>
         private static UInt64[][] PawnAttack = { new UInt64[64], new UInt64[64] };
 
-        private static UInt64[] Relevant = new UInt64[64];
+        /// <summary>
+        /// The cached queen attack bitboard. 
+        /// </summary>
         private static UInt64[] cachedQueenAttack = new UInt64[64];
+
+        /// <summary>
+        /// The cached queen block bitboard used to verify the validity of the 
+        /// cached attack bitboard.
+        /// </summary>
         private static UInt64[] cachedQueenBlock = new UInt64[64];
+
+        /// <summary>
+        /// The cached rook attack bitboard.
+        /// </summary>
         private static UInt64[] cachedRookAttack = new UInt64[64];
+
+        /// <summary>
+        /// The cached rook block bitboard used to verify the validity of the cached 
+        /// attack bitboard.
+        /// </summary>
         private static UInt64[] cachedRookBlock = new UInt64[64];
+
+        /// <summary>
+        /// The cached bishop attack bitboard.
+        /// </summary>
         private static UInt64[] cachedBishopAttack = new UInt64[64];
+
+        /// <summary>
+        /// The cached bishop block bitboard used to verify the validity of the 
+        /// cached attack bitboard.
+        /// </summary>
         private static UInt64[] cachedBishopBlock = new UInt64[64];
 
+        /// <summary>
+        /// Initializes lookup tables. 
+        /// </summary>
         static Attack() {
             for (Int32 square = 0; square < 64; square++) {
+
+                // Initialize ray tables. 
                 RayN[square] = Bit.LineFill(square, 0, -1) ^ (1UL << square);
                 RayE[square] = Bit.LineFill(square, 1, 0) ^ (1UL << square);
                 RayS[square] = Bit.LineFill(square, 0, 1) ^ (1UL << square);
@@ -37,6 +133,7 @@ namespace AbsoluteZero {
                 Axes[square] = RayN[square] | RayE[square] | RayS[square] | RayW[square];
                 Diagonals[square] = RayNE[square] | RayNW[square] | RaySE[square] | RaySW[square];
 
+                // Initialize cached block bitboards. 
                 cachedQueenBlock[square] = UInt64.MaxValue;
                 cachedRookBlock[square] = UInt64.MaxValue;
                 cachedBishopBlock[square] = UInt64.MaxValue;
