@@ -60,7 +60,7 @@ namespace AbsoluteZero {
         /// Returns the index of the bit in a bitboard with a single set bit. 
         /// </summary>
         /// <param name="bitboard">The bitboard to read.</param>
-        /// <returns>The indexo of the single set bit.</returns>
+        /// <returns>The index of the single set bit.</returns>
         public static Int32 Read(UInt64 bitboard) {
             return BitIndex[(bitboard * 0x07EDD5E59A4E28C2UL) >> 58];
         }
