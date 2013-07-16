@@ -28,30 +28,58 @@ namespace AbsoluteZero {
         /// </summary>
         private static readonly Int32[] BitIndex = new Int32[64];
 
+        /// <summary>
+        /// Initializes lookup tables. 
+        /// </summary>
         static Bit() {
+
+            // Initialize bit index table. 
             for (Int32 i = 0; i < 64; i++)
                 BitIndex[((1UL << i) * 0x07EDD5E59A4E28C2UL) >> 58] = i;
 
+            // Initialize file and rank bitboard tables. 
             for (Int32 square = 0; square < 64; square++) {
-                File[square] = DirectionFill(Position.File(square), 0, 1);
-                Rank[square] = DirectionFill(Position.Rank(square) * 8, 1, 0);
+                File[square] = LineFill(Position.File(square), 0, 1);
+                Rank[square] = LineFill(Position.Rank(square) * 8, 1, 0);
             }
         }
 
+        /// <summary>
+        /// Removes and returns the index of the least significant set bit in the 
+        /// given bitboard.  
+        /// </summary>
+        /// <param name="bitboard">The bitboard to pop.</param>
+        /// <returns>The index of the least significant set bit.</returns>
         public static Int32 Pop(ref UInt64 bitboard) {
             UInt64 isolatedBit = bitboard & (0UL - bitboard);
             bitboard &= bitboard - 1;
             return BitIndex[(isolatedBit * 0x07EDD5E59A4E28C2UL) >> 58];
         }
 
+        /// <summary>
+        /// Returns the index of the bit in a bitboard with a single set bit. 
+        /// </summary>
+        /// <param name="bitboard">The bitboard to read.</param>
+        /// <returns>The indexo of the single set bit.</returns>
         public static Int32 Read(UInt64 bitboard) {
             return BitIndex[(bitboard * 0x07EDD5E59A4E28C2UL) >> 58];
         }
 
+        /// <summary>
+        /// Returns the index of the least significant set bit in the given 
+        /// bitboard.
+        /// </summary>
+        /// <param name="bitboard">The bitboard to scan.</param>
+        /// <returns>The index of the least significant set bit.</returns>
         public static Int32 Scan(UInt64 bitboard) {
             return BitIndex[((bitboard & (UInt64)(-(Int64)bitboard)) * 0x07EDD5E59A4E28C2UL) >> 58];
         }
 
+        /// <summary>
+        /// Returns the index of the most significant set bit in the given bitboard.
+        /// </summary>
+        /// <param name="bitboard">The bitboard to scan.</param>
+        /// <returns>The index of the most significant set bit.</returns>
         public static Int32 ScanReverse(UInt64 bitboard) {
             Int32 result = 0;
             if (bitboard > 0xFFFFFFFF) {
@@ -79,12 +107,23 @@ namespace AbsoluteZero {
             return result;
         }
 
+        /// <summary>
+        /// Returns the number of set bits in the given bitboard.
+        /// </summary>
+        /// <param name="bitboard">The bitboard to count.</param>
+        /// <returns>The number of set bits.</returns>
         public static Int32 Count(UInt64 bitboard) {
             bitboard -= (bitboard >> 1) & 0x5555555555555555UL;
             bitboard = (bitboard & 0x3333333333333333UL) + ((bitboard >> 2) & 0x3333333333333333UL);
             return (Int32)(((bitboard + (bitboard >> 4) & 0xF0F0F0F0F0F0F0FUL) * 0x101010101010101UL) >> 56);
         }
 
+        /// <summary>
+        /// Returns the number of set bits in the given bitboard. For a bitboard 
+        /// with very few set bits this may be faster than Bit.Count(). 
+        /// </summary>
+        /// <param name="bitboard">The bitboard to count.</param>
+        /// <returns>The number of set bits.</returns>
         public static Int32 CountSparse(UInt64 bitboard) {
             Int32 count = 0;
             while (bitboard != 0) {
@@ -94,6 +133,13 @@ namespace AbsoluteZero {
             return count;
         }
 
+        /// <summary>
+        /// Returns a bitboard that gives the result of performing a floodfill from 
+        /// a given index for a given distance. 
+        /// </summary>
+        /// <param name="index">The index to floodfill from.</param>
+        /// <param name="distance">The distance to floodfill.</param>
+        /// <returns>A bitboard that is the result of the floodfill.</returns>
         public static UInt64 FloodFill(Int32 index, Int32 distance) {
             if (distance < 0 || index < 0 || index > 63)
                 return 0;
@@ -107,25 +153,42 @@ namespace AbsoluteZero {
             return bitboard;
         }
 
-        public static UInt64 DirectionFill(Int32 index, Int32 dx, Int32 dy) {
+        /// <summary>
+        /// Returns a bitboard that has set bits along a given line.  
+        /// </summary>
+        /// <param name="index">A point on the line.</param>
+        /// <param name="dx">The x component of the line's direction vector.</param>
+        /// <param name="dy">The y component of the line's direction vector.</param>
+        /// <returns>The bitboard that is the result of the line fill.</returns>
+        public static UInt64 LineFill(Int32 index, Int32 dx, Int32 dy) {
             if (index < 0 || index > 63)
                 return 0;
             UInt64 bitboard = 1UL << index;
             if (Math.Floor(index / 8F) == Math.Floor((index + dx) / 8F))
-                bitboard |= DirectionFill(index + dx + dy * 8, dx, dy);
+                bitboard |= LineFill(index + dx + dy * 8, dx, dy);
             return bitboard;
 
         }
-
-        public static String ToString(Int32 bitboard) {
+        
+        /// <summary>
+        /// Returns a string giving the binary representation of the move.
+        /// </summary>
+        /// <param name="x">The move to convert.</param>
+        /// <returns>The binary representation of the move.</returns>
+        public static String ToString(Int32 move) {
             Char[] sequence = new Char[32];
             for (Int32 i = sequence.Length - 1; i >= 0; i--) {
-                sequence[i] = (Char)((bitboard & 1) + 48);
-                bitboard >>= 1;
+                sequence[i] = (Char)((move & 1) + 48);
+                move >>= 1;
             }
             return new String(sequence);
         }
 
+        /// <summary>
+        /// Returns a string giving the binary representation of the bitboard.
+        /// </summary>
+        /// <param name="bitboard">The bitboard to convert.</param>
+        /// <returns>The binary representation of the bitboard.</returns>
         public static String ToString(UInt64 bitboard) {
             Char[] sequence = new Char[64];
             for (Int32 i = sequence.Length - 1; i >= 0; i--) {
@@ -135,6 +198,12 @@ namespace AbsoluteZero {
             return new String(sequence);
         }
 
+        /// <summary>
+        /// Returns a string giving the binary representation of the bitboard with 
+        /// appropriate line terminating characters. The result is a 8 by 8 matrix. 
+        /// </summary>
+        /// <param name="bitboard">The bitboard to convert</param>
+        /// <returns>The binary representation of the bitboard in a matrix format.</returns>
         public static String ToMatrix(UInt64 bitboard) {
             StringBuilder sequence = new StringBuilder(78);
             Int32 file = 0;

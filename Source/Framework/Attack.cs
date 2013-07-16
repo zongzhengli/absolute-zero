@@ -26,14 +26,14 @@ namespace AbsoluteZero {
 
         static Attack() {
             for (Int32 square = 0; square < 64; square++) {
-                RayN[square] = Bit.DirectionFill(square, 0, -1) ^ (1UL << square);
-                RayE[square] = Bit.DirectionFill(square, 1, 0) ^ (1UL << square);
-                RayS[square] = Bit.DirectionFill(square, 0, 1) ^ (1UL << square);
-                RayW[square] = Bit.DirectionFill(square, -1, 0) ^ (1UL << square);
-                RayNE[square] = Bit.DirectionFill(square, 1, -1) ^ (1UL << square);
-                RayNW[square] = Bit.DirectionFill(square, -1, -1) ^ (1UL << square);
-                RaySE[square] = Bit.DirectionFill(square, 1, 1) ^ (1UL << square);
-                RaySW[square] = Bit.DirectionFill(square, -1, 1) ^ (1UL << square);
+                RayN[square] = Bit.LineFill(square, 0, -1) ^ (1UL << square);
+                RayE[square] = Bit.LineFill(square, 1, 0) ^ (1UL << square);
+                RayS[square] = Bit.LineFill(square, 0, 1) ^ (1UL << square);
+                RayW[square] = Bit.LineFill(square, -1, 0) ^ (1UL << square);
+                RayNE[square] = Bit.LineFill(square, 1, -1) ^ (1UL << square);
+                RayNW[square] = Bit.LineFill(square, -1, -1) ^ (1UL << square);
+                RaySE[square] = Bit.LineFill(square, 1, 1) ^ (1UL << square);
+                RaySW[square] = Bit.LineFill(square, -1, 1) ^ (1UL << square);
                 Axes[square] = RayN[square] | RayE[square] | RayS[square] | RayW[square];
                 Diagonals[square] = RayNE[square] | RayNW[square] | RaySE[square] | RaySW[square];
 
