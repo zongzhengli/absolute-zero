@@ -26,12 +26,12 @@ namespace AbsoluteZero {
 
                 switch (terms[0]) {
                     default:
-                        EngineConsole.WriteLine("Unknown command. Enter 'help' for assistance.");
+                        Terminal.WriteLine("Unknown command. Enter 'help' for assistance.");
                         break;
                     case "uci":
-                        EngineConsole.WriteLine("id name Absolute Zero " + Zero.Version);
-                        EngineConsole.WriteLine("id author Zong Zheng Li");
-                        EngineConsole.WriteLine("uciok");
+                        Terminal.WriteLine("id name Absolute Zero " + Zero.Version);
+                        Terminal.WriteLine("id author Zong Zheng Li");
+                        Terminal.WriteLine("uciok");
                         break;
                     case "ucinewgame":
                         engine.Reset();
@@ -94,7 +94,7 @@ namespace AbsoluteZero {
                             }
                         new Thread(new ThreadStart(delegate {
                             Int32 bestMove = engine.GetMove(position);
-                            EngineConsole.WriteLine("bestmove " + Identify.Move(bestMove));
+                            Terminal.WriteLine("bestmove " + Identify.Move(bestMove));
                         })) {
                             IsBackground = true
                         }.Start();
@@ -106,7 +106,7 @@ namespace AbsoluteZero {
                         // TODO: implement command. 
                         break;
                     case "isready":
-                        EngineConsole.WriteLine("readyok");
+                        Terminal.WriteLine("readyok");
                         break;
                     case "register":
                         // TODO: implement command. 
@@ -120,27 +120,27 @@ namespace AbsoluteZero {
                         Perft.Divide(position, Int32.Parse(terms[1]));
                         break;
                     case "draw":
-                        EngineConsole.WriteLine(position);
+                        Terminal.WriteLine(position);
                         break;
                     case "fen":
-                        EngineConsole.WriteLine(position.GetFEN());
+                        Terminal.WriteLine(position.GetFEN());
                         break;
                     case "help":
-                        EngineConsole.WriteLine("Command          Function");
-                        EngineConsole.WriteLine("-----------------------------------------------------------------------");
-                        EngineConsole.WriteLine("perft x          Runs perft(x) on the current position.");
-                        EngineConsole.WriteLine("divide x         Runs divide(x) on the current position.");
-                        EngineConsole.WriteLine("fen              Prints the FEN for the current position.");
-                        EngineConsole.WriteLine("draw             Draws the current position.");
-                        EngineConsole.WriteLine("-----------------------------------------------------------------------");
-                        EngineConsole.WriteLine("position x       Sets the current position. Requires \"startpos\" or");
-                        EngineConsole.WriteLine("                 \"fen x\".");
-                        EngineConsole.WriteLine("go x             Searches the current position. Optional parameters");
-                        EngineConsole.WriteLine("                 include \"movetime x\", \"depth x\", \"nodes x\", \"wtime x\",");
-                        EngineConsole.WriteLine("                 \"btime x\", \"winc x\", and \"binc x\".");
-                        EngineConsole.WriteLine("stop             Stops an ongoing search.");
-                        EngineConsole.WriteLine("quit             Terminates the application.");
-                        EngineConsole.WriteLine("-----------------------------------------------------------------------");
+                        Terminal.WriteLine("Command          Function");
+                        Terminal.WriteLine("-----------------------------------------------------------------------");
+                        Terminal.WriteLine("perft x          Runs perft(x) on the current position.");
+                        Terminal.WriteLine("divide x         Runs divide(x) on the current position.");
+                        Terminal.WriteLine("fen              Prints the FEN for the current position.");
+                        Terminal.WriteLine("draw             Draws the current position.");
+                        Terminal.WriteLine("-----------------------------------------------------------------------");
+                        Terminal.WriteLine("position x       Sets the current position. Requires \"startpos\" or");
+                        Terminal.WriteLine("                 \"fen x\".");
+                        Terminal.WriteLine("go x             Searches the current position. Optional parameters");
+                        Terminal.WriteLine("                 include \"movetime x\", \"depth x\", \"nodes x\", \"wtime x\",");
+                        Terminal.WriteLine("                 \"btime x\", \"winc x\", and \"binc x\".");
+                        Terminal.WriteLine("stop             Stops an ongoing search.");
+                        Terminal.WriteLine("quit             Terminates the application.");
+                        Terminal.WriteLine("-----------------------------------------------------------------------");
                         break;
                 }
             }

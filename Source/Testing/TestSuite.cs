@@ -56,8 +56,8 @@ namespace AbsoluteZero {
             Int64 totalNodes = 0;
             Double totalTime = 0;
 
-            EngineConsole.WriteLine(Format.PadRightAll(ColumnWidth, "Position", "Result", "Time", "Nodes"));
-            EngineConsole.WriteLine("-----------------------------------------------------------------------");
+            Terminal.WriteLine(Format.PadRightAll(ColumnWidth, "Position", "Result", "Time", "Nodes"));
+            Terminal.WriteLine("-----------------------------------------------------------------------");
             foreach (String line in epd) {
                 List<String> terms = new List<String>(line.Replace(";", " ;").Split(' '));
 
@@ -92,12 +92,12 @@ namespace AbsoluteZero {
                     result = "pass";
                     totalSolved++;
                 }
-                EngineConsole.WriteLine(Format.PadRightAll(ColumnWidth, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
+                Terminal.WriteLine(Format.PadRightAll(ColumnWidth, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
             }
-            EngineConsole.WriteLine("-----------------------------------------------------------------------");
-            EngineConsole.WriteLine("Result: " + totalSolved + " / " + totalPositions);
-            EngineConsole.WriteLine("Time elapsed: " + Format.Precision(totalTime) + " ms");
-            EngineConsole.WriteLine("Average nodes: " + Format.Precision(totalNodes / (Double)totalPositions));
+            Terminal.WriteLine("-----------------------------------------------------------------------");
+            Terminal.WriteLine("Result: " + totalSolved + " / " + totalPositions);
+            Terminal.WriteLine("Time elapsed: " + Format.Precision(totalTime) + " ms");
+            Terminal.WriteLine("Average nodes: " + Format.Precision(totalNodes / (Double)totalPositions));
         }
     }
 }

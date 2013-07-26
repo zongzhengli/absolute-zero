@@ -15,8 +15,8 @@ namespace AbsoluteZero {
         [STAThread]
         public static void Main(String[] args) {
 
-            // Display console window by default. We will hide it later if necessary. 
-            EngineConsole.Initialize();
+            // Display terminal window by default. We will hide it later if necessary. 
+            Terminal.Initialize();
 
             // Run as GUI application if there are no command-line arguments. Display 
             // the Settings window, which will display the main board window as needed. 
@@ -26,7 +26,7 @@ namespace AbsoluteZero {
                 Application.Run(new Settings());
             }
 
-            // Run as console application if there are command-line arguments. 
+            // Run as command-line application if there are command-line arguments. 
             else {
 
                 // Get the subroutine arguments. 
@@ -35,11 +35,11 @@ namespace AbsoluteZero {
 
                 switch (args[0]) {
                     default:
-                        EngineConsole.WriteLine("Unrecognized command-line parameter. Valid parameters are:");
-                        EngineConsole.WriteLine("-u    UCI/command-line mode");
-                        EngineConsole.WriteLine("-t    Tournament mode");
-                        EngineConsole.WriteLine("-s    Test suite mode");
-                        EngineConsole.Write("Press any key to continue . . . ");
+                        Terminal.WriteLine("Unrecognized command-line parameter. Valid parameters are:");
+                        Terminal.WriteLine("-u    UCI/command-line mode");
+                        Terminal.WriteLine("-t    Tournament mode");
+                        Terminal.WriteLine("-s    Test suite mode");
+                        Terminal.Write("Press any key to continue . . . ");
                         Console.ReadKey();
                         break;
                     case "-u":

@@ -106,7 +106,7 @@
     <Compile Include="Source\Interface\InputBox.Designer.cs">
       <DependentUpon>InputBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\Utilities\Log.cs" />
+    <Compile Include="Source\Utilities\Terminal.cs" />
     <Compile Include="Source\Visuals\VisualPosition.cs" />
     <Compile Include="Source\Interface\Window.cs">
       <SubType>Form</SubType>

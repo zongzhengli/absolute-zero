@@ -18,27 +18,27 @@ namespace AbsoluteZero {
             const Int32 DepthWidth = 10;
             const Int32 TimeWidth = 11;
             const Int32 SpeedWidth = 14;
-            EngineConsole.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Time", TimeWidth) + Format.PadRight("Speed", SpeedWidth) + "Nodes");
-            EngineConsole.WriteLine("-----------------------------------------------------------------------");
+            Terminal.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Time", TimeWidth) + Format.PadRight("Speed", SpeedWidth) + "Nodes");
+            Terminal.WriteLine("-----------------------------------------------------------------------");
             for (Int32 d = 1; d <= depth; d++) {
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 Int64 nodes = Nodes(position, d);
                 stopwatch.Stop();
                 Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-                EngineConsole.WriteLine(
+                Terminal.WriteLine(
                     Format.PadRight(d, DepthWidth) +
                     Format.PadRight(Format.Precision(elapsed) + " ms", TimeWidth) +
                     Format.PadRight(Format.Precision(nodes / elapsed) + " kN/s", SpeedWidth) +
                     nodes
                     );
             }
-            EngineConsole.WriteLine("-----------------------------------------------------------------------");
+            Terminal.WriteLine("-----------------------------------------------------------------------");
         }
 
         public static void Divide(Position position, Int32 depth) {
             const Int32 MoveWidth = 8;
-            EngineConsole.WriteLine(Format.PadRight("Move", MoveWidth) + "Nodes");
-            EngineConsole.WriteLine("-----------------------------------------------------------------------");
+            Terminal.WriteLine(Format.PadRight("Move", MoveWidth) + "Nodes");
+            Terminal.WriteLine("-----------------------------------------------------------------------");
             Int64 totalNodes = 0;
             List<Int32> moves = position.LegalMoves();
             foreach (Int32 move in moves) {
@@ -46,11 +46,11 @@ namespace AbsoluteZero {
                 Int64 nodes = Nodes(position, depth - 1);
                 position.Unmake(move);
                 totalNodes += nodes;
-                EngineConsole.WriteLine(Format.PadRight(Identify.Move(move), MoveWidth) + nodes);
+                Terminal.WriteLine(Format.PadRight(Identify.Move(move), MoveWidth) + nodes);
             }
-            EngineConsole.WriteLine("-----------------------------------------------------------------------");
-            EngineConsole.WriteLine("Moves: " + moves.Count);
-            EngineConsole.WriteLine("Nodes: " + totalNodes);
+            Terminal.WriteLine("-----------------------------------------------------------------------");
+            Terminal.WriteLine("Moves: " + moves.Count);
+            Terminal.WriteLine("Nodes: " + totalNodes);
         }
 
         public static Int64 Nodes(Position position, Int32 depth) {

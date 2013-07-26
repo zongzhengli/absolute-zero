@@ -1,6 +1,10 @@
 ﻿using System;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Provides PRNG methods. 
+    /// </summary>
     static class Random {
         private static UInt64 seed = (UInt64)DateTime.Now.ToFileTime();
 

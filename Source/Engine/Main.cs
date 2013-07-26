@@ -9,8 +9,8 @@ namespace AbsoluteZero {
     partial class Zero : IEngine {
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {
-                EngineConsole.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Value", ValueWidth) + "Principal Variation");
-                EngineConsole.WriteLine("-----------------------------------------------------------------------");
+                Terminal.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Value", ValueWidth) + "Principal Variation");
+                Terminal.WriteLine("-----------------------------------------------------------------------");
             }
 
             Prepare();
@@ -20,11 +20,11 @@ namespace AbsoluteZero {
             stopwatch.Stop();
 
             if (Restrictions.Output == OutputType.Standard) {
-                EngineConsole.WriteLine("-----------------------------------------------------------------------");
+                Terminal.WriteLine("-----------------------------------------------------------------------");
                 Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-                EngineConsole.WriteLine("FEN: " + position.GetFEN());
-                EngineConsole.WriteLine();
-                EngineConsole.WriteLine(position.ToStringAppend(
+                Terminal.WriteLine("FEN: " + position.GetFEN());
+                Terminal.WriteLine();
+                Terminal.WriteLine(position.ToStringAppend(
                     "Absolute Zero " + 8 * IntPtr.Size + "-bit",
                     "Version " + Version,
                     String.Empty,
@@ -37,7 +37,7 @@ namespace AbsoluteZero {
                     "Hash cutoffs: " + Format.Precision(100D * hashCutoffs / hashProbes, 2) + "%",
                     "Static evaluation: " + Format.PrecisionAndSign(.01 * Evaluate(position), 2)
                     ));
-                EngineConsole.WriteLine();
+                Terminal.WriteLine();
             }
             return move;
         }

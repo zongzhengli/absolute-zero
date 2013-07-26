@@ -6,19 +6,19 @@ using System.IO;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The console for engine input and output. 
+    /// The terminal for engine input and output. 
     /// </summary>
-    static class EngineConsole {
+    static class Terminal {
 
         /// <summary>
-        /// The width of the console window. 
+        /// The width of the terminal window. 
         /// </summary>
-        private const Int32 ConsoleWidth = 82;
+        private const Int32 TerminalWidth = 82;
 
         /// <summary>
-        /// The height of the console window. 
+        /// The height of the terminal window. 
         /// </summary>
-        private const Int32 ConsoleHeight = 25;
+        private const Int32 TerminalHeight = 25;
 
         /// <summary>
         /// The text that has been processed. 
@@ -26,12 +26,12 @@ namespace AbsoluteZero {
         private static StringBuilder text = new StringBuilder();
 
         /// <summary>
-        /// Initializes the console. 
+        /// Initializes the terminal. 
         /// </summary>
         public static void Initialize() {
             try {
-                Console.Title = "Engine Console";
-                Console.SetWindowSize(ConsoleWidth, ConsoleHeight);
+                Console.Title = "Engine Terminal";
+                Console.SetWindowSize(TerminalWidth, TerminalHeight);
             } catch { }
         }
 
@@ -90,9 +90,9 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Hides the console window. 
+        /// Hides the terminal window. 
         /// </summary>
-        public static void HideConsole() {
+        public static void Hide() {
             Native.ShowWindow(Native.GetConsoleWindow(), Native.SW_HIDE);
         }
     }
