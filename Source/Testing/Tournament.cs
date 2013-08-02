@@ -3,15 +3,33 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Facilitates a tournament between two engine instances. 
+    /// </summary>
     static class Tournament {
+
+        /// <summary>
+        /// The number of matches between file updates. 
+        /// </summary>
         private const Int32 UpdateInterval = 10;
+
+        /// <summary>
+        /// The number of characters in a column. 
+        /// </summary>
         private const Int32 ColumnWidth = 8;
 
+        /// <summary>
+        /// The ID code for the tournament.  
+        /// </summary>
         public static String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
 
+        /// <summary>
+        /// Begins the tournament with the given parameters. 
+        /// </summary>
+        /// <param name="parameters">Command-line parameters giving the conditions of the tournament.</param>
         public static void Run(String[] parameters) {
 
-            // Engine declarations. 
             IEngine experimental = new Zero() {
                 NewFeature = true
             };
@@ -55,7 +73,7 @@ namespace AbsoluteZero {
                             break;
                     }
 
-                    // Output statistics. 
+                    // Write statistics. 
                     if (games % UpdateInterval == 0) {
                         String elo = Format.PrecisionAndSign(Elo.GetDifference(wins, losses, draws));
                         String error = "±" + Math.Round(Elo.GetError(wins, losses, draws));

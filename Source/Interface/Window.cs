@@ -62,10 +62,10 @@ namespace AbsoluteZero {
         /// <summary>
         /// Constructs a Window for the specified Game.
         /// </summary>
-        /// <param name="parameter">The Game to associate with the Window. </param>
-        public Window(Game parameter)
+        /// <param name="g">The Game to associate with the Window. </param>
+        public Window(Game g)
             : this() {
-            game = parameter;
+            game = g;
             UpdateMenu();
         }
 
