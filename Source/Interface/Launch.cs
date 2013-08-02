@@ -11,7 +11,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The main entry point for the application. 
         /// </summary>
-        /// <param name="args">The command-line arugments</param>
+        /// <param name="args">The command-line arugments.</param>
         [STAThread]
         public static void Main(String[] args) {
 
@@ -34,6 +34,8 @@ namespace AbsoluteZero {
                 Array.Copy(args, 1, subArgs, 0, subArgs.Length);
 
                 switch (args[0]) {
+
+                    // Unrecognized command.
                     default:
                         Terminal.WriteLine("Unrecognized command-line parameter. Valid parameters are:");
                         Terminal.WriteLine("-u    UCI/command-line mode");
@@ -42,12 +44,18 @@ namespace AbsoluteZero {
                         Terminal.Write("Press any key to continue . . . ");
                         Console.ReadKey();
                         break;
+
+                    // UCI mode.
                     case "-u":
                         Universal.Run();
                         break;
+                    
+                    // Tournament mode. 
                     case "-t":
                         new Tournament().Start(subArgs);
                         break;
+
+                    // Test suite mode. 
                     case "-s":
                         TestSuite.Run(subArgs);
                         break;
