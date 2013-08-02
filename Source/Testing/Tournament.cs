@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace AbsoluteZero {
-    class Tournament {
+    static class Tournament {
         private const Int32 UpdateInterval = 10;
         private const Int32 ColumnWidth = 8;
 
-        public String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
+        public static String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
 
-        public void Start(String[] parameters) {
+        public static void Run(String[] parameters) {
 
             // Engine declarations. 
             IEngine experimental = new Zero() {

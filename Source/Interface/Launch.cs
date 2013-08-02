@@ -52,7 +52,7 @@ namespace AbsoluteZero {
                     
                     // Tournament mode. 
                     case "-t":
-                        new Tournament().Start(subArgs);
+                        Tournament.Run(subArgs);
                         break;
 
                     // Test suite mode. 
