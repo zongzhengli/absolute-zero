@@ -18,13 +18,13 @@ namespace AbsoluteZero {
                     fileName = parameters[i];
                 else
                     switch (parameters[i]) {
-                        case "time":
+                        case "-t":
                             Restrictions.MoveTime = Int32.Parse(parameters[i + 1]);
                             break;
-                        case "depth":
+                        case "-d":
                             Restrictions.Depth = Int32.Parse(parameters[i + 1]);
                             break;
-                        case "nodes":
+                        case "-n":
                             Restrictions.Nodes = Int32.Parse(parameters[i + 1]);
                             break;
                     }
