@@ -29,7 +29,6 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="parameters">Command-line parameters giving the conditions of the tournament.</param>
         public static void Run(String[] parameters) {
-
             IEngine experimental = new Zero() {
                 NewFeature = true
             };
@@ -53,7 +52,7 @@ namespace AbsoluteZero {
                     Position position = new Position(epd[Random.Int32(epd.Count - 1)]);
                     MatchResult result = Match.Play(experimental, standard, position, MatchOptions.RandomizeColour);
 
-                    // Output match results. 
+                    // Write the match result. 
                     switch (result) {
                         case MatchResult.Win:
                             sw.Write('1');
@@ -73,7 +72,7 @@ namespace AbsoluteZero {
                             break;
                     }
 
-                    // Write statistics. 
+                    // Write the cummulative results. 
                     if (games % UpdateInterval == 0) {
                         String elo = Format.PrecisionAndSign(Elo.GetDifference(wins, losses, draws));
                         String error = "±" + Math.Round(Elo.GetError(wins, losses, draws));
