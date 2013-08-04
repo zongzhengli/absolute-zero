@@ -129,7 +129,7 @@ namespace AbsoluteZero {
             // Check for time extension and search termination. This is done once for 
             // every given number of nodes for efficency. 
             if (totalNodes++ > referenceNodes) {
-                referenceNodes += TimeResolution;
+                referenceNodes += NodeResolution;
                 
                 // Apply loss time extension. The value of the best move for the current 
                 // root position is compared with the value of the previous root position. 

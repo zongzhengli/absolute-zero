@@ -24,7 +24,7 @@ namespace AbsoluteZero {
         public const Int32 PlyLimit = DepthLimit + 64;
         public const Int32 MovesLimit = 256;
         public const Int32 HashAllocation = 64;
-        public const Int32 TimeResolution = 1000;
+        public const Int32 NodeResolution = 1000;
 
         public Int32 AspirationWindow = 17;
         public Int32 NullMoveReduction = 3;
@@ -57,14 +57,14 @@ namespace AbsoluteZero {
         public Int32 KingAdjacentToOpenFileValue = -42;
 
         public Int32[][] QueenToEnemyKingSpatialValue = new Int32[64][];
-        public Int32[] QueenDistanceToEnemyKingValue_ = { 0, 17, 8, 4, 0, -4, -8, -12 };
+        public Int32[] QueenDistanceToEnemyKingValue = { 0, 17, 8, 4, 0, -4, -8, -12 };
 
         public Int32 BishopPairValue = 29;
         public Int32[] BishopMobilityValue = { -25, -12, -3, 0, 2, 5, 8, 10, 12, 13, 15, 17, 18, 18 };
 
         public Int32[][] KnightToEnemyKingSpatialValue = new Int32[64][];
-        public Int32[] KnightDistanceToEnemyKingValue_ = { 0, 8, 8, 6, 4, 0, -4, -6, -8, -10, -12, -13, -15, -17, -25 };
-        public Int32[] KnightMovesToEnemyKingValue_ = { 0, 21, 8, 0, -4, -8, -12 };
+        public Int32[] KnightDistanceToEnemyKingValue = { 0, 8, 8, 6, 4, 0, -4, -6, -8, -10, -12, -13, -15, -17, -25 };
+        public Int32[] KnightMovesToEnemyKingValue = { 0, 21, 8, 0, -4, -8, -12 };
         public Int32[] KnightMobilityValue = { -21, -8, -2, 0, 2, 5, 8, 10, 12 };
 
         public Int32 PawnEndgameGainValue = 17;
@@ -218,12 +218,12 @@ namespace AbsoluteZero {
                 // Initialize queen to enemy king spatial value table. 
                 QueenToEnemyKingSpatialValue[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
-                    QueenToEnemyKingSpatialValue[square][to] = QueenDistanceToEnemyKingValue_[ChebyshevDistance[square][to]];
+                    QueenToEnemyKingSpatialValue[square][to] = QueenDistanceToEnemyKingValue[ChebyshevDistance[square][to]];
 
                 // Initialize knight to enemy king spatial value table. 
                 KnightToEnemyKingSpatialValue[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
-                    KnightToEnemyKingSpatialValue[square][to] = KnightDistanceToEnemyKingValue_[RectilinearDistance[square][to]] + KnightMovesToEnemyKingValue_[KnightMoveDistance[square][to]];
+                    KnightToEnemyKingSpatialValue[square][to] = KnightDistanceToEnemyKingValue[RectilinearDistance[square][to]] + KnightMovesToEnemyKingValue[KnightMoveDistance[square][to]];
             }
         }
 
