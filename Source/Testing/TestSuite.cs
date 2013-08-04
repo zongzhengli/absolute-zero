@@ -6,10 +6,29 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Facilitates engine analysis on test suites. 
+    /// </summary>
     static class TestSuite {
+
+        /// <summary>
+        /// The number of characters in a column. 
+        /// </summary>
         private const Int32 ColumnWidth = 12;
+
+        /// <summary>
+        /// The maximum number of characters that are displayed for the ID of a test 
+        /// position. 
+        /// </summary>
         private const Int32 IDWidthLimit = ColumnWidth - 3;
 
+        /// <summary>
+        /// Parses the given parameters to determine engine restrictions and returns 
+        /// a list of positions in EPD form. 
+        /// </summary>
+        /// <param name="parameters">Command-line parameters giving the position suite and engine restrictions. </param>
+        /// <returns>A list of positions in EPD form.</returns>
         public static List<String> Parse(String[] parameters) {
             Restrictions.Reset();
             String fileName = String.Empty;
@@ -39,6 +58,10 @@ namespace AbsoluteZero {
             return epd;
         }
 
+        /// <summary>
+        /// Begins the test with the given parameters. 
+        /// </summary>
+        /// <param name="parameters">Command-line parameters giving the conditions of the test. </param>
         public static void Run(String[] parameters) {
             new Thread(new ThreadStart(delegate {
                 Execute(Parse(parameters));
@@ -48,6 +71,10 @@ namespace AbsoluteZero {
             Application.Run(new Window());
         }
 
+        /// <summary>
+        /// Facilitates the test with the given positions. 
+        /// </summary>
+        /// <param name="epd">List of positions in the test suite in EPD form. </param>
         private static void Execute(List<String> epd) {
             IEngine engine = new Zero();
             Restrictions.Output = OutputType.None;
@@ -61,19 +88,25 @@ namespace AbsoluteZero {
             foreach (String line in epd) {
                 List<String> terms = new List<String>(line.Replace(";", " ;").Split(' '));
 
+                // Strip everything to get the FEN. 
                 Int32 bmIndex = line.IndexOf("bm ");
                 bmIndex = bmIndex < 0 ? Int32.MaxValue : bmIndex;
                 Int32 amIndex = line.IndexOf("am ");
                 amIndex = amIndex < 0 ? Int32.MaxValue : amIndex;
                 String fen = line.Remove(Math.Min(bmIndex, amIndex));
+
+                // Get the best moves. 
                 List<String> solutions = new List<String>();
                 for (Int32 i = terms.IndexOf("bm") + 1; i >= 0 && i < terms.Count && terms[i] != ";"; i++)
                     solutions.Add(terms[i]);
+
+                // Get the ID of the position. 
                 Int32 idIndex = line.IndexOf("id ") + 3;
                 String id = line.Substring(idIndex, line.IndexOf(';', idIndex) - idIndex).Replace("\"", String.Empty);
                 if (id.Length > IDWidthLimit)
                     id = id.Remove(IDWidthLimit) + "..";
 
+                // Set the position and invoke a search on it. 
                 Position position = new Position(fen);
                 VisualPosition.Set(position);
                 engine.Reset();
@@ -87,13 +120,18 @@ namespace AbsoluteZero {
                 totalTime += elapsed;
                 totalNodes += engine.GetNodes();
 
+                // Determine whether the engine found a solution. 
                 String result = "fail";
                 if (solutions.Contains(Identify.MoveAlgebraically(position, move))) {
                     result = "pass";
                     totalSolved++;
                 }
+
+                // Print the result for the search on the position. 
                 Terminal.WriteLine(Format.PadRightAll(ColumnWidth, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
             }
+
+            // Print final results after all positions have been searched. 
             Terminal.WriteLine("-----------------------------------------------------------------------");
             Terminal.WriteLine("Result: " + totalSolved + " / " + totalPositions);
             Terminal.WriteLine("Time elapsed: " + Format.Precision(totalTime) + " ms");
