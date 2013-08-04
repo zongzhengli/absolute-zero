@@ -15,12 +15,12 @@ namespace AbsoluteZero {
         private const Int32 UpdateInterval = 10;
 
         /// <summary>
-        /// The number of characters in a column. 
+        /// The number of characters in a column for output. 
         /// </summary>
         private const Int32 ColumnWidth = 8;
 
         /// <summary>
-        /// The ID code for the tournament.  
+        /// The unique ID code for the tournament.  
         /// </summary>
         public static String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
 
@@ -44,7 +44,7 @@ namespace AbsoluteZero {
                 sw.WriteLine(Format.Pad(UpdateInterval) + "     " + Format.PadRightAll(ColumnWidth, "Games", "Wins", "Losses", "Draws", "Elo", "Error"));
                 sw.WriteLine("-----------------------------------------------------------------");
 
-                // Main tournament loop. 
+                // Play the tournament. 
                 for (Int32 games = 1; ; games++) {
                     sw.Flush();
                     experimental.Reset();

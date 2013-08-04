@@ -13,7 +13,7 @@ namespace AbsoluteZero {
     static class TestSuite {
 
         /// <summary>
-        /// The number of characters in a column. 
+        /// The number of characters in a column for output. 
         /// </summary>
         private const Int32 ColumnWidth = 12;
 
