@@ -8,7 +8,7 @@ namespace AbsoluteZero {
     public enum MatchResult { Win, Loss, Draw, Unresolved }
 
     /// <summary>
-    /// Specifies the match option. 
+    /// Specifies the properties of the match. 
     /// </summary>
     public enum MatchOptions { None, RandomizeColour, UnlimitedLength }
 
@@ -18,7 +18,7 @@ namespace AbsoluteZero {
     static class Match {
 
         /// <summary>
-        /// The number of plies in a match before it can be terminated as a draw. 
+        /// The number of plies before the match is terminated as unresolved. 
         /// </summary>
         public static Int32 HalfMovesLimit = 200;
 
