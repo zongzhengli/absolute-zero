@@ -6,21 +6,50 @@ using PieceClass = AbsoluteZero.Piece;
 using MoveClass = AbsoluteZero.Move;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Specifies whether or not to use absolutely proper identification. 
+    /// </summary>
     public enum IdentificationOptions { None, Proper };
 
+    /// <summary>
+    /// Provides methods that identify, or give text representations of, various 
+    /// chess data types. 
+    /// </summary>
     class Identify {
+
+        /// <summary>
+        /// Returns the text representation of the file for the given square. 
+        /// </summary>
+        /// <param name="square">The square to identify.</param>
+        /// <returns>The name of the file for the given square.</returns>
         public static String File(Int32 square) {
             return ((Char)(Position.File(square) + 97)).ToString();
         }
 
+        /// <summary>
+        /// Returns the text representation of the rank for the given square. 
+        /// </summary>
+        /// <param name="square">The square to identify.</param>
+        /// <returns>The name of the rank for the given square.</returns>
         public static String Rank(Int32 square) {
             return (8 - Position.Rank(square)).ToString();
         }
 
+        /// <summary>
+        /// Returns the text representation of the given square.
+        /// </summary>
+        /// <param name="square">The square to identify.</param>
+        /// <returns>The name of the given square.</returns>
         public static String Square(Int32 square) {
             return File(square) + Rank(square);
         }
 
+        /// <summary>
+        /// Returns the text representation of the given colour.  
+        /// </summary>
+        /// <param name="colour">The colour to identify.</param>
+        /// <returns>The text representation of the given colour</returns>
         public static String Colour(Int32 colour) {
             return (colour & PieceClass.Colour) == PieceClass.White ? "White" : "Black";
         }
