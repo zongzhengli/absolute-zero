@@ -7,6 +7,10 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// 
+    /// </summary>
     class Game {
         private static readonly SolidBrush OverlayBrush = new SolidBrush(Color.FromArgb(190, Color.White));
         private static readonly SolidBrush MessageBrush = new SolidBrush(Color.Black);
@@ -70,8 +74,8 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Facilitates play between the two players on the current position for the 
-        /// game. This method is non-blocking and does not modify the given position. 
+        /// Starts play between the two players on the current position for the game. 
+        /// This method is non-blocking and does not modify the given position. 
         /// </summary>
         /// <param name="position">The position to start playing from.</param>
         private void Play(Position pos) {
@@ -84,7 +88,7 @@ namespace AbsoluteZero {
                     IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
 
-                    // Adjudicate game end by checkmate or stalemate. 
+                    // Adjudicate checkmate and stalemate. 
                     if (legalMoves.Count == 0) {
                         if (position.InCheck(position.SideToMove)) {
                             message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
@@ -96,7 +100,7 @@ namespace AbsoluteZero {
                         return;
                     }
 
-                    // Adjudicate game end by draw.  
+                    // Adjudicate draw.  
                     if (position.InsufficientMaterial()) {
                         message = "Draw by insufficient material!";
                         state = GameState.Draw;
