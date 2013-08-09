@@ -9,14 +9,19 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// 
+    /// Facilitates a game between two players. 
     /// </summary>
     class Game {
+
+        // Graphics constants. 
         private static readonly SolidBrush OverlayBrush = new SolidBrush(Color.FromArgb(190, Color.White));
         private static readonly SolidBrush MessageBrush = new SolidBrush(Color.Black);
         private static readonly Font MessageFont = new Font("Arial", 20);
+
+        // Game states. 
         private enum GameState { Default, Ingame, WhiteWon, BlackWon, Draw };
 
+        // Game fields. 
         private List<Int32> moves = new List<Int32>();
         private List<Type> types = new List<Type>();
         private Position initialPosition;
