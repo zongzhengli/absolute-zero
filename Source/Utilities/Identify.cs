@@ -54,6 +54,11 @@ namespace AbsoluteZero {
             return (colour & PieceClass.Colour) == PieceClass.White ? "White" : "Black";
         }
 
+        /// <summary>
+        /// Returns the text representation of the given piece as an initial. 
+        /// </summary>
+        /// <param name="piece">The piece to identify.</param>
+        /// <returns>The text representation of the given piece as an initial.</returns>
         public static String PieceInitial(Int32 piece) {
             switch (piece & PieceClass.Type) {
                 case PieceClass.King:
@@ -72,6 +77,11 @@ namespace AbsoluteZero {
             return "-";
         }
 
+        /// <summary>
+        /// Returns the text representation of the given move. 
+        /// </summary>
+        /// <param name="move">The move to identify.</param>
+        /// <returns>The text representation of the given move.</returns>
         public static String Move(Int32 move) {
             String coordinates = Identify.Square(MoveClass.From(move)) + Identify.Square(MoveClass.To(move));
             switch (MoveClass.Special(move) & PieceClass.Type) {
@@ -88,6 +98,11 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Returns the text representation of the given sequence of moves. 
+        /// </summary>
+        /// <param name="moves">The sequence of moves to identify.</param>
+        /// <returns>The text representation of the given sequence of moves.</returns>
         public static String Moves(List<Int32> moves) {
             if (moves.Count == 0)
                 return String.Empty;
@@ -99,6 +114,12 @@ namespace AbsoluteZero {
             return sequence.ToString(0, sequence.Length - 1);
         }
 
+        /// <summary>
+        /// Returns the text representation of the given move in algebraic notation. 
+        /// </summary>
+        /// <param name="position">The position on which the move is to be played.</param>
+        /// <param name="move">The move to identify.</param>
+        /// <returns>The text representation of the given move in algebraic notation</returns>
         public static String MoveAlgebraically(Position position, Int32 move) {
             if (MoveClass.IsCastle(move))
                 return MoveClass.To(move) < MoveClass.From(move) ? "O-O-O" : "O-O";
@@ -159,6 +180,14 @@ namespace AbsoluteZero {
             return piece + disambiguation + capture + square + promotion + check;
         }
 
+        /// <summary>
+        /// Returns the text representation of the given sequence of moves in 
+        /// algebraic notation. 
+        /// </summary>
+        /// <param name="position">The position on which the sequence of moves are to be played.</param>
+        /// <param name="moves">The sequence of moves to identify.</param>
+        /// <param name="options">The identification option specifying whether to be absolutely proper.</param>
+        /// <returns>The text representation of the given sequence of moves in algebraic notation</returns>
         public static String MovesAlgebraically(Position position, List<Int32> moves, IdentificationOptions options = IdentificationOptions.None) {
             if (moves.Count == 0)
                 return String.Empty;
