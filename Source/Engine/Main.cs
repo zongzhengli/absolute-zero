@@ -81,12 +81,17 @@ namespace AbsoluteZero {
             return variation;
         }
 
+        /// <summary>
+        /// Returns the principal variation for the last completed search. 
+        /// </summary>
+        /// <returns>The principal variation for the last completed search.</returns>
         public List<Int32> GetPV() {
             return pv;
         }
 
         /// <summary>
-        /// Returns the number of nodes visited during the most recent search. 
+        /// Returns the number of nodes visited during the most recent search, which 
+        /// may be an ongoing search or the last completed search. 
         /// </summary>
         /// <returns>The number of nodes visited during the most recent search.</returns>
         public Int64 GetNodes() {
@@ -122,14 +127,25 @@ namespace AbsoluteZero {
             rootAlpha = 0;
         }
 
+        /// <summary>
+        /// Returns whether the engine is willing to accept a draw offer. 
+        /// </summary>
+        /// <returns>Whether the engine is willing to accept a draw offer.</returns>
         public Boolean AcceptDraw() {
             return finalAlpha <= DrawValue;
         }
 
+        /// <summary>
+        /// Returns the name of the engine. 
+        /// </summary>
+        /// <returns></returns>
         public String GetName() {
             return "Absolute Zero " + Version;
         }
 
+        /// <summary>
+        /// Resets fields to prepare for a new search. 
+        /// </summary>
         private void Prepare() {
             abortSearch = false;
             totalNodes = 0;
