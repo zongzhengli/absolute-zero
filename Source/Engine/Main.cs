@@ -7,6 +7,13 @@ namespace AbsoluteZero {
     /// The interface component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero : IEngine {
+
+        /// <summary>
+        /// Returns the best move as determined by the engine. This method may write 
+        /// output to the terminal. 
+        /// </summary>
+        /// <param name="position">The position to analyse.</param>
+        /// <returns>The best move as determined by the engine.</returns>
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {
                 Terminal.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Value", ValueWidth) + "Principal Variation");
@@ -78,19 +85,35 @@ namespace AbsoluteZero {
             return pv;
         }
 
+        /// <summary>
+        /// Returns the number of nodes visited during the most recent search. 
+        /// </summary>
+        /// <returns>The number of nodes visited during the most recent search.</returns>
         public Int64 GetNodes() {
             return totalNodes;
         }
 
+        /// <summary>
+        /// Sets the size of the transposition table to the given size in megabytes. 
+        /// Unless the given size is the same as the current size, all entries in the 
+        /// table are removed. 
+        /// </summary>
+        /// <param name="megabytes">The number of megabytes to allocate for the tranposition table.</param>
         public void AllocateHash(Int32 megabytes) {
             if (megabytes != table.Size >> 20)
                 table = new HashTable(megabytes);
         }
 
+        /// <summary>
+        /// Terminates the ongoing search if applicable. 
+        /// </summary>
         public void Stop() {
             abortSearch = true;
         }
 
+        /// <summary>
+        /// Resets the engine to its initial state. 
+        /// </summary>
         public void Reset() {
             table.Clear();
             for (Int32 i = 0; i < killerMoves.Length; i++)
