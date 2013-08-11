@@ -1,30 +1,35 @@
 ﻿using System;
 
 namespace AbsoluteZero {
-   partial class Zero {
+
+    /// <summary>
+    /// The transposition table entry component of the Absolute Zero chess 
+    /// engine. 
+    /// </summary>
+    partial class Zero {
 
        /// <summary>
-       /// Defines an entry in the transposition table. 
+       /// Defines an entry in the transposition hash table. 
        /// </summary>
         private struct HashEntry {
 
             /// <summary>
-            /// Specifies the hash entry is invalid. 
+            /// Specifies the HashEntry is invalid. 
             /// </summary>
             public const Int32 Invalid = 0;
 
             /// <summary>
-            /// Specifies the hash entry gives an exact value.
+            /// Specifies the HashEntry gives an exact value.
             /// </summary>
             public const Int32 Exact = 1;
 
             /// <summary>
-            /// Specifies the hash entry gives a lower bound value.
+            /// Specifies the HashEntry gives a lower bound value.
             /// </summary>
             public const Int32 Alpha = 2;
 
             /// <summary>
-            /// Specifies the hash entry gives an upper bound value.
+            /// Specifies the HashEntry gives an upper bound value.
             /// </summary>
             public const Int32 Beta = 3;
 
@@ -39,21 +44,25 @@ namespace AbsoluteZero {
             private const Int32 TypeMask = (1 << TypeBits) - 1;
             private const Int32 DepthMask = (1 << DepthBits) - 1;
 
+            /// <summary>
+            /// The size of a HashEntry in bytes. 
+            /// </summary>
             public const Int32 Size = 16;
 
             /// <summary>
-            /// The zobrist key of the position associated with the hash entry. 
+            /// The zobrist key of the position associated with the HashEntry. 
             /// </summary>
             public UInt64 Key;
 
             /// <summary>
-            /// The best move for the position associated with the hash entry. 
+            /// The best move for the position associated with the HashEntry. 
             /// </summary>
             public Int32 Move;
 
             /// <summary>
-            /// Contains the entry type, search depth, and search value associated with the hash entry. 
-            /// The properties are rolled into a single value to save space. 
+            /// Contains the entry type, search depth, and search value associated with 
+            /// the HashEntry. The properties are rolled into a single value to save 
+            /// space. 
             /// </summary>
             public Int32 Misc;
 
