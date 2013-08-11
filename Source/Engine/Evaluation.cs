@@ -7,6 +7,12 @@ namespace AbsoluteZero {
     /// </summary>
     partial class Zero {
 
+        /// <summary>
+        /// Returns the estimated value of the given position as determined by static 
+        /// analysis. 
+        /// </summary>
+        /// <param name="position">The position to evaluate.</param>
+        /// <returns>The estimated value of the position.</returns>
         private Int32 Evaluate(Position position) {
             UInt64[] bitboard = position.Bitboard;
             Single value = position.Material[Piece.White] + position.Material[Piece.Black];
@@ -137,6 +143,13 @@ namespace AbsoluteZero {
             return (Int32)value * (-2 * position.SideToMove + 1) + TempoValue;
         }
 
+        /// <summary>
+        /// Returns the estimated material exchange value of the given move on the 
+        /// given position as determined by static analysis.
+        /// </summary>
+        /// <param name="position">The position the move is to be played on.</param>
+        /// <param name="move">The move to evaluate.</param>
+        /// <returns>The estimated material exchange value of the move.</returns>
         private static Int32 EvaluateStaticExchange(Position position, Int32 move) {
             Int32 from = Move.From(move);
             Int32 to = Move.To(move);
@@ -162,6 +175,15 @@ namespace AbsoluteZero {
             return value * (-2 * position.SideToMove + 1);
         }
 
+        /// <summary>
+        /// Returns the estimated material exchange value of moving a piece to the 
+        /// given square and performing captures on the square as necessary as 
+        /// determined by static analysis. 
+        /// </summary>
+        /// <param name="position">The position the square is to be moved to.</param>
+        /// <param name="colour">The side to move.</param>
+        /// <param name="square">The square to move to.</param>
+        /// <returns>The estimated material exchange value of moving to the square.</returns>
         private static Int32 EvaluateStaticExchange(Position position, Int32 colour, Int32 square) {
             Int32 value = 0;
             Int32 from = SmallestAttackerSquare(position, colour, square);
@@ -183,6 +205,14 @@ namespace AbsoluteZero {
             return value;
         }
 
+        /// <summary>
+        /// Returns the square of the piece with the lowest material value that can 
+        /// move to the given square. 
+        /// </summary>
+        /// <param name="position">The position to find the square for.</param>
+        /// <param name="colour">The side to find the square for.</param>
+        /// <param name="square">The square to move to.</param>
+        /// <returns>The square of the piece with the lowest material value that can move to the given square.</returns>
         public static Int32 SmallestAttackerSquare(Position position, Int32 colour, Int32 square) {
             UInt64 sourceBitboard = position.Bitboard[colour | Piece.Pawn] & Attack.Pawn(square, 1 - colour);
             if (sourceBitboard != 0)
