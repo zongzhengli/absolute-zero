@@ -2,10 +2,30 @@
 
 namespace AbsoluteZero {
    partial class Zero {
+
+       /// <summary>
+       /// Defines an entry in the transposition table. 
+       /// </summary>
         private struct HashEntry {
+
+            /// <summary>
+            /// Specifies the hash entry is invalid. 
+            /// </summary>
             public const Int32 Invalid = 0;
+
+            /// <summary>
+            /// Specifies the hash entry gives an exact value.
+            /// </summary>
             public const Int32 Exact = 1;
+
+            /// <summary>
+            /// Specifies the hash entry gives a lower bound value.
+            /// </summary>
             public const Int32 Alpha = 2;
+
+            /// <summary>
+            /// Specifies the hash entry gives an upper bound value.
+            /// </summary>
             public const Int32 Beta = 3;
 
             private const Int32 TypeBits = 2;
