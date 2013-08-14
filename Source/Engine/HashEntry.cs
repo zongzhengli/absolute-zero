@@ -87,19 +87,19 @@ namespace AbsoluteZero {
             /// <summary>
             /// The zobrist key of the position associated with the HashEntry. 
             /// </summary>
-            public UInt64 Key;
+            public readonly UInt64 Key;
 
             /// <summary>
             /// The best move for the position associated with the HashEntry. 
             /// </summary>
-            public Int32 Move;
+            public readonly Int32 Move;
 
             /// <summary>
             /// Contains the entry type, search depth, and search value associated with 
             /// the HashEntry. The properties are rolled into a single value to save 
             /// space. 
             /// </summary>
-            public Int32 Misc;
+            public readonly Int32 Misc;
 
             /// <summary>
             /// Constructs a HashEntry.
