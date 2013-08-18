@@ -87,14 +87,14 @@ namespace AbsoluteZero {
                         // Output principal variation for high depths. This happens on every depth 
                         // increase and every time an improvement is found. 
                         if (Restrictions.Output != OutputType.None && depth > SingleVariationDepth)
-                            Terminal.WriteLine(OutputString(position, depth, alpha, pv));
+                            Terminal.WriteLine(GetPVString(position, depth, alpha, pv));
                     }
                 }
                 
                 // Output principal variation for low depths. This happens once for every 
                 // depth since improvements are very frequent. 
                 if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
-                    Terminal.WriteLine(OutputString(position, depth, alpha, pv));
+                    Terminal.WriteLine(GetPVString(position, depth, alpha, pv));
                 
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 

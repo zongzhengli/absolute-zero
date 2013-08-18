@@ -49,7 +49,7 @@ namespace AbsoluteZero {
             return move;
         }
 
-        private String OutputString(Position position, Int32 depth, Int32 value, List<Int32> pv) {
+        private String GetPVString(Position position, Int32 depth, Int32 value, List<Int32> pv) {
             Boolean isMate = Math.Abs(value) > NearCheckmateValue;
             Int32 movesToMate = (CheckmateValue - Math.Abs(value) + 1) / 2;
 
@@ -61,6 +61,7 @@ namespace AbsoluteZero {
                         valueString = (value > 0 ? "+Mate " : "-Mate ") + movesToMate;
                     valueString = Format.PadRight(valueString, ValueWidth);
                     String movesString = Identify.MovesAlgebraically(position, pv);
+
                     return depthString + valueString + movesString;
                 case OutputType.Universal:
                     String score = "cp " + value;
@@ -68,6 +69,7 @@ namespace AbsoluteZero {
                         score = "mate " + (value < 0 ? "-" : String.Empty) + movesToMate;
                     Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
                     Int64 nps = (Int64)(1000 * totalNodes / elapsed);
+
                     return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + totalNodes + " nps " + nps + " pv " + Identify.Moves(pv);
             }
             return String.Empty;
