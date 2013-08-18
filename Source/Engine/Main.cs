@@ -49,6 +49,14 @@ namespace AbsoluteZero {
             return move;
         }
 
+        /// <summary>
+        /// Returns a string that describes the given principal variation. 
+        /// </summary>
+        /// <param name="position">The position the principal variation is to be played on.</param>
+        /// <param name="depth">The depth of the search that yielded the principal variation. </param>
+        /// <param name="value">The value of the search that yielded the principal variation.</param>
+        /// <param name="pv">The principle variation to describe.</param>
+        /// <returns>A string that describes the given principal variation.</returns>
         private String GetPVString(Position position, Int32 depth, Int32 value, List<Int32> pv) {
             Boolean isMate = Math.Abs(value) > NearCheckmateValue;
             Int32 movesToMate = (CheckmateValue - Math.Abs(value) + 1) / 2;
@@ -75,6 +83,14 @@ namespace AbsoluteZero {
             return String.Empty;
         }
 
+        /// <summary>
+        /// Collects and returns the principal variation for the last performed 
+        /// search at the given depth. 
+        /// </summary>
+        /// <param name="position">The position the principal variation is to be played on.</param>
+        /// <param name="depth">The depth of the search to collect the principal variation for.</param>
+        /// <param name="firstMove">The first move of the principal variation.</param>
+        /// <returns></returns>
         private List<Int32> CollectPV(Position position, Int32 depth, Int32 firstMove) {
             List<Int32> variation = new List<Int32>(depth);
             variation.Add(firstMove);
