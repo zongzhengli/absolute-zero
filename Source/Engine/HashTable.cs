@@ -43,10 +43,20 @@ namespace AbsoluteZero {
                 entries = new HashEntry[Capacity];
             }
 
+            /// <summary>
+            /// Returns the entry in the HashTable for the given key. An invalid entry 
+            /// may be returned, and its associated key will differ from the given key. 
+            /// </summary>
+            /// <param name="key"></param>
+            /// <returns></returns>
             public HashEntry Probe(UInt64 key) {
                 return entries[key % indexer];
             }
-
+            
+            /// <summary>
+            /// Stores the given entry in the HashTable. 
+            /// </summary>
+            /// <param name="entry"></param>
             public void Store(HashEntry entry) {
                 UInt64 index = entry.Key % indexer;
                 if (entries[index].Misc == 0)
@@ -54,11 +64,17 @@ namespace AbsoluteZero {
                 entries[index] = entry;
             }
 
+            /// <summary>
+            /// Clears the HashTable of all entries. 
+            /// </summary>
             public void Clear() {
                 entries = new HashEntry[Capacity];
                 Count = 0;
             }
 
+            /// <summary>
+            /// The size of the HashTable in bytes. 
+            /// </summary>
             public Int32 Size {
                 get {
                     return HashEntry.Size * Capacity;
