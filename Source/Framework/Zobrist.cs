@@ -1,15 +1,49 @@
 ﻿using System;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Provides methods for Zobrist hashing. 
+    /// </summary>
     static class Zobrist {
+
+        /// <summary>
+        /// The table giving the hash value for a given piece on a given square. 
+        /// </summary>
         public static readonly UInt64[][] PiecePosition = new UInt64[14][];
+
+        /// <summary>
+        /// The table giving the hash value for ability to castle on the king side 
+        /// for a given colour. 
+        /// </summary>
         public static readonly UInt64[] CastleKingside = new UInt64[2];
+
+        /// <summary>
+        /// The table giving the hash value for ability to castle on the queen side 
+        /// for a given colour. 
+        /// </summary>
         public static readonly UInt64[] CastleQueenside = new UInt64[2];
+
+        /// <summary>
+        /// The table giving the hash value for ability to perform en passant on a 
+        /// given square. 
+        /// </summary>
         public static readonly UInt64[] EnPassant = new UInt64[64];
+
+        /// <summary>
+        /// The hash value for black side to move. 
+        /// </summary>
         public static UInt64 Colour;
 
+        /// <summary>
+        /// The seed for the pseudorandom number generator used to generate the hash 
+        /// values. 
+        /// </summary>
         private static UInt64 seed = 11830773696567897325UL;
 
+        /// <summary>
+        /// Initializes hash values. 
+        /// </summary>
         static Zobrist() {
             for (Int32 piece = Piece.Min; piece <= Piece.Max; piece++) {
                 PiecePosition[piece] = new UInt64[64];
@@ -28,6 +62,10 @@ namespace AbsoluteZero {
             Colour = NextUInt64();
         }
 
+        /// <summary>
+        /// Returns a pseudorandom 64-bit integer.
+        /// </summary>
+        /// <returns></returns>
         private static UInt64 NextUInt64() {
             seed ^= seed << 13;
             seed ^= seed >> 7;
