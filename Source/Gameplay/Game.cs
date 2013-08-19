@@ -174,7 +174,7 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Offers a darw to the engine if applicable. 
+        /// Offers a draw to the engine if applicable. 
         /// </summary>
         public void OfferDraw() {
             IPlayer offeree = White is IEngine ? White : Black;
@@ -249,7 +249,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Saves the PGN string of the game to a file with the given path.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The path of the file.</param>
         public void SavePGN(String path) {
             using (StreamWriter sw = new StreamWriter(path))
                 sw.WriteLine(GetPGN());
@@ -258,7 +258,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Returns the PGN string of the game.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The PGN string of the game.</returns>
         public String GetPGN() {
             StringBuilder sequence = new StringBuilder();
             sequence.Append("[Date \"" + date + "\"]");
