@@ -3,7 +3,7 @@
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The attack bitboard generation module.
+    /// Provides attack bitboard generation methods. 
     /// </summary>
     static class Attack {
         
@@ -161,16 +161,36 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Returns a bitboard consisting of a single filled square with the given 
+        /// file and rank. If an invalid square is specified the empty bitboard is 
+        /// returned. 
+        /// </summary>
+        /// <param name="file">The file of the square.</param>
+        /// <param name="rank">The rank of the square.</param>
+        /// <returns>A bitboard consisting of a single filled square.</returns>
         public static UInt64 TryGetBitboard(Int32 file, Int32 rank) {
             if (file < 0 || file >= 8 || rank < 0 || rank >= 8)
                 return 0;
             return 1UL << (file + rank * 8);
         }
 
+        /// <summary>
+        /// Returns the king's attack bitboard for the given square. 
+        /// </summary>
+        /// <param name="square">The square the king is on.</param>
+        /// <returns>The king's attack bitboard.</returns>
         public static UInt64 King(Int32 square) {
             return KingAttack[square];
         }
 
+        /// <summary>
+        /// Returns the queen's attack bitboard for the given square with the given 
+        /// occupancy bitboard. 
+        /// </summary>
+        /// <param name="square">The square the queen is on.</param>
+        /// <param name="occupiedBitboard">The occupancy bitboard.</param>
+        /// <returns>The queen's attack bitboard.</returns>
         public static UInt64 Queen(Int32 square, UInt64 occupiedBitboard) {
             if ((cachedQueenAttack[square] & occupiedBitboard) != cachedQueenBlock[square]) {
                 cachedQueenAttack[square] = Rook(square, occupiedBitboard) | Bishop(square, occupiedBitboard);
@@ -179,6 +199,13 @@ namespace AbsoluteZero {
             return cachedQueenAttack[square];
         }
 
+        /// <summary>
+        /// Returns the rook's attack bitboard for the given square with the given 
+        /// occupancy bitboard.
+        /// </summary>
+        /// <param name="square">The square the rook is on.</param>
+        /// <param name="occupiedBitboard">The occupancy bitboard.</param>
+        /// <returns>The rook's attack bitboard.</returns>
         public static UInt64 Rook(Int32 square, UInt64 occupiedBitboard) {
             if ((cachedRookAttack[square] & occupiedBitboard) != cachedRookBlock[square]) {
                 UInt64 attackBitboard = RayN[square];
@@ -210,6 +237,13 @@ namespace AbsoluteZero {
             return cachedRookAttack[square];
         }
 
+        /// <summary>
+        /// Returns the bishop's attack bitboard for the given square with the given 
+        /// occupancy bitboard.
+        /// </summary>
+        /// <param name="square">The square the bishop is on.</param>
+        /// <param name="occupiedBitboard">The occupancy bitboard.</param>
+        /// <returns>The bishop's attack bitboard.</returns>
         public static UInt64 Bishop(Int32 square, UInt64 occupiedBitboard) {
             if ((cachedBishopAttack[square] & occupiedBitboard) != cachedBishopBlock[square]) {
                 UInt64 attackBitboard = RayNE[square];
@@ -241,14 +275,33 @@ namespace AbsoluteZero {
             return cachedBishopAttack[square];
         }
 
+        /// <summary>
+        /// Returns the knight's attack bitboard for the given square. 
+        /// </summary>
+        /// <param name="square">The square the knight is on.</param>
+        /// <returns>The knight's attack bitboard.</returns>
         public static UInt64 Knight(Int32 square) {
             return KnightAttack[square];
         }
 
+        /// <summary>
+        /// Returns the pawn's attack bitboard for the given square as the given 
+        /// colour. 
+        /// </summary>
+        /// <param name="square">The square the pawn is on.</param>
+        /// <param name="colour">The colour of the pawn.</param>
+        /// <returns>The pawn's attack bitboard.</returns>
         public static UInt64 Pawn(Int32 square, Int32 colour) {
             return PawnAttack[colour][square];
         }
 
+        /// <summary>
+        /// Returns a bitboard that gives the result of performing a floodfill by 
+        /// traversing via knight moves. 
+        /// </summary>
+        /// <param name="square">The square to start the fill at.</param>
+        /// <param name="moves">The number of moves for the fill.</param>
+        /// <returns></returns>
         public static UInt64 KnightFill(Int32 square, Int32 moves) {
             if (moves <= 0)
                 return 0;
