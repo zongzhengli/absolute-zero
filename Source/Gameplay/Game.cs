@@ -18,7 +18,7 @@ namespace AbsoluteZero {
         private static readonly SolidBrush MessageBrush = new SolidBrush(Color.Black);
         private static readonly Font MessageFont = new Font("Arial", 20);
 
-        // Game states. 
+        // Specifies the game state. 
         private enum GameState { Default, Ingame, WhiteWon, BlackWon, Draw };
 
         // Game fields. 
@@ -33,6 +33,14 @@ namespace AbsoluteZero {
         private String message;
         private Thread thread;
 
+        /// <summary>
+        /// Constructs a Game with the given players and initial position. If the 
+        /// initial position is not specified the default starting chess position is 
+        /// used. 
+        /// </summary>
+        /// <param name="white"></param>
+        /// <param name="black"></param>
+        /// <param name="fen"></param>
         public Game(IPlayer white, IPlayer black, String fen = Position.StartingFEN) {
             White = white;
             Black = black;
@@ -165,6 +173,9 @@ namespace AbsoluteZero {
             Black.Reset();
         }
 
+        /// <summary>
+        /// Offers a darw to the engine if applicable. 
+        /// </summary>
         public void OfferDraw() {
             IPlayer offeree = White is IEngine ? White : Black;
             if (offeree.AcceptDraw()) {
@@ -175,6 +186,10 @@ namespace AbsoluteZero {
                 MessageBox.Show("The draw offer was declined.");
         }
 
+        /// <summary>
+        /// Handles a mouse up event. 
+        /// </summary>
+        /// <param name="e">The mouse event.</param>
         public void MouseUpEvent(MouseEventArgs e) {
             if (White is Human)
                 (White as Human).MouseUpEvent(e);
@@ -182,6 +197,10 @@ namespace AbsoluteZero {
                 (Black as Human).MouseUpEvent(e);
         }
 
+        /// <summary>
+        /// Draws the position and animations associated with the game. 
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
         public void Draw(Graphics g) {
             VisualPosition.FillDarkSquares(g);
             if (White is Human)
@@ -195,6 +214,9 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Undoes the last move made by a human player. 
+        /// </summary>
         public void UndoMove() {
             End();
             Int32 length = 0;
@@ -212,6 +234,10 @@ namespace AbsoluteZero {
             Play(position);
         }
 
+        /// <summary>
+        /// Returns the FEN string of the position in the game. 
+        /// </summary>
+        /// <returns></returns>
         public String GetFEN() {
             Position position = initialPosition.DeepClone();
             moves.ForEach(move => {
@@ -220,11 +246,19 @@ namespace AbsoluteZero {
             return position.GetFEN();
         }
 
+        /// <summary>
+        /// Saves the PGN string of the game to a file with the given path.
+        /// </summary>
+        /// <param name="path"></param>
         public void SavePGN(String path) {
             using (StreamWriter sw = new StreamWriter(path))
                 sw.WriteLine(GetPGN());
         }
 
+        /// <summary>
+        /// Returns the PGN string of the game.
+        /// </summary>
+        /// <returns></returns>
         public String GetPGN() {
             StringBuilder sequence = new StringBuilder();
             sequence.Append("[Date \"" + date + "\"]");
