@@ -13,7 +13,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The brush used to paint the piece selection background. 
         /// </summary>
-        static readonly SolidBrush SelectionBrush = new SolidBrush(Color.White);
+        private static readonly SolidBrush SelectionBrush = new SolidBrush(Color.White);
 
         /// <summary>
         /// The ManualResetEvent that blocks the running thread to wait for the 

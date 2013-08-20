@@ -10,7 +10,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The maximum magnitude for results. 
         /// </summary>
-        public const Int32 MaximumMagnitude = 999;
+        private const Int32 MaximumMagnitude = 999;
 
         /// <summary>
         /// The standard deviation for the error bound calculations. 
