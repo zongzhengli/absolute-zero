@@ -42,22 +42,15 @@ namespace AbsoluteZero {
         private Position CurrentPosition;
 
         /// <summary>
-        /// The colour of the player. 
-        /// </summary>
-        private Int32 currentColour;
-
-        /// <summary>
         /// Returns the player's move for the given position. 
         /// </summary>
         /// <param name="position">The position to make a move on.</param>
         /// <returns>The player's move.</returns>
         public Int32 GetMove(Position position) {
+            Reset();
             CurrentPosition = position;
-            currentColour = position.SideToMove;
             IsMoving = true;
-            InitialSquare = FinalSquare = Position.InvalidSquare;
             WaitForMove.WaitOne();
-            WaitForMove.Reset();
             IsMoving = false;
             return CreateMove(position, InitialSquare, FinalSquare);
         }
@@ -81,6 +74,8 @@ namespace AbsoluteZero {
         /// Resets the player's fields. 
         /// </summary>
         public void Reset() {
+            InitialSquare = Position.InvalidSquare;
+            FinalSquare = Position.InvalidSquare;
             IsMoving = false;
             WaitForMove.Reset();
         }
@@ -132,7 +127,7 @@ namespace AbsoluteZero {
             if (!IsMoving)
                 return;
             Int32 square = Position.SquareAt(e.Location);
-            if (CurrentPosition.Square[square] != Piece.Empty && (CurrentPosition.Square[square] & Piece.Colour) == currentColour) {
+            if (CurrentPosition.Square[square] != Piece.Empty && (CurrentPosition.Square[square] & Piece.Colour) == CurrentPosition.SideToMove) {
                 if (InitialSquare == square)
                     InitialSquare = Position.InvalidSquare;
                 else {
