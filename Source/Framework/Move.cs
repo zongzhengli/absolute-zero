@@ -2,16 +2,48 @@
 using PieceClass = AbsoluteZero.Piece;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Provides move methods. 
+    /// </summary>
     static class Move {
+
+        /// <summary>
+        /// The invalid move.
+        /// </summary>
         public const Int32 Invalid = 0;
 
+        /// <summary>
+        /// The amount the to square is shifted in the move. 
+        /// </summary>
         private const Int32 ToShift = 6;
+
+        /// <summary>
+        /// The amount the piece is shifted in the move.
+        /// </summary>
         private const Int32 PieceShift = ToShift + 6;
+
+        /// <summary>
+        /// The amount the captured piece is shifted in the move.
+        /// </summary>
         private const Int32 CaptureShift = PieceShift + 4;
+
+        /// <summary>
+        /// The amount the special piece is shifted in the move.
+        /// </summary>
         private const Int32 SpecialShift = CaptureShift + 4;
 
-        private const Int32 SquareMask = 63;                                           // 6 bits
-        private const Int32 PieceMask = 15;                                            // 4 bits
+        /// <summary>
+        /// The mask used to extract the unshifted square from the miscellaneous
+        /// field.
+        /// </summary>
+        private const Int32 SquareMask = (1 << 6) - 1;
+
+        /// <summary>
+        /// The mask used to extract the unshifted square from the miscellaneous 
+        /// field.
+        /// </summary>
+        private const Int32 PieceMask = (1 << 4) - 1;
 
         private const Int32 TypeCaptureShifted = PieceClass.Type << CaptureShift;
         private const Int32 EmptyCaptureShifted = PieceClass.Empty << CaptureShift;
