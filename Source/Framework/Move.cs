@@ -34,24 +34,60 @@ namespace AbsoluteZero {
         private const Int32 SpecialShift = CaptureShift + 4;
 
         /// <summary>
-        /// The mask used to extract the unshifted square from the miscellaneous
-        /// field.
+        /// The mask used to extract the unshifted square from the move.
         /// </summary>
         private const Int32 SquareMask = (1 << 6) - 1;
 
         /// <summary>
-        /// The mask used to extract the unshifted square from the miscellaneous 
-        /// field.
+        /// The mask used to extract the unshifted square from the move.
         /// </summary>
         private const Int32 PieceMask = (1 << 4) - 1;
 
+        /// <summary>
+        /// The mask used to extract the shifted type of the captured piece from the 
+        /// move. 
+        /// </summary>
         private const Int32 TypeCaptureShifted = PieceClass.Type << CaptureShift;
+
+        /// <summary>
+        /// The value of the captured empty piece exactly as it is represented in 
+        /// the move. 
+        /// </summary>
         private const Int32 EmptyCaptureShifted = PieceClass.Empty << CaptureShift;
+
+        /// <summary>
+        /// The mask used to extract the shifted type of the special piece from the 
+        /// move. 
+        /// </summary>
         private const Int32 TypeSpecialShifted = PieceClass.Type << SpecialShift;
+
+        /// <summary>
+        /// The value of the king special (castling) exactly as it is represented in 
+        /// the move. 
+        /// </summary>
         private const Int32 KingSpecialShifted = PieceClass.King << SpecialShift;
+
+        /// <summary>
+        /// The value of the pawn special (en passant) exactly as it is represented 
+        /// in the move. 
+        /// </summary>
         private const Int32 PawnSpecialShifted = PieceClass.Pawn << SpecialShift;
+
+        /// <summary>
+        /// The value of the queen special (queen promotion) exactly as it is 
+        /// represented in the move. 
+        /// </summary>
         private const Int32 QueenSpecialShifted = PieceClass.Queen << SpecialShift;
+
+        /// <summary>
+        /// The mask used to extract the shifted type of the moving piece from the 
+        /// move. 
+        /// </summary>
         private const Int32 TypePieceShifted = PieceClass.Type << PieceShift;
+
+        /// <summary>
+        /// The value of the moving pawn exactly as it is represented in the move. 
+        /// </summary>
         private const Int32 PawnPieceShifted = PieceClass.Pawn << PieceShift;
 
         public static UInt64 Pawn(Int32 square, Int32 colour) {
