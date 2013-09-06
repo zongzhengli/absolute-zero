@@ -22,14 +22,14 @@ namespace AbsoluteZero {
         /// <summary>
         /// Stores the generated moves. 
         /// </summary>
-        private static Int32[][] moves = new Int32[DepthLimit][];
+        private static Int32[][] _moves = new Int32[DepthLimit][];
 
         /// <summary>
         /// Initializes the moves array. 
         /// </summary>
         static Perft() {
-            for (Int32 i = 0; i < moves.Length; i++)
-                moves[i] = new Int32[MovesLimit];
+            for (Int32 i = 0; i < _moves.Length; i++)
+                _moves[i] = new Int32[MovesLimit];
         }
 
         /// <summary>
@@ -96,14 +96,14 @@ namespace AbsoluteZero {
         public static Int64 Nodes(Position position, Int32 depth) {
             if (depth <= 0)
                 return 1;
-            Int32 movesCount = position.LegalMoves(moves[depth]);
+            Int32 movesCount = position.LegalMoves(_moves[depth]);
             if (depth == 1)
                 return movesCount;
             Int64 nodes = 0;
             for (Int32 i = 0; i < movesCount; i++) {
-                position.Make(moves[depth][i]);
+                position.Make(_moves[depth][i]);
                 nodes += Nodes(position, depth - 1);
-                position.Unmake(moves[depth][i]);
+                position.Unmake(_moves[depth][i]);
             }
             return nodes;
         }
@@ -137,15 +137,15 @@ namespace AbsoluteZero {
         /// <param name="epsilon">The factor giving the fraction of nodes to actually evaluate.</param>
         /// <returns>The simulated result of performing perft.</returns>
         private static Int64 Simulate(Position position, Int32 depth, Double epsilon) {
-            Int32 movesCount = position.LegalMoves(moves[depth]);
+            Int32 movesCount = position.LegalMoves(_moves[depth]);
             if (depth <= 1)
                 return Random.Double() < epsilon ? movesCount : 0;
             Int64 nodes = 0;
             for (Int32 i = 0; i < movesCount; i++)
                 if (Random.Double() < epsilon) {
-                    position.Make(moves[depth][i]);
+                    position.Make(_moves[depth][i]);
                     nodes += Simulate(position, depth - 1, epsilon);
-                    position.Unmake(moves[depth][i]);
+                    position.Unmake(_moves[depth][i]);
                 }
             return nodes;
         }
