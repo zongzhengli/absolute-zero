@@ -85,35 +85,35 @@ namespace AbsoluteZero {
         /// <summary>
         /// The cached queen attack bitboard. 
         /// </summary>
-        private static UInt64[] cachedQueenAttack = new UInt64[64];
+        private static UInt64[] _cachedQueenAttack = new UInt64[64];
 
         /// <summary>
         /// The cached queen block bitboard used to verify the validity of the 
         /// cached attack bitboard.
         /// </summary>
-        private static UInt64[] cachedQueenBlock = new UInt64[64];
+        private static UInt64[] _cachedQueenBlock = new UInt64[64];
 
         /// <summary>
         /// The cached rook attack bitboard.
         /// </summary>
-        private static UInt64[] cachedRookAttack = new UInt64[64];
+        private static UInt64[] _cachedRookAttack = new UInt64[64];
 
         /// <summary>
         /// The cached rook block bitboard used to verify the validity of the cached 
         /// attack bitboard.
         /// </summary>
-        private static UInt64[] cachedRookBlock = new UInt64[64];
+        private static UInt64[] _cachedRookBlock = new UInt64[64];
 
         /// <summary>
         /// The cached bishop attack bitboard.
         /// </summary>
-        private static UInt64[] cachedBishopAttack = new UInt64[64];
+        private static UInt64[] _cachedBishopAttack = new UInt64[64];
 
         /// <summary>
         /// The cached bishop block bitboard used to verify the validity of the 
         /// cached attack bitboard.
         /// </summary>
-        private static UInt64[] cachedBishopBlock = new UInt64[64];
+        private static UInt64[] _cachedBishopBlock = new UInt64[64];
 
         /// <summary>
         /// Initializes lookup tables. 
@@ -134,9 +134,9 @@ namespace AbsoluteZero {
                 Diagonals[square] = RayNE[square] | RayNW[square] | RaySE[square] | RaySW[square];
 
                 // Initialize cached block bitboards. 
-                cachedQueenBlock[square] = UInt64.MaxValue;
-                cachedRookBlock[square] = UInt64.MaxValue;
-                cachedBishopBlock[square] = UInt64.MaxValue;
+                _cachedQueenBlock[square] = UInt64.MaxValue;
+                _cachedRookBlock[square] = UInt64.MaxValue;
+                _cachedBishopBlock[square] = UInt64.MaxValue;
 
                 Int32 file = Position.File(square);
                 Int32 rank = Position.Rank(square);
@@ -192,11 +192,11 @@ namespace AbsoluteZero {
         /// <param name="occupiedBitboard">The occupancy bitboard.</param>
         /// <returns>The queen's attack bitboard.</returns>
         public static UInt64 Queen(Int32 square, UInt64 occupiedBitboard) {
-            if ((cachedQueenAttack[square] & occupiedBitboard) != cachedQueenBlock[square]) {
-                cachedQueenAttack[square] = Rook(square, occupiedBitboard) | Bishop(square, occupiedBitboard);
-                cachedQueenBlock[square] = cachedQueenAttack[square] & occupiedBitboard;
+            if ((_cachedQueenAttack[square] & occupiedBitboard) != _cachedQueenBlock[square]) {
+                _cachedQueenAttack[square] = Rook(square, occupiedBitboard) | Bishop(square, occupiedBitboard);
+                _cachedQueenBlock[square] = _cachedQueenAttack[square] & occupiedBitboard;
             }
-            return cachedQueenAttack[square];
+            return _cachedQueenAttack[square];
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace AbsoluteZero {
         /// <param name="occupiedBitboard">The occupancy bitboard.</param>
         /// <returns>The rook's attack bitboard.</returns>
         public static UInt64 Rook(Int32 square, UInt64 occupiedBitboard) {
-            if ((cachedRookAttack[square] & occupiedBitboard) != cachedRookBlock[square]) {
+            if ((_cachedRookAttack[square] & occupiedBitboard) != _cachedRookBlock[square]) {
                 UInt64 attackBitboard = RayN[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
@@ -231,10 +231,10 @@ namespace AbsoluteZero {
                     partialBitboard ^= RayW[Bit.ScanReverse(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
-                cachedRookAttack[square] = attackBitboard;
-                cachedRookBlock[square] = attackBitboard & occupiedBitboard;
+                _cachedRookAttack[square] = attackBitboard;
+                _cachedRookBlock[square] = attackBitboard & occupiedBitboard;
             }
-            return cachedRookAttack[square];
+            return _cachedRookAttack[square];
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace AbsoluteZero {
         /// <param name="occupiedBitboard">The occupancy bitboard.</param>
         /// <returns>The bishop's attack bitboard.</returns>
         public static UInt64 Bishop(Int32 square, UInt64 occupiedBitboard) {
-            if ((cachedBishopAttack[square] & occupiedBitboard) != cachedBishopBlock[square]) {
+            if ((_cachedBishopAttack[square] & occupiedBitboard) != _cachedBishopBlock[square]) {
                 UInt64 attackBitboard = RayNE[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
@@ -269,10 +269,10 @@ namespace AbsoluteZero {
                     partialBitboard ^= RaySW[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
-                cachedBishopAttack[square] = attackBitboard;
-                cachedBishopBlock[square] = attackBitboard & occupiedBitboard;
+                _cachedBishopAttack[square] = attackBitboard;
+                _cachedBishopBlock[square] = attackBitboard & occupiedBitboard;
             }
-            return cachedBishopAttack[square];
+            return _cachedBishopAttack[square];
         }
 
         /// <summary>
