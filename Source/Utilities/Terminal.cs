@@ -23,7 +23,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The text that has been processed. 
         /// </summary>
-        private static StringBuilder text = new StringBuilder();
+        private static StringBuilder _text = new StringBuilder();
 
         /// <summary>
         /// Initializes the terminal. 
@@ -40,7 +40,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="value">The value to write.</param>
         public static void Write(String value) {
-            text.Append(value);
+            _text.Append(value);
             Console.Write(value);
         }
 
@@ -59,7 +59,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="value">The value to write.</param>
         public static void WriteLine(String value = "") {
-            text.AppendLine(value);
+            _text.AppendLine(value);
             Console.WriteLine(value);
         }
 
@@ -86,7 +86,7 @@ namespace AbsoluteZero {
         /// <param name="path">The path of the file to write to.</param>
         public static void SaveText(String path) {
             using (StreamWriter sw = new StreamWriter(path))
-                sw.WriteLine(text.ToString());
+                sw.WriteLine(_text.ToString());
         }
 
         /// <summary>
