@@ -39,7 +39,7 @@ namespace AbsoluteZero {
         /// The seed for the pseudorandom number generator used to generate the hash 
         /// values. 
         /// </summary>
-        private static UInt64 seed = 11830773696567897325UL;
+        private static UInt64 _seed = 11830773696567897325UL;
 
         /// <summary>
         /// Initializes hash values. 
@@ -67,10 +67,10 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns></returns>
         private static UInt64 NextUInt64() {
-            seed ^= seed << 13;
-            seed ^= seed >> 7;
-            seed ^= seed << 17;
-            return seed;
+            _seed ^= _seed << 13;
+            _seed ^= _seed >> 7;
+            _seed ^= _seed << 17;
+            return _seed;
         }
     }
 }
