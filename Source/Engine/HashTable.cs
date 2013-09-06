@@ -16,12 +16,12 @@ namespace AbsoluteZero {
             /// <summary>
             /// The collection of hash entries. 
             /// </summary>
-            private HashEntry[] entries;
+            private HashEntry[] _entries;
 
             /// <summary>
             /// The value used to index into the array storing the HashEntrys.
             /// </summary>
-            private UInt64 indexer;
+            private UInt64 _indexer;
 
             /// <summary>
             /// The number of entries stored in the HashTable. 
@@ -39,8 +39,8 @@ namespace AbsoluteZero {
             /// <param name="megabytes">The size of the new HashTable in megabytes.</param>
             public HashTable(Int32 megabytes) {
                 Capacity = (megabytes << 20) / HashEntry.Size;
-                indexer = (UInt64)Capacity;
-                entries = new HashEntry[Capacity];
+                _indexer = (UInt64)Capacity;
+                _entries = new HashEntry[Capacity];
             }
 
             /// <summary>
@@ -50,7 +50,7 @@ namespace AbsoluteZero {
             /// <param name="key"></param>
             /// <returns></returns>
             public HashEntry Probe(UInt64 key) {
-                return entries[key % indexer];
+                return _entries[key % _indexer];
             }
             
             /// <summary>
@@ -58,17 +58,17 @@ namespace AbsoluteZero {
             /// </summary>
             /// <param name="entry"></param>
             public void Store(HashEntry entry) {
-                UInt64 index = entry.Key % indexer;
-                if (entries[index].Misc == 0)
+                UInt64 index = entry.Key % _indexer;
+                if (_entries[index].Misc == 0)
                     Count++;
-                entries[index] = entry;
+                _entries[index] = entry;
             }
 
             /// <summary>
             /// Clears the HashTable of all entries. 
             /// </summary>
             public void Clear() {
-                entries = new HashEntry[Capacity];
+                _entries = new HashEntry[Capacity];
                 Count = 0;
             }
 
