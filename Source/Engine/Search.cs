@@ -26,12 +26,12 @@ namespace AbsoluteZero {
             // apply when playing under time controls. 
             Int32 colour = position.SideToMove;
             Int32 depthLimit = Math.Min(DepthLimit, Restrictions.Depth);
-            timeLimit = Restrictions.MoveTime;
-            timeExtension = 0;
+            _timeLimit = Restrictions.MoveTime;
+            _timeExtension = 0;
             if (Restrictions.UseTimeControls) {
-                timeLimit = Restrictions.TimeIncrement[colour] - TimeControlsExpectedLatency;
-                timeLimit += Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-.007 * position.HalfMoves)));
-                timeExtensionLimit = .3 * Restrictions.TimeControl[colour] + Restrictions.TimeIncrement[colour] - timeLimit - TimeControlsExpectedLatency;
+                _timeLimit = Restrictions.TimeIncrement[colour] - TimeControlsExpectedLatency;
+                _timeLimit += Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-.007 * position.HalfMoves)));
+                _timeExtensionLimit = .3 * Restrictions.TimeControl[colour] + Restrictions.TimeIncrement[colour] - _timeLimit - TimeControlsExpectedLatency;
             }
             
             // Apply iterative deepening. The search is repeated with incrementally 
@@ -53,8 +53,8 @@ namespace AbsoluteZero {
                     // most recent preceding search. If the result does not lie within the 
                     // window, a re-search is initiated with an open window. 
                     if (i == 0) {
-                        value = -Search(position, depth - 1, 1, -rootAlpha - AspirationWindow, -rootAlpha + AspirationWindow, causesCheck);
-                        if (value <= rootAlpha - AspirationWindow || value >= rootAlpha + AspirationWindow) {
+                        value = -Search(position, depth - 1, 1, -_rootAlpha - AspirationWindow, -_rootAlpha + AspirationWindow, causesCheck);
+                        if (value <= _rootAlpha - AspirationWindow || value >= _rootAlpha + AspirationWindow) {
                             TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
                             value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
                         }
@@ -70,7 +70,7 @@ namespace AbsoluteZero {
 
                     // Unmake the move and check for search termination. 
                     position.Unmake(move);
-                    if (abortSearch)
+                    if (_abortSearch)
                         goto exit;
                     
                     // Check for new best move. If the current move has the best value so far, 
@@ -79,31 +79,31 @@ namespace AbsoluteZero {
                     // moves, and so subsequent searches are more efficient. The principal 
                     // variation is collected at this point. 
                     if (value > alpha) {
-                        alpha = rootAlpha = value;
+                        alpha = _rootAlpha = value;
                         moves.RemoveAt(i);
                         moves.Insert(0, move);
-                        pv = CollectPV(position, depth, move);
+                        _pv = CollectPV(position, depth, move);
                         
                         // Output principal variation for high depths. This happens on every depth 
                         // increase and every time an improvement is found. 
                         if (Restrictions.Output != OutputType.None && depth > SingleVariationDepth)
-                            Terminal.WriteLine(GetPVString(position, depth, alpha, pv));
+                            Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                     }
                 }
                 
                 // Output principal variation for low depths. This happens once for every 
                 // depth since improvements are very frequent. 
                 if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
-                    Terminal.WriteLine(GetPVString(position, depth, alpha, pv));
+                    Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                 
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 
                 // one more depth is unlikely, the search is terminated. 
-                if (Restrictions.UseTimeControls && timeExtension <= 0 && stopwatch.ElapsedMilliseconds / timeLimit > TimeControlsContinuationThreshold)
+                if (Restrictions.UseTimeControls && _timeExtension <= 0 && _stopwatch.ElapsedMilliseconds / _timeLimit > TimeControlsContinuationThreshold)
                     goto exit;
             }
         exit:
-            finalAlpha = rootAlpha;
+            _finalAlpha = _rootAlpha;
             return moves[0];
         }
  
@@ -122,28 +122,28 @@ namespace AbsoluteZero {
         private Int32 Search(Position position, Int32 depth, Int32 ply, Int32 alpha, Int32 beta, Boolean inCheck, Boolean allowNull = true) {
             
             // Check whether to enter quiescence search and initialize pv length. 
-            pvLength[ply] = 0;
+            _pvLength[ply] = 0;
             if (depth <= 0 && !inCheck)
                 return Quiescence(position, ply, alpha, beta);
             
             // Check for time extension and search termination. This is done once for 
             // every given number of nodes for efficency. 
-            if (totalNodes++ > referenceNodes) {
-                referenceNodes += NodeResolution;
+            if (_totalNodes++ > _referenceNodes) {
+                _referenceNodes += NodeResolution;
                 
                 // Apply loss time extension. The value of the best move for the current 
                 // root position is compared with the value of the previous root position. 
                 // If there is a large loss, a time extension is given. 
-                Int32 loss = finalAlpha - rootAlpha;
+                Int32 loss = _finalAlpha - _rootAlpha;
                 if (loss >= TimeControlsLossResolution) {
                     Int32 index = Math.Min(loss / TimeControlsLossResolution, TimeControlsLossExtension.Length - 1);
                     TryTimeExtension(TimeControlsLossThreshold, TimeControlsLossExtension[index]);
                 }
 
-                if (stopwatch.ElapsedMilliseconds >= timeLimit + timeExtension || totalNodes >= Restrictions.Nodes)
-                    abortSearch = true;
+                if (_stopwatch.ElapsedMilliseconds >= _timeLimit + _timeExtension || _totalNodes >= Restrictions.Nodes)
+                    _abortSearch = true;
             }
-            if (abortSearch)
+            if (_abortSearch)
                 return Infinity;
 
             // Perform draw detection. 
@@ -159,8 +159,8 @@ namespace AbsoluteZero {
                 return mateAlpha;
 
             // Perform hash probe. 
-            hashProbes++;
-            HashEntry hashEntry = table.Probe(position.ZobristKey);
+            _hashProbes++;
+            HashEntry hashEntry = _table.Probe(position.ZobristKey);
             Int32 hashMove = Move.Invalid;
             if (hashEntry.Key == position.ZobristKey) {
                 hashMove = hashEntry.Move;
@@ -168,7 +168,7 @@ namespace AbsoluteZero {
                     Int32 hashType = hashEntry.GetType();
                     Int32 hashValue = hashEntry.GetValue(ply);
                     if ((hashType == HashEntry.Beta && hashValue >= beta) || (hashType == HashEntry.Alpha && hashValue <= alpha)) {
-                        hashCutoffs++;
+                        _hashCutoffs++;
                         return hashValue;
                     }
                 }
@@ -187,24 +187,24 @@ namespace AbsoluteZero {
             }
             
             // Generate legal moves and perform basic move ordering. 
-            Int32[] moves = generatedMoves[ply];
+            Int32[] moves = _generatedMoves[ply];
             Int32 movesCount = position.LegalMoves(moves);
             if (movesCount == 0)
                 return inCheck ? -(CheckmateValue - ply) : drawValue;
             for (Int32 i = 0; i < movesCount; i++)
-                moveValues[i] = MoveOrderingValue(moves[i]);
-            moveValues[movesCount] = -Infinity;
+                _moveValues[i] = MoveOrderingValue(moves[i]);
+            _moveValues[movesCount] = -Infinity;
 
             // Apply single reply and check extensions. 
             if (movesCount == 1 || inCheck)
                 depth++;
 
             // Perform killer move ordering. 
-            for (Int32 slot = 0; slot < killerMoves[ply].Length; slot++) {
-                Int32 killerMove = killerMoves[ply][slot];
+            for (Int32 slot = 0; slot < _killerMoves[ply].Length; slot++) {
+                Int32 killerMove = _killerMoves[ply][slot];
                 for (Int32 i = 0; i < movesCount; i++)
                     if (moves[i] == killerMove) {
-                        moveValues[i] = KillerMoveValue + slot * KillerMoveSlotValue;
+                        _moveValues[i] = KillerMoveValue + slot * KillerMoveSlotValue;
                         break;
                     }
             }
@@ -213,7 +213,7 @@ namespace AbsoluteZero {
             if (hashMove != Move.Invalid)
                 for (Int32 i = 0; i < moves.Length; i++)
                     if (moves[i] == hashMove) {
-                        moveValues[i] = HashMoveValue;
+                        _moveValues[i] = HashMoveValue;
                         break;
                     }
 
@@ -226,9 +226,9 @@ namespace AbsoluteZero {
             }
             
             // Sort the moves based on their ordering values and initialize variables. 
-            Sort(moves, moveValues, movesCount);
+            Sort(moves, _moveValues, movesCount);
             Int32 irreducibleMoves = 1;
-            while (moveValues[irreducibleMoves] > 0)
+            while (_moveValues[irreducibleMoves] > 0)
                 irreducibleMoves++;
             UInt64 preventionBitboard = PassedPawnPreventionBitboard(position);
             Int32 bestType = HashEntry.Alpha;
@@ -267,16 +267,16 @@ namespace AbsoluteZero {
 
                 // Unmake the move and check for search termination. 
                 position.Unmake(move);
-                if (abortSearch)
+                if (_abortSearch)
                     return Infinity;
 
                 // Check for upper bound cutoff. 
                 if (value >= beta) {
-                    table.Store(new HashEntry(position, depth, ply, move, value, HashEntry.Beta));
+                    _table.Store(new HashEntry(position, depth, ply, move, value, HashEntry.Beta));
                     if (reducible) {
-                        for (Int32 j = killerMoves[ply].Length - 2; j >= 0; j--)
-                            killerMoves[ply][j + 1] = killerMoves[ply][j];
-                        killerMoves[ply][0] = move;
+                        for (Int32 j = _killerMoves[ply].Length - 2; j >= 0; j--)
+                            _killerMoves[ply][j + 1] = _killerMoves[ply][j];
+                        _killerMoves[ply][0] = move;
                     }
                     return value;
                 }
@@ -288,16 +288,16 @@ namespace AbsoluteZero {
                     bestType = HashEntry.Exact;
 
                     // Collect the principal variation. 
-                    pvMoves[ply][0] = move;
-                    for (Int32 j = 0; j < pvLength[ply + 1]; j++)
-                        pvMoves[ply][j + 1] = pvMoves[ply + 1][j];
-                    pvLength[ply] = pvLength[ply + 1] + 1;
+                    _pvMoves[ply][0] = move;
+                    for (Int32 j = 0; j < _pvLength[ply + 1]; j++)
+                        _pvMoves[ply][j + 1] = _pvMoves[ply + 1][j];
+                    _pvLength[ply] = _pvLength[ply + 1] + 1;
                 }
             }
             
             // Store the results in the hash table and return the lower bound of the 
             // value of the position. 
-            table.Store(new HashEntry(position, depth, ply, bestMove, alpha, bestType));
+            _table.Store(new HashEntry(position, depth, ply, bestMove, alpha, bestType));
             return alpha;
         }
 
@@ -311,8 +311,8 @@ namespace AbsoluteZero {
         /// <param name="beta">The upper bound on the value of the best move. </param>
         /// <returns>The value of the termination position given optimal play. </returns>
         private Int32 Quiescence(Position position, Int32 ply, Int32 alpha, Int32 beta) {
-            totalNodes++;
-            quiescenceNodes++;
+            _totalNodes++;
+            _quiescenceNodes++;
             
             // Evaluate the position statically. Check for upper bound cutoff and lower 
             // bound improvement. 
@@ -325,11 +325,11 @@ namespace AbsoluteZero {
             // Initialize variables and generate the pseudo-legal moves to be 
             // considered. Perform basic move ordering and sort the moves. 
             Int32 colour = position.SideToMove;
-            Int32[] moves = generatedMoves[ply];
+            Int32[] moves = _generatedMoves[ply];
             Int32 movesCount = position.PseudoQuiescenceMoves(moves);
             for (Int32 i = 0; i < movesCount; i++)
-                moveValues[i] = MoveOrderingValue(moves[i]);
-            Sort(moves, moveValues, movesCount);
+                _moveValues[i] = MoveOrderingValue(moves[i]);
+            Sort(moves, _moveValues, movesCount);
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
@@ -372,9 +372,9 @@ namespace AbsoluteZero {
         /// <param name="threshold">The ratio between time elapsed and time allotted needed to trigger the time extension. </param>
         /// <param name="coefficient">The proportion of time allotted to extend by. </param>
         private void TryTimeExtension(Double threshold, Double coefficient) {
-            Double newExtension = Math.Min(coefficient * timeLimit, timeExtensionLimit);
-            if (Restrictions.UseTimeControls && newExtension > timeExtension && stopwatch.ElapsedMilliseconds / timeLimit > threshold)
-                timeExtension = newExtension;
+            Double newExtension = Math.Min(coefficient * _timeLimit, _timeExtensionLimit);
+            if (Restrictions.UseTimeControls && newExtension > _timeExtension && _stopwatch.ElapsedMilliseconds / _timeLimit > threshold)
+                _timeExtension = newExtension;
         }
          
         /// <summary>

@@ -92,30 +92,30 @@ namespace AbsoluteZero {
         private static readonly Single PhaseCoefficient;
 
         // Search variables. 
-        private HashTable table = new HashTable(HashAllocation);
-        private Int32[][] generatedMoves = new Int32[PlyLimit][];
-        private Int32[][] pvMoves = new Int32[PlyLimit][];
-        private Int32[] pvLength = new Int32[PlyLimit];
-        private Int32[][] killerMoves = new Int32[PlyLimit][];
-        private Single[] moveValues = new Single[MovesLimit];
-        private List<Int32> pv = new List<Int32>();
-        private Stopwatch stopwatch = new Stopwatch();
-        private Boolean abortSearch;
-        private Double timeLimit;
-        private Double timeExtension;
-        private Double timeExtensionLimit;
-        private Int32 finalAlpha = 0;
-        private Int32 rootAlpha = 0;
-        private Int64 totalNodes;
-        private Int64 quiescenceNodes;
-        private Int32 referenceNodes;
-        private Int64 hashProbes;
-        private Int64 hashCutoffs;
+        private HashTable _table = new HashTable(HashAllocation);
+        private Int32[][] _generatedMoves = new Int32[PlyLimit][];
+        private Int32[][] _pvMoves = new Int32[PlyLimit][];
+        private Int32[] _pvLength = new Int32[PlyLimit];
+        private Int32[][] _killerMoves = new Int32[PlyLimit][];
+        private Single[] _moveValues = new Single[MovesLimit];
+        private List<Int32> _pv = new List<Int32>();
+        private Stopwatch _stopwatch = new Stopwatch();
+        private Boolean _abortSearch;
+        private Double _timeLimit;
+        private Double _timeExtension;
+        private Double _timeExtensionLimit;
+        private Int32 _finalAlpha = 0;
+        private Int32 _rootAlpha = 0;
+        private Int64 _totalNodes;
+        private Int64 _quiescenceNodes;
+        private Int32 _referenceNodes;
+        private Int64 _hashProbes;
+        private Int64 _hashCutoffs;
 
         // Evaluation variables. 
-        private static readonly UInt64[] minorAttackBitboard = new UInt64[2];
-        private static readonly UInt64[] pawnAttackBitboard = new UInt64[2];
-        private static readonly Int32[] kingSquare = new Int32[2];
+        private static readonly UInt64[] _minorAttackBitboard = new UInt64[2];
+        private static readonly UInt64[] _pawnAttackBitboard = new UInt64[2];
+        private static readonly Int32[] _kingSquare = new Int32[2];
 
         static Zero() {
 
@@ -206,12 +206,12 @@ namespace AbsoluteZero {
         }
 
         public Zero() {
-            for (Int32 i = 0; i < generatedMoves.Length; i++)
-                generatedMoves[i] = new Int32[MovesLimit];
-            for (Int32 i = 0; i < pvMoves.Length; i++)
-                pvMoves[i] = new Int32[PlyLimit];
-            for (Int32 i = 0; i < killerMoves.Length; i++)
-                killerMoves[i] = new Int32[KillerMovesAllocation];
+            for (Int32 i = 0; i < _generatedMoves.Length; i++)
+                _generatedMoves[i] = new Int32[MovesLimit];
+            for (Int32 i = 0; i < _pvMoves.Length; i++)
+                _pvMoves[i] = new Int32[PlyLimit];
+            for (Int32 i = 0; i < _killerMoves.Length; i++)
+                _killerMoves[i] = new Int32[KillerMovesAllocation];
 
             for (Int32 square = 0; square < 64; square++) {
 

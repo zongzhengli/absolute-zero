@@ -22,22 +22,22 @@ namespace AbsoluteZero {
             Single opening = PhaseCoefficient * Math.Min(position.Material[Piece.White], -position.Material[Piece.Black]);
             Single endgame = 1 - opening;
 
-            pawnAttackBitboard[Piece.White] = (bitboard[Piece.White | Piece.Pawn] & NotAFileBitboard) >> 9;
-            pawnAttackBitboard[Piece.White] |= (bitboard[Piece.White | Piece.Pawn] & NotHFileBitboard) >> 7;
-            pawnAttackBitboard[Piece.Black] = (bitboard[Piece.Black | Piece.Pawn] & NotAFileBitboard) << 7;
-            pawnAttackBitboard[Piece.Black] |= (bitboard[Piece.Black | Piece.Pawn] & NotHFileBitboard) << 9;
-            kingSquare[Piece.White] = Bit.Read(bitboard[Piece.White | Piece.King]);
-            kingSquare[Piece.Black] = Bit.Read(bitboard[Piece.Black | Piece.King]);
+            _pawnAttackBitboard[Piece.White] = (bitboard[Piece.White | Piece.Pawn] & NotAFileBitboard) >> 9;
+            _pawnAttackBitboard[Piece.White] |= (bitboard[Piece.White | Piece.Pawn] & NotHFileBitboard) >> 7;
+            _pawnAttackBitboard[Piece.Black] = (bitboard[Piece.Black | Piece.Pawn] & NotAFileBitboard) << 7;
+            _pawnAttackBitboard[Piece.Black] |= (bitboard[Piece.Black | Piece.Pawn] & NotHFileBitboard) << 9;
+            _kingSquare[Piece.White] = Bit.Read(bitboard[Piece.White | Piece.King]);
+            _kingSquare[Piece.Black] = Bit.Read(bitboard[Piece.Black | Piece.King]);
 
             for (colour = Piece.White; colour <= Piece.Black; colour++) {
-                UInt64 targetBitboard = ~bitboard[colour | Piece.All] & ~pawnAttackBitboard[1 - colour];
+                UInt64 targetBitboard = ~bitboard[colour | Piece.All] & ~_pawnAttackBitboard[1 - colour];
                 UInt64 pawnBitboard = bitboard[colour | Piece.Pawn];
                 UInt64 enemyBitboard = bitboard[(1 - colour) | Piece.Pawn];
                 UInt64 allPawnBitboard = pawnBitboard | enemyBitboard;
                 sign = -2 * colour + 1;
 
                 // Evaluate king. 
-                Int32 square = kingSquare[colour];
+                Int32 square = _kingSquare[colour];
                 value += opening * KingOpeningPositionValue[colour][square] + endgame * KingEndgamePositionValue[colour][square];
                 value += opening * PawnNearKingValue * Bit.Count(PawnShieldBitboard[square] & pawnBitboard) * sign;
                 if ((allPawnBitboard & Bit.File[square]) == 0)
@@ -51,12 +51,12 @@ namespace AbsoluteZero {
                 UInt64 pieceBitboard = bitboard[colour | Piece.Bishop];
                 if ((pieceBitboard & (pieceBitboard - 1)) != 0)
                     value += BishopPairValue * sign;
-                minorAttackBitboard[colour] = 0;
+                _minorAttackBitboard[colour] = 0;
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += BishopPositionValue[colour][square];
                     UInt64 pseudoMoveBitboard = Attack.Bishop(square, position.OccupiedBitboard);
-                    minorAttackBitboard[colour] |= pseudoMoveBitboard;
+                    _minorAttackBitboard[colour] |= pseudoMoveBitboard;
                     value += BishopMobilityValue[Bit.Count(targetBitboard & pseudoMoveBitboard)] * sign;
                 }
 
@@ -65,9 +65,9 @@ namespace AbsoluteZero {
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += opening * KnightOpeningPositionValue[colour][square];
-                    value += endgame * KnightToEnemyKingSpatialValue[square][kingSquare[1 - colour]] * sign;
+                    value += endgame * KnightToEnemyKingSpatialValue[square][_kingSquare[1 - colour]] * sign;
                     UInt64 pseudoMoveBitboard = Attack.Knight(square);
-                    minorAttackBitboard[colour] |= pseudoMoveBitboard;
+                    _minorAttackBitboard[colour] |= pseudoMoveBitboard;
                     value += KnightMobilityValue[Bit.Count(targetBitboard & pseudoMoveBitboard)] * sign;
                 }
 
@@ -76,7 +76,7 @@ namespace AbsoluteZero {
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += opening * QueenOpeningPositionValue[colour][square];
-                    value += endgame * QueenToEnemyKingSpatialValue[square][kingSquare[1 - colour]] * sign;
+                    value += endgame * QueenToEnemyKingSpatialValue[square][_kingSquare[1 - colour]] * sign;
                 }
 
                 // Evaluate rooks. 
@@ -107,11 +107,11 @@ namespace AbsoluteZero {
 
                 // Evaluate pawn threat to enemy minor pieces.
                 UInt64 victimBitboard = bitboard[(1 - colour) | Piece.All] ^ enemyBitboard;
-                value += PawnAttackValue * Bit.CountSparse(pawnAttackBitboard[colour] & victimBitboard) * sign;
+                value += PawnAttackValue * Bit.CountSparse(_pawnAttackBitboard[colour] & victimBitboard) * sign;
 
                 // Evaluate pawn defence to friendly minor pieces. 
                 UInt64 lowValueBitboard = bitboard[colour | Piece.Bishop] | bitboard[colour | Piece.Knight] | bitboard[colour | Piece.Pawn];
-                value += PawnDefenceValue * Bit.Count(pawnAttackBitboard[colour] & lowValueBitboard) * sign;
+                value += PawnDefenceValue * Bit.Count(_pawnAttackBitboard[colour] & lowValueBitboard) * sign;
             }
 
             // Evaluate obvious captures. 
@@ -119,27 +119,27 @@ namespace AbsoluteZero {
             sign = -2 * colour + 1;
 
             // Pawn takes queen.
-            if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
+            if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
                 value += (PieceValue[Piece.Queen] - PieceValue[Piece.Pawn]) * sign;
 
             // Minor takes queen. 
-            else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
+            else if ((_minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
                 value += (PieceValue[Piece.Queen] - PieceValue[Piece.Bishop]) * sign;
 
             // Pawn takes rook. 
-            else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
+            else if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
                 value += (PieceValue[Piece.Rook] - PieceValue[Piece.Pawn]) * sign;
 
             // Pawn takes bishop. 
-            else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Bishop]) != 0)
+            else if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Bishop]) != 0)
                 value += (PieceValue[Piece.Bishop] - PieceValue[Piece.Pawn]) * sign;
 
             // Pawn takes knight. 
-            else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Knight]) != 0)
+            else if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Knight]) != 0)
                 value += (PieceValue[Piece.Knight] - PieceValue[Piece.Pawn]) * sign;
 
             // Minor takes rook. 
-            else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
+            else if ((_minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
                 value += (PieceValue[Piece.Rook] - PieceValue[Piece.Bishop]) * sign;
 
             return (Int32)value * sign + TempoValue;

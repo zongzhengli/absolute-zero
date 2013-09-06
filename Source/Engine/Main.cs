@@ -21,27 +21,27 @@ namespace AbsoluteZero {
             }
 
             Prepare();
-            stopwatch.Reset();
-            stopwatch.Start();
+            _stopwatch.Reset();
+            _stopwatch.Start();
             Int32 move = SearchRoot(position);
-            stopwatch.Stop();
+            _stopwatch.Stop();
 
             if (Restrictions.Output == OutputType.Standard) {
                 Terminal.WriteLine("-----------------------------------------------------------------------");
-                Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
+                Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();
                 Terminal.WriteLine(position.ToStringAppend(
                     "Absolute Zero " + 8 * IntPtr.Size + "-bit",
                     "Version " + Version,
                     String.Empty,
-                    "Nodes visited: " + totalNodes,
+                    "Nodes visited: " + _totalNodes,
                     "Search time: " + Format.Precision(elapsed) + " ms",
-                    "Search speed: " + Format.Precision(totalNodes / elapsed) + " kN/s",
+                    "Search speed: " + Format.Precision(_totalNodes / elapsed) + " kN/s",
                     String.Empty,
-                    "Quiescence nodes: " + Format.Precision(100D * quiescenceNodes / totalNodes, 2) + "%",
-                    "Hash usage: " + Format.Precision(100D * table.Count / table.Capacity, 2) + "%",
-                    "Hash cutoffs: " + Format.Precision(100D * hashCutoffs / hashProbes, 2) + "%",
+                    "Quiescence nodes: " + Format.Precision(100D * _quiescenceNodes / _totalNodes, 2) + "%",
+                    "Hash usage: " + Format.Precision(100D * _table.Count / _table.Capacity, 2) + "%",
+                    "Hash cutoffs: " + Format.Precision(100D * _hashCutoffs / _hashProbes, 2) + "%",
                     "Static evaluation: " + Format.PrecisionAndSign(.01 * Evaluate(position), 2)
                     ));
                 Terminal.WriteLine();
@@ -75,10 +75,10 @@ namespace AbsoluteZero {
                     String score = "cp " + value;
                     if (isMate)
                         score = "mate " + (value < 0 ? "-" : String.Empty) + movesToMate;
-                    Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-                    Int64 nps = (Int64)(1000 * totalNodes / elapsed);
+                    Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
+                    Int64 nps = (Int64)(1000 * _totalNodes / elapsed);
 
-                    return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + totalNodes + " nps " + nps + " pv " + Identify.Moves(pv);
+                    return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + _totalNodes + " nps " + nps + " pv " + Identify.Moves(pv);
             }
             return String.Empty;
         }
@@ -94,8 +94,8 @@ namespace AbsoluteZero {
         private List<Int32> CollectPV(Position position, Int32 depth, Int32 firstMove) {
             List<Int32> variation = new List<Int32>(depth);
             variation.Add(firstMove);
-            for (Int32 i = 0; i < pvLength[1]; i++)
-                variation.Add(pvMoves[1][i]);
+            for (Int32 i = 0; i < _pvLength[1]; i++)
+                variation.Add(_pvMoves[1][i]);
             return variation;
         }
 
@@ -104,7 +104,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>The principal variation for the last completed search.</returns>
         public List<Int32> GetPV() {
-            return pv;
+            return _pv;
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>The number of nodes visited during the most recent search.</returns>
         public Int64 GetNodes() {
-            return totalNodes;
+            return _totalNodes;
         }
 
         /// <summary>
@@ -123,26 +123,26 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="megabytes">The number of megabytes to allocate for the tranposition table.</param>
         public void AllocateHash(Int32 megabytes) {
-            if (megabytes != table.Size >> 20)
-                table = new HashTable(megabytes);
+            if (megabytes != _table.Size >> 20)
+                _table = new HashTable(megabytes);
         }
 
         /// <summary>
         /// Terminates the ongoing search if applicable. 
         /// </summary>
         public void Stop() {
-            abortSearch = true;
+            _abortSearch = true;
         }
 
         /// <summary>
         /// Resets the engine to its initial state. 
         /// </summary>
         public void Reset() {
-            table.Clear();
-            for (Int32 i = 0; i < killerMoves.Length; i++)
-                Array.Clear(killerMoves[i], 0, killerMoves[i].Length);
-            finalAlpha = 0;
-            rootAlpha = 0;
+            _table.Clear();
+            for (Int32 i = 0; i < _killerMoves.Length; i++)
+                Array.Clear(_killerMoves[i], 0, _killerMoves[i].Length);
+            _finalAlpha = 0;
+            _rootAlpha = 0;
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>Whether the engine is willing to accept a draw offer.</returns>
         public Boolean AcceptDraw() {
-            return finalAlpha <= DrawValue;
+            return _finalAlpha <= DrawValue;
         }
 
         /// <summary>
@@ -165,12 +165,12 @@ namespace AbsoluteZero {
         /// Resets fields to prepare for a new search. 
         /// </summary>
         private void Prepare() {
-            abortSearch = false;
-            totalNodes = 0;
-            quiescenceNodes = 0;
-            referenceNodes = 0;
-            hashProbes = 0;
-            hashCutoffs = 0;
+            _abortSearch = false;
+            _totalNodes = 0;
+            _quiescenceNodes = 0;
+            _referenceNodes = 0;
+            _hashProbes = 0;
+            _hashCutoffs = 0;
         }
     }
 }
