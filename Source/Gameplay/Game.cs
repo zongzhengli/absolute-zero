@@ -22,16 +22,16 @@ namespace AbsoluteZero {
         private enum GameState { Default, Ingame, WhiteWon, BlackWon, Draw };
 
         // Game fields. 
-        private List<Int32> moves = new List<Int32>();
-        private List<Type> types = new List<Type>();
-        private Position initialPosition;
+        private List<Int32> _moves = new List<Int32>();
+        private List<Type> _types = new List<Type>();
+        private Position _initialPosition;
+        private GameState _state = GameState.Default;
+        private String _date;
+        private String _message;
+        private Thread _thread;
+
         public IPlayer White;
         public IPlayer Black;
-
-        private GameState state = GameState.Default;
-        private String date;
-        private String message;
-        private Thread thread;
 
         /// <summary>
         /// Constructs a Game with the given players and initial position. If the 
@@ -81,8 +81,8 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="position">The position to start the game from.</param>
         public void Start(Position position) {
-            date = DateTime.Now.ToString("yyyy.MM.dd");
-            initialPosition = position;
+            _date = DateTime.Now.ToString("yyyy.MM.dd");
+            _initialPosition = position;
             Play(position);
         }
 
@@ -94,9 +94,9 @@ namespace AbsoluteZero {
         private void Play(Position pos) {
             Position position = pos.DeepClone();
             VisualPosition.Set(position);
-            state = GameState.Ingame;
+            _state = GameState.Ingame;
 
-            thread = new Thread(new ThreadStart(delegate {
+            _thread = new Thread(new ThreadStart(delegate {
                 while (true) {
                     IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
@@ -104,30 +104,30 @@ namespace AbsoluteZero {
                     // Adjudicate checkmate and stalemate. 
                     if (legalMoves.Count == 0) {
                         if (position.InCheck(position.SideToMove)) {
-                            message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
-                            state = player.Equals(White) ? GameState.BlackWon : GameState.WhiteWon;
+                            _message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
+                            _state = player.Equals(White) ? GameState.BlackWon : GameState.WhiteWon;
                         } else {
-                            message = "Stalemate. It's a draw!";
-                            state = GameState.Draw;
+                            _message = "Stalemate. It's a draw!";
+                            _state = GameState.Draw;
                         }
                         return;
                     }
 
                     // Adjudicate draw.  
                     if (position.InsufficientMaterial()) {
-                        message = "Draw by insufficient material!";
-                        state = GameState.Draw;
+                        _message = "Draw by insufficient material!";
+                        _state = GameState.Draw;
                         return;
                     }
                     if (player is IEngine && player.AcceptDraw()) {
                         if (position.FiftyMovesClock >= 100) {
-                            message = "Draw by fifty-move rule!";
-                            state = GameState.Draw;
+                            _message = "Draw by fifty-move rule!";
+                            _state = GameState.Draw;
                             return;
                         }
                         if (position.HasRepeated(3)) {
-                            message = "Draw by threefold repetition!";
-                            state = GameState.Draw;
+                            _message = "Draw by threefold repetition!";
+                            _state = GameState.Draw;
                             return;
                         }
                     }
@@ -143,13 +143,13 @@ namespace AbsoluteZero {
                     // Make the move. 
                     position.Make(move);
                     VisualPosition.Make(move);
-                    moves.Add(move);
-                    types.Add(player.GetType());
+                    _moves.Add(move);
+                    _types.Add(player.GetType());
                 }
             })) {
                 IsBackground = true
             };
-            thread.Start();
+            _thread.Start();
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace AbsoluteZero {
         public void End() {
             White.Stop();
             Black.Stop();
-            thread.Abort();
+            _thread.Abort();
         }
 
         /// <summary>
@@ -166,9 +166,9 @@ namespace AbsoluteZero {
         /// state at which no moves have been played. 
         /// </summary>
         public void Reset() {
-            state = GameState.Default;
-            moves.Clear();
-            types.Clear();
+            _state = GameState.Default;
+            _moves.Clear();
+            _types.Clear();
             White.Reset();
             Black.Reset();
         }
@@ -180,8 +180,8 @@ namespace AbsoluteZero {
             IPlayer offeree = White is IEngine ? White : Black;
             if (offeree.AcceptDraw()) {
                 End();
-                message = "Draw by agreement!";
-                state = GameState.Draw;
+                _message = "Draw by agreement!";
+                _state = GameState.Draw;
             } else
                 MessageBox.Show("The draw offer was declined.");
         }
@@ -208,9 +208,9 @@ namespace AbsoluteZero {
             if (Black is Human)
                 (Black as Human).Draw(g);
             VisualPosition.DrawPieces(g);
-            if (state != GameState.Ingame) {
+            if (_state != GameState.Ingame) {
                 g.FillRectangle(OverlayBrush, 0, 0, VisualPosition.Width, VisualPosition.Width);
-                g.DrawString(message, MessageFont, MessageBrush, 20, 20);
+                g.DrawString(_message, MessageFont, MessageBrush, 20, 20);
             }
         }
 
@@ -220,15 +220,15 @@ namespace AbsoluteZero {
         public void UndoMove() {
             End();
             Int32 length = 0;
-            for (Int32 i = types.Count - 1; i >= 0; i--)
-                if (types[i] == typeof(Human)) {
+            for (Int32 i = _types.Count - 1; i >= 0; i--)
+                if (_types[i] == typeof(Human)) {
                     length = i;
                     break;
                 }
-            moves.RemoveRange(length, moves.Count - length);
-            types.RemoveRange(length, types.Count - length);
-            Position position = initialPosition.DeepClone();
-            moves.ForEach(move => {
+            _moves.RemoveRange(length, _moves.Count - length);
+            _types.RemoveRange(length, _types.Count - length);
+            Position position = _initialPosition.DeepClone();
+            _moves.ForEach(move => {
                 position.Make(move);
             });
             Play(position);
@@ -239,8 +239,8 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns></returns>
         public String GetFEN() {
-            Position position = initialPosition.DeepClone();
-            moves.ForEach(move => {
+            Position position = _initialPosition.DeepClone();
+            _moves.ForEach(move => {
                 position.Make(move);
             });
             return position.GetFEN();
@@ -261,14 +261,14 @@ namespace AbsoluteZero {
         /// <returns>The PGN string of the game.</returns>
         public String GetPGN() {
             StringBuilder sequence = new StringBuilder();
-            sequence.Append("[Date \"" + date + "\"]");
+            sequence.Append("[Date \"" + _date + "\"]");
             sequence.Append(Environment.NewLine);
             sequence.Append("[White \"" + White.GetName() + "\"]");
             sequence.Append(Environment.NewLine);
             sequence.Append("[Black \"" + Black.GetName() + "\"]");
             sequence.Append(Environment.NewLine);
             String result = "*";
-            switch (state) {
+            switch (_state) {
                 case GameState.WhiteWon:
                     result = "1-0";
                     break;
@@ -282,7 +282,7 @@ namespace AbsoluteZero {
             sequence.Append("[Result \"" + result + "\"]");
             sequence.Append(Environment.NewLine);
 
-            String initialFEN = initialPosition.GetFEN();
+            String initialFEN = _initialPosition.GetFEN();
             if (initialFEN != Position.StartingFEN) {
                 sequence.Append("[SepUp \"1\"]");
                 sequence.Append(Environment.NewLine);
@@ -291,7 +291,7 @@ namespace AbsoluteZero {
             }
 
             sequence.Append(Environment.NewLine);
-            sequence.Append(Identify.MovesAlgebraically(initialPosition, moves, IdentificationOptions.Proper));
+            sequence.Append(Identify.MovesAlgebraically(_initialPosition, _moves, IdentificationOptions.Proper));
             if (result != "*")
                 sequence.Append(" " + result);
 
