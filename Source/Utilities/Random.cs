@@ -10,7 +10,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Holds the state of the number generator. 
         /// </summary>
-        private static UInt64 seed = (UInt64)DateTime.Now.ToFileTime();
+        private static UInt64 _seed = (UInt64)DateTime.Now.ToFileTime();
 
         /// <summary>
         /// Initializes the number generator by generating and discarding a few 
@@ -27,10 +27,10 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>A random integer in the range [1, 2^64-1].</returns>
         public static UInt64 UInt64() {
-            seed ^= seed << 13;
-            seed ^= seed >> 7;
-            seed ^= seed << 17;
-            return seed;
+            _seed ^= _seed << 13;
+            _seed ^= _seed >> 7;
+            _seed ^= _seed << 17;
+            return _seed;
         }
         
         /// <summary>
