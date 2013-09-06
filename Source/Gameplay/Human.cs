@@ -19,27 +19,27 @@ namespace AbsoluteZero {
         /// The ManualResetEvent that blocks the running thread to wait for the 
         /// player to move. 
         /// </summary>
-        private ManualResetEvent WaitForMove = new ManualResetEvent(false);
+        private ManualResetEvent _waitForMove = new ManualResetEvent(false);
 
         /// <summary>
         /// Whether the player is current deciding on a move. 
         /// </summary>
-        private Boolean IsMoving = false;
+        private Boolean _isMoving = false;
 
         /// <summary>
         /// The initial square for the player's move.
         /// </summary>
-        private Int32 InitialSquare;
+        private Int32 _initialSquare;
 
         /// <summary>
         /// The final square for the player's move. 
         /// </summary>
-        private Int32 FinalSquare;
+        private Int32 _finalSquare;
 
         /// <summary>
         /// The current position the player is moving on.
         /// </summary>
-        private Position CurrentPosition;
+        private Position _currentPosition;
 
         /// <summary>
         /// Returns the player's move for the given position. 
@@ -48,11 +48,11 @@ namespace AbsoluteZero {
         /// <returns>The player's move.</returns>
         public Int32 GetMove(Position position) {
             Reset();
-            CurrentPosition = position;
-            IsMoving = true;
-            WaitForMove.WaitOne();
-            IsMoving = false;
-            return CreateMove(position, InitialSquare, FinalSquare);
+            _currentPosition = position;
+            _isMoving = true;
+            _waitForMove.WaitOne();
+            _isMoving = false;
+            return CreateMove(position, _initialSquare, _finalSquare);
         }
 
         /// <summary>
@@ -74,10 +74,10 @@ namespace AbsoluteZero {
         /// Resets the player's fields. 
         /// </summary>
         public void Reset() {
-            InitialSquare = Position.InvalidSquare;
-            FinalSquare = Position.InvalidSquare;
-            IsMoving = false;
-            WaitForMove.Reset();
+            _initialSquare = Position.InvalidSquare;
+            _finalSquare = Position.InvalidSquare;
+            _isMoving = false;
+            _waitForMove.Reset();
         }
 
         /// <summary>
@@ -124,19 +124,19 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="e">The mouse event.</param>
         public void MouseUpEvent(MouseEventArgs e) {
-            if (!IsMoving)
+            if (!_isMoving)
                 return;
             Int32 square = Position.SquareAt(e.Location);
-            if (CurrentPosition.Square[square] != Piece.Empty && (CurrentPosition.Square[square] & Piece.Colour) == CurrentPosition.SideToMove) {
-                if (InitialSquare == square)
-                    InitialSquare = Position.InvalidSquare;
+            if (_currentPosition.Square[square] != Piece.Empty && (_currentPosition.Square[square] & Piece.Colour) == _currentPosition.SideToMove) {
+                if (_initialSquare == square)
+                    _initialSquare = Position.InvalidSquare;
                 else {
-                    FinalSquare = Position.InvalidSquare;
-                    InitialSquare = square;
+                    _finalSquare = Position.InvalidSquare;
+                    _initialSquare = square;
                 }
             } else {
-                FinalSquare = square;
-                WaitForMove.Set();
+                _finalSquare = square;
+                _waitForMove.Set();
             }
         }
 
@@ -145,8 +145,8 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="g">The drawing surface.</param>
         public void Draw(Graphics g) {
-            if (IsMoving && InitialSquare != Position.InvalidSquare)
-                VisualPosition.FillSquare(g, SelectionBrush, InitialSquare);
+            if (_isMoving && _initialSquare != Position.InvalidSquare)
+                VisualPosition.FillSquare(g, SelectionBrush, _initialSquare);
         }
     }
 }
