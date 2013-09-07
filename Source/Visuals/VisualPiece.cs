@@ -8,29 +8,29 @@ namespace AbsoluteZero {
         private static readonly Font PieceFont = new Font("Arial", 30);
         private static readonly Brush PieceBrush = new SolidBrush(Color.Black);
 
-        private Int32 piece;
-        private Int32 realX;
-        private Int32 realY;
-        private Double dynamicX;
-        private Double dynamicY;
+        private Int32 _piece;
+        private Int32 _realX;
+        private Int32 _realY;
+        private Double _dynamicX;
+        private Double _dynamicY;
 
         public VisualPiece(Int32 piece, Int32 x, Int32 y) {
-            this.piece = piece;
-            dynamicX = realX = x;
-            dynamicY = realY = y;
+            this._piece = piece;
+            _dynamicX = _realX = x;
+            _dynamicY = _realY = y;
         }
 
         public void Draw(Graphics g) {
-            Boolean isWhite = (piece & Piece.Colour) == Piece.White;
-            Int32 x = (Int32)Math.Round(dynamicX);
-            Int32 y = (Int32)Math.Round(dynamicY);
+            Boolean isWhite = (_piece & Piece.Colour) == Piece.White;
+            Int32 x = (Int32)Math.Round(_dynamicX);
+            Int32 y = (Int32)Math.Round(_dynamicY);
             if (VisualPosition.Rotated) {
                 x = VisualPosition.SquareWidth * 7 - x;
                 y = VisualPosition.SquareWidth * 7 - y;
             }
             x += PieceOffset.X;
             y += PieceOffset.Y;
-            switch (piece & Piece.Type) {
+            switch (_piece & Piece.Type) {
                 case Piece.Empty:
                     break;
                 case Piece.Pawn:
@@ -55,22 +55,22 @@ namespace AbsoluteZero {
         }
 
         public void Promote(Int32 promotion) {
-            piece = promotion;
+            _piece = promotion;
         }
 
         public void MoveTo(Point final) {
             Double easing = VisualPosition.Animations ? VisualPosition.AnimationEasing : 1;
-            Int32 currentX = realX = final.X;
-            Int32 currentY = realY = final.Y;
+            Int32 currentX = _realX = final.X;
+            Int32 currentY = _realY = final.Y;
             while (true) {
-                dynamicX += (realX - dynamicX) * easing;
-                dynamicY += (realY - dynamicY) * easing;
-                if (Math.Abs(realX - dynamicX) < 1 && Math.Abs(realY - dynamicY) < 1) {
-                    dynamicX = realX;
-                    dynamicY = realY;
+                _dynamicX += (_realX - _dynamicX) * easing;
+                _dynamicY += (_realY - _dynamicY) * easing;
+                if (Math.Abs(_realX - _dynamicX) < 1 && Math.Abs(_realY - _dynamicY) < 1) {
+                    _dynamicX = _realX;
+                    _dynamicY = _realY;
                     return;
                 }
-                if (currentX != realX || currentY != realY)
+                if (currentX != _realX || currentY != _realY)
                     return;
                 Thread.Sleep(VisualPosition.AnimationInterval);
             }
@@ -81,7 +81,7 @@ namespace AbsoluteZero {
         }
 
         public Boolean IsAt(Int32 x, Int32 y) {
-            return realX == x && realY == y;
+            return _realX == x && _realY == y;
         }
     }
 }
