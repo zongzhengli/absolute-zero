@@ -47,8 +47,8 @@ namespace AbsoluteZero {
             /// Returns the entry in the HashTable for the given key. An invalid entry 
             /// may be returned, and its associated key will differ from the given key. 
             /// </summary>
-            /// <param name="key"></param>
-            /// <returns></returns>
+            /// <param name="key">The key to find the entry for.</param>
+            /// <returns>The entry in the HashTable for the given key.</returns>
             public HashEntry Probe(UInt64 key) {
                 return _entries[key % _indexer];
             }
@@ -56,7 +56,7 @@ namespace AbsoluteZero {
             /// <summary>
             /// Stores the given entry in the HashTable. 
             /// </summary>
-            /// <param name="entry"></param>
+            /// <param name="entry">The entry to store.</param>
             public void Store(HashEntry entry) {
                 UInt64 index = entry.Key % _indexer;
                 if (_entries[index].Misc == 0)
