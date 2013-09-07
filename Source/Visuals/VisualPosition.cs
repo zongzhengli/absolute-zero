@@ -5,21 +5,22 @@ using System.Threading;
 
 namespace AbsoluteZero {
     static class VisualPosition {
-        public static Boolean Animations = true;
-        public static Boolean Rotated = false;
-        public const Double AnimationEasing = .3;
-        public const Int32 AnimationInterval = 33;
-
-        public const Int32 SquareWidth = 50;
-        public const Int32 Width = 8 * SquareWidth;
         public static readonly Color LightColor = Color.FromArgb(230, 230, 230);
         public static readonly Color DarkColor = Color.FromArgb(215, 215, 215);
         private static readonly SolidBrush LightBrush = new SolidBrush(LightColor);
         private static readonly SolidBrush DarkBrush = new SolidBrush(DarkColor);
         private static readonly Rectangle[] DarkSquares = new Rectangle[32];
-        private static readonly Object ElementLock = new Object();
+        private static readonly Object PiecesLock = new Object();
 
-        private static List<VisualPiece> element = new List<VisualPiece>(32);
+        public const Double AnimationEasing = .3;
+        public const Int32 AnimationInterval = 33;
+        public const Int32 SquareWidth = 50;
+        public const Int32 Width = 8 * SquareWidth;
+
+        public static Boolean Animations = true;
+        public static Boolean Rotated = false;
+
+        private static List<VisualPiece> _pieces = new List<VisualPiece>(32);
 
         static VisualPosition() {
             for (Int32 file = 0; file < 8; file++)
@@ -29,11 +30,11 @@ namespace AbsoluteZero {
         }
 
         public static void Set(Position position) {
-            lock (ElementLock) {
-                element.Clear();
+            lock (PiecesLock) {
+                _pieces.Clear();
                 for (Int32 square = 0; square < position.Square.Length; square++)
                     if (position.Square[square] != Piece.Empty)
-                        element.Add(new VisualPiece(position.Square[square], Position.File(square) * SquareWidth, Position.Rank(square) * SquareWidth));
+                        _pieces.Add(new VisualPiece(position.Square[square], Position.File(square) * SquareWidth, Position.Rank(square) * SquareWidth));
             }
         }
 
@@ -44,10 +45,10 @@ namespace AbsoluteZero {
             Point final = new Point(Position.File(to) * SquareWidth, Position.Rank(to) * SquareWidth);
 
             // Remove captured pieces.
-            lock (ElementLock)
-                for (Int32 i = 0; i < element.Count; i++)
-                    if (element[i].IsAt(final)) {
-                        element.RemoveAt(i);
+            lock (PiecesLock)
+                for (Int32 i = 0; i < _pieces.Count; i++)
+                    if (_pieces[i].IsAt(final)) {
+                        _pieces.RemoveAt(i);
                         break;
                     }
 
@@ -60,10 +61,10 @@ namespace AbsoluteZero {
                     break;
                 case Piece.Pawn:
                     Point enPassant = new Point(Position.File(to) * SquareWidth, Position.Rank(from) * SquareWidth);
-                    lock (ElementLock)
-                        for (Int32 i = 0; i < element.Count; i++)
-                            if (element[i].IsAt(enPassant)) {
-                                element.RemoveAt(i);
+                    lock (PiecesLock)
+                        for (Int32 i = 0; i < _pieces.Count; i++)
+                            if (_pieces[i].IsAt(enPassant)) {
+                                _pieces.RemoveAt(i);
                                 break;
                             }
                     break;
@@ -73,10 +74,10 @@ namespace AbsoluteZero {
 
         private static void Animate(Int32 move, Point initial, Point final) {
             VisualPiece piece = null;
-            lock (ElementLock)
-                for (Int32 i = 0; i < element.Count; i++)
-                    if (element[i].IsAt(initial)) {
-                        piece = element[i];
+            lock (PiecesLock)
+                for (Int32 i = 0; i < _pieces.Count; i++)
+                    if (_pieces[i].IsAt(initial)) {
+                        piece = _pieces[i];
                         break;
                     }
             new Thread(new ThreadStart(delegate {
@@ -105,7 +106,7 @@ namespace AbsoluteZero {
         }
 
         public static void DrawPieces(Graphics g) {
-            element.ForEach(piece => {
+            _pieces.ForEach(piece => {
                 if (piece != null)
                     piece.Draw(g);
             });
