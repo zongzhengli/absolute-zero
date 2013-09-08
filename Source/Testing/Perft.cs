@@ -42,20 +42,20 @@ namespace AbsoluteZero {
             const Int32 DepthWidth = 10;
             const Int32 TimeWidth = 11;
             const Int32 SpeedWidth = 14;
+            String formatString = "{0,-" + DepthWidth + "}{1,-" + TimeWidth + "}{2,-" + SpeedWidth + "}{3}";
 
-            Terminal.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Time", TimeWidth) + Format.PadRight("Speed", SpeedWidth) + "Nodes");
+            Terminal.WriteLine(String.Format(formatString, "Depth", "Time", "Speed", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
             for (Int32 d = 1; d <= depth; d++) {
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 Int64 nodes = Nodes(position, d);
                 stopwatch.Stop();
+
                 Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-                Terminal.WriteLine(
-                    Format.PadRight(d, DepthWidth) +
-                    Format.PadRight(Format.Precision(elapsed) + " ms", TimeWidth) +
-                    Format.PadRight(Format.Precision(nodes / elapsed) + " kN/s", SpeedWidth) +
-                    nodes
-                    );
+                String t = Format.Precision(elapsed) + " ms";
+                String s = Format.Precision(nodes / elapsed) + " kN/s";
+
+                Terminal.WriteLine(String.Format(formatString, d, t, s, nodes));
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
         }
@@ -70,7 +70,9 @@ namespace AbsoluteZero {
         /// <param name="depth">The depth to perform divide with.</param>
         public static void Divide(Position position, Int32 depth) {
             const Int32 MoveWidth = 8;
-            Terminal.WriteLine(Format.PadRight("Move", MoveWidth) + "Nodes");
+            String formatString = "{0,-" + MoveWidth + "}{1}";
+
+            Terminal.WriteLine(String.Format(formatString, "Move", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
             Int64 totalNodes = 0;
             List<Int32> moves = position.LegalMoves();
@@ -79,7 +81,8 @@ namespace AbsoluteZero {
                 Int64 nodes = Nodes(position, depth - 1);
                 position.Unmake(move);
                 totalNodes += nodes;
-                Terminal.WriteLine(Format.PadRight(Identify.Move(move), MoveWidth) + nodes);
+
+                Terminal.WriteLine(String.Format(formatString, Identify.Move(move), nodes));
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
             Terminal.WriteLine("Moves: " + moves.Count);

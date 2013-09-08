@@ -16,7 +16,7 @@ namespace AbsoluteZero {
         /// <returns>The best move as determined by the engine.</returns>
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {
-                Terminal.WriteLine(Format.PadRight("Depth", DepthWidth) + Format.PadRight("Value", ValueWidth) + "Principal Variation");
+                Terminal.WriteLine(String.Format(FormatString, "Depth", "Value", "Principal Variation"));
                 Terminal.WriteLine("-----------------------------------------------------------------------");
             }
 
@@ -62,15 +62,16 @@ namespace AbsoluteZero {
             Int32 movesToMate = (CheckmateValue - Math.Abs(value) + 1) / 2;
 
             switch (Restrictions.Output) {
+
                 case OutputType.Standard:
-                    String depthString = Format.PadRight(depth, DepthWidth);
+                    String depthString = depth.ToString();
                     String valueString = Format.PrecisionAndSign(.01 * value, 2);
                     if (isMate)
                         valueString = (value > 0 ? "+Mate " : "-Mate ") + movesToMate;
-                    valueString = Format.PadRight(valueString, ValueWidth);
                     String movesString = Identify.MovesAlgebraically(position, pv);
 
-                    return depthString + valueString + movesString;
+                    return String.Format(FormatString, depthString, valueString, movesString);
+
                 case OutputType.Universal:
                     String score = "cp " + value;
                     if (isMate)

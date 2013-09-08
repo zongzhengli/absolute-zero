@@ -15,6 +15,7 @@ namespace AbsoluteZero {
         public Boolean NewFeature = false;
 
         // Formatting constants. 
+        private static readonly String FormatString = "{0,-" + DepthWidth + "}{1,-" + ValueWidth + "}{2}";
         private const Int32 SingleVariationDepth = 5;
         private const Int32 DepthWidth = 8;
         private const Int32 ValueWidth = 9;

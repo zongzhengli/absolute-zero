@@ -13,6 +13,11 @@ namespace AbsoluteZero {
     static class TestSuite {
 
         /// <summary>
+        /// The string that determines output formatting. 
+        /// </summary>
+        private static readonly String FormatString = String.Format("{{0,-{0}}}{{1,-{0}}}{{2,-{0}}}{{3}}", ColumnWidth);
+
+        /// <summary>
         /// The number of characters in a column for output. 
         /// </summary>
         private const Int32 ColumnWidth = 12;
@@ -37,7 +42,7 @@ namespace AbsoluteZero {
                     fileName = parameters[i];
                 else
                     switch (parameters[i]) {
-                        case "-t":
+                        case "-m":
                             Restrictions.MoveTime = Int32.Parse(parameters[i + 1]);
                             break;
                         case "-d":
@@ -83,7 +88,7 @@ namespace AbsoluteZero {
             Int64 totalNodes = 0;
             Double totalTime = 0;
 
-            Terminal.WriteLine(Format.PadRightAll(ColumnWidth, "Position", "Result", "Time", "Nodes"));
+            Terminal.WriteLine(String.Format(FormatString, "Position", "Result", "Time", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
             foreach (String line in epd) {
                 List<String> terms = new List<String>(line.Replace(";", " ;").Split(' '));
@@ -128,7 +133,7 @@ namespace AbsoluteZero {
                 }
 
                 // Print the result for the search on the position. 
-                Terminal.WriteLine(Format.PadRightAll(ColumnWidth, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
+                Terminal.WriteLine(String.Format(FormatString, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
             }
 
             // Print final results after all positions have been searched. 
