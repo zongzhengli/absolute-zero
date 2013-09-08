@@ -27,7 +27,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The unique ID code for the tournament.  
         /// </summary>
-        public static String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
+        private static String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
 
         /// <summary>
         /// Begins the tournament with the given parameters. 

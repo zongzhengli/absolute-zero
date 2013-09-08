@@ -37,7 +37,7 @@ namespace AbsoluteZero {
         /// depth. This method writes the results to the terminal. 
         /// </summary>
         /// <param name="position">The position to perform perft on.</param>
-        /// <param name="depth">The final depth to perofrm perft to.</param>
+        /// <param name="depth">The final depth to perform perft to.</param>
         public static void Iterate(Position position, Int32 depth) {
             const Int32 DepthWidth = 10;
             const Int32 TimeWidth = 11;
