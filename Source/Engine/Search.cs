@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// The search component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero {
-        
+
         /// <summary>
         /// Returns the best move for the given position as determined by an 
         /// iterative deepening search framework. This is the main entry point for 
@@ -16,12 +16,12 @@ namespace AbsoluteZero {
         /// <param name="position">The position to search on. </param>
         /// <returns>The predicted best move. </returns>
         private Int32 SearchRoot(Position position) {
-            
+
             // Generate legal moves. Return immediately if there is only one legal move. 
             List<Int32> moves = position.LegalMoves();
             if (Restrictions.UseTimeControls && moves.Count <= 1)
                 return moves[0];
-            
+
             // Initialize variables and determine time limits. The time limits only 
             // apply when playing under time controls. 
             Int32 colour = position.SideToMove;
@@ -33,12 +33,12 @@ namespace AbsoluteZero {
                 _timeLimit += Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-.007 * position.HalfMoves)));
                 _timeExtensionLimit = .3 * Restrictions.TimeControl[colour] + Restrictions.TimeIncrement[colour] - _timeLimit - TimeControlsExpectedLatency;
             }
-            
+
             // Apply iterative deepening. The search is repeated with incrementally 
             // higher depths until it is terminated. 
             for (Int32 depth = 1; depth <= depthLimit; depth++) {
                 Int32 alpha = -Infinity;
-                
+
                 // Go through the move list. 
                 for (Int32 i = 0; i < moves.Count; i++) {
 
@@ -47,7 +47,7 @@ namespace AbsoluteZero {
                     Int32 move = moves[i];
                     Boolean causesCheck = position.CausesCheck(move);
                     position.Make(move);
-                    
+
                     // Apply principal variation search with aspiration windows. The first move 
                     // is searched with a window centered around the best value found from the 
                     // most recent preceding search. If the result does not lie within the 
@@ -59,9 +59,9 @@ namespace AbsoluteZero {
                             value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
                         }
 
-                    // Subsequent moves are searched with a zero window search. If the result is 
-                    // better than the best value so far, a re-search is initiated with a wider 
-                    // window. 
+                        // Subsequent moves are searched with a zero window search. If the result is 
+                        // better than the best value so far, a re-search is initiated with a wider 
+                        // window. 
                     } else {
                         value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
                         if (value > alpha)
@@ -72,7 +72,7 @@ namespace AbsoluteZero {
                     position.Unmake(move);
                     if (_abortSearch)
                         goto exit;
-                    
+
                     // Check for new best move. If the current move has the best value so far, 
                     // it is moved to the front of the list. This ensures the best move is 
                     // always the first move in the list, also gives a rough ordering of the 
@@ -83,19 +83,19 @@ namespace AbsoluteZero {
                         moves.RemoveAt(i);
                         moves.Insert(0, move);
                         _pv = CollectPV(position, depth, move);
-                        
+
                         // Output principal variation for high depths. This happens on every depth 
                         // increase and every time an improvement is found. 
                         if (Restrictions.Output != OutputType.None && depth > SingleVariationDepth)
                             Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                     }
                 }
-                
+
                 // Output principal variation for low depths. This happens once for every 
                 // depth since improvements are very frequent. 
                 if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
                     Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
-                
+
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 
                 // one more depth is unlikely, the search is terminated. 
@@ -106,7 +106,7 @@ namespace AbsoluteZero {
             _finalAlpha = _rootAlpha;
             return moves[0];
         }
- 
+
         /// <summary>
         /// Returns the dynamic value of the position as determined by a recursive 
         /// search to the given depth. This implements the main search algorithm. 
@@ -120,17 +120,17 @@ namespace AbsoluteZero {
         /// <param name="allowNull">Whether a null move is permitted. </param>
         /// <returns>The value of the termination position given optimal play. </returns>
         private Int32 Search(Position position, Int32 depth, Int32 ply, Int32 alpha, Int32 beta, Boolean inCheck, Boolean allowNull = true) {
-            
+
             // Check whether to enter quiescence search and initialize pv length. 
             _pvLength[ply] = 0;
             if (depth <= 0 && !inCheck)
                 return Quiescence(position, ply, alpha, beta);
-            
+
             // Check for time extension and search termination. This is done once for 
             // every given number of nodes for efficency. 
             if (_totalNodes++ > _referenceNodes) {
                 _referenceNodes += NodeResolution;
-                
+
                 // Apply loss time extension. The value of the best move for the current 
                 // root position is compared with the value of the previous root position. 
                 // If there is a large loss, a time extension is given. 
@@ -160,13 +160,16 @@ namespace AbsoluteZero {
 
             // Perform hash probe. 
             _hashProbes++;
-            HashEntry hashEntry = _table.Probe(position.ZobristKey);
+            HashEntry hashEntry;
             Int32 hashMove = Move.Invalid;
-            if (hashEntry.Key == position.ZobristKey) {
+            
+            if (_table.TryProbe(position.ZobristKey, out hashEntry)) {
                 hashMove = hashEntry.Move;
+
                 if (hashEntry.GetDepth() >= depth) {
                     Int32 hashType = hashEntry.GetType();
                     Int32 hashValue = hashEntry.GetValue(ply);
+
                     if ((hashType == HashEntry.Beta && hashValue >= beta) || (hashType == HashEntry.Alpha && hashValue <= alpha)) {
                         _hashCutoffs++;
                         return hashValue;
@@ -185,7 +188,7 @@ namespace AbsoluteZero {
                 if (value >= beta)
                     return value;
             }
-            
+
             // Generate legal moves and perform basic move ordering. 
             Int32[] moves = _generatedMoves[ply];
             Int32 movesCount = position.LegalMoves(moves);
@@ -224,7 +227,7 @@ namespace AbsoluteZero {
                 futilityValue = Evaluate(position) + FutilityMargin[depth];
                 futileNode = futilityValue <= alpha;
             }
-            
+
             // Sort the moves based on their ordering values and initialize variables. 
             Sort(moves, _moveValues, movesCount);
             Int32 irreducibleMoves = 1;
@@ -236,7 +239,7 @@ namespace AbsoluteZero {
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
-                
+
                 // Initialize variables and determine properties of the current move and 
                 // position. 
                 Int32 move = moves[i];
@@ -294,7 +297,7 @@ namespace AbsoluteZero {
                     _pvLength[ply] = _pvLength[ply + 1] + 1;
                 }
             }
-            
+
             // Store the results in the hash table and return the lower bound of the 
             // value of the position. 
             _table.Store(new HashEntry(position, depth, ply, bestMove, alpha, bestType));
@@ -313,7 +316,7 @@ namespace AbsoluteZero {
         private Int32 Quiescence(Position position, Int32 ply, Int32 alpha, Int32 beta) {
             _totalNodes++;
             _quiescenceNodes++;
-            
+
             // Evaluate the position statically. Check for upper bound cutoff and lower 
             // bound improvement. 
             Int32 value = Evaluate(position);
@@ -321,7 +324,7 @@ namespace AbsoluteZero {
                 return value;
             if (value > alpha)
                 alpha = value;
-            
+
             // Initialize variables and generate the pseudo-legal moves to be 
             // considered. Perform basic move ordering and sort the moves. 
             Int32 colour = position.SideToMove;
@@ -334,14 +337,14 @@ namespace AbsoluteZero {
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
                 Int32 move = moves[i];
-                
+
                 // Consider the move only if it doesn't immediately lose material. This 
                 // improves efficiency. 
                 if ((Move.Piece(move) & Piece.Type) <= (Move.Capture(move) & Piece.Type) || EvaluateStaticExchange(position, move) >= 0) {
 
                     // Make the move. 
                     position.Make(move);
-                    
+
                     // Search the move if it is legal. This is equivalent to not leaving the 
                     // king in check. 
                     if (!position.InCheck(colour)) {
@@ -362,7 +365,7 @@ namespace AbsoluteZero {
             }
             return alpha;
         }
-         
+
         /// <summary>
         /// Attempts to apply the time extension given. The time extension is applied 
         /// when playing under time controls if it is longer than the existing time 
@@ -376,7 +379,7 @@ namespace AbsoluteZero {
             if (Restrictions.UseTimeControls && newExtension > _timeExtension && _stopwatch.ElapsedMilliseconds / _timeLimit > threshold)
                 _timeExtension = newExtension;
         }
-         
+
         /// <summary>
         /// Returns whether the given move is a dangerous pawn advance. A dangerous 
         /// pawn advance is a pawn move that results in the pawn being in a position 
@@ -426,7 +429,7 @@ namespace AbsoluteZero {
             }
             return pawnblockBitboard;
         }
- 
+
         /// <summary>
         /// Sorts the given array of moves based on the given array of values. 
         /// </summary>

@@ -44,13 +44,14 @@ namespace AbsoluteZero {
             }
 
             /// <summary>
-            /// Returns the entry in the HashTable for the given key. An invalid entry 
-            /// may be returned, and its associated key will differ from the given key. 
+            /// Finds the entry in the HashTable for the given key. The return value 
+            /// indicates whether the entry was found. 
             /// </summary>
             /// <param name="key">The key to find the entry for.</param>
-            /// <returns>The entry in the HashTable for the given key.</returns>
-            public HashEntry Probe(UInt64 key) {
-                return _entries[key % _indexer];
+            /// <param name="entry">Contains the entry found when the method returns.</param>
+            /// <returns>Whether the entry was found in the HashTable.</returns>
+            public bool TryProbe(UInt64 key, out HashEntry entry) {
+                return (entry = _entries[key % _indexer]).Key == key;
             }
             
             /// <summary>
