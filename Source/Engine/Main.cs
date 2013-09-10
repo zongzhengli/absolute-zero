@@ -23,12 +23,13 @@ namespace AbsoluteZero {
             Prepare();
             _stopwatch.Reset();
             _stopwatch.Start();
+
             Int32 move = SearchRoot(position);
             _stopwatch.Stop();
+            Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
 
             if (Restrictions.Output == OutputType.Standard) {
                 Terminal.WriteLine("-----------------------------------------------------------------------");
-                Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();
                 Terminal.WriteLine(position.ToStringAppend(
@@ -62,7 +63,6 @@ namespace AbsoluteZero {
             Int32 movesToMate = (CheckmateValue - Math.Abs(value) + 1) / 2;
 
             switch (Restrictions.Output) {
-
                 case OutputType.Standard:
                     String depthString = depth.ToString();
                     String valueString = Format.PrecisionAndSign(.01 * value, 2);
@@ -85,13 +85,13 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Collects and returns the principal variation for the last performed 
+        /// Collects and returns the principal variation for the last completed 
         /// search at the given depth. 
         /// </summary>
         /// <param name="position">The position the principal variation is to be played on.</param>
         /// <param name="depth">The depth of the search to collect the principal variation for.</param>
         /// <param name="firstMove">The first move of the principal variation.</param>
-        /// <returns></returns>
+        /// <returns>The principal variation for the last completed search.</returns>
         private List<Int32> CollectPV(Position position, Int32 depth, Int32 firstMove) {
             List<Int32> variation = new List<Int32>(depth);
             variation.Add(firstMove);
