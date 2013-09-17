@@ -58,7 +58,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Return whether the player is willing to accept a draw offer. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Whether the player is willing to accept a draw offer.</returns>
         public Boolean AcceptDraw() {
             return false;
         }
@@ -83,7 +83,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Returns the name of the player. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The name of the player.</returns>
         public String GetName() {
             return "Human";
         }

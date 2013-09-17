@@ -121,7 +121,7 @@ namespace AbsoluteZero {
             /// <summary>
             /// Returns the type of the value associated with the HashEntry.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>The type of the value associated with the HashEntry.</returns>
             public new Int32 GetType() {
                 return Misc & TypeMask;
             }
@@ -129,16 +129,17 @@ namespace AbsoluteZero {
             /// <summary>
             /// Returns the search depth associated with the HashEntry. 
             /// </summary>
-            /// <returns></returns>
+            /// <returns>The search depth associated with the HashEntry.</returns>
             public Int32 GetDepth() {
                 return ((Misc >> DepthShift) - DepthNormal) & DepthMask;
             }
-
+            
             /// <summary>
-            /// Returns the value associated with the HashEntry. 
+            /// Returns the value associated with the HashEntry. The search ply is 
+            /// required to determine correct checkmate values. 
             /// </summary>
-            /// <param name="ply"></param>
-            /// <returns></returns>
+            /// <param name="ply">The ply of the search routine that is requesting the value.</param>
+            /// <returns>The value associated with the HashEntry.</returns>
             public Int32 GetValue(Int32 ply) {
                 Int32 value = (Misc >> ValueShift) - ValueNormal;
                 if (Math.Abs(value) > NearCheckmateValue)

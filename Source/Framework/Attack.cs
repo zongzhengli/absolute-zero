@@ -301,7 +301,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="square">The square to start the fill at.</param>
         /// <param name="moves">The number of moves for the fill.</param>
-        /// <returns></returns>
+        /// <returns>A bitboard that is the result of the knight floodfill.</returns>
         public static UInt64 KnightFill(Int32 square, Int32 moves) {
             if (moves <= 0)
                 return 0;

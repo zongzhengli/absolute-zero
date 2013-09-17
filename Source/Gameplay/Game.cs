@@ -38,9 +38,9 @@ namespace AbsoluteZero {
         /// initial position is not specified the default starting chess position is 
         /// used. 
         /// </summary>
-        /// <param name="white"></param>
-        /// <param name="black"></param>
-        /// <param name="fen"></param>
+        /// <param name="white">The player to play as white.</param>
+        /// <param name="black">The player to play as black.</param>
+        /// <param name="fen">An optional FEN for the starting position.</param>
         public Game(IPlayer white, IPlayer black, String fen = Position.StartingFEN) {
             White = white;
             Black = black;
@@ -237,7 +237,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Returns the FEN string of the position in the game. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The FEN of the position in the game.</returns>
         public String GetFEN() {
             Position position = _initialPosition.DeepClone();
             _moves.ForEach(move => {

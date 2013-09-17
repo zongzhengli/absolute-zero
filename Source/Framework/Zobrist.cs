@@ -63,9 +63,9 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns a pseudorandom 64-bit integer.
+        /// Returns a pseudorandom unsigned 64-bit integer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A pseudorandom unsigned 64-bit integer.</returns>
         private static UInt64 NextUInt64() {
             _seed ^= _seed << 13;
             _seed ^= _seed >> 7;

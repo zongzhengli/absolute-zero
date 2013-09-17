@@ -157,7 +157,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Returns the name of the engine. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The name of the engine.</returns>
         public String GetName() {
             return "Absolute Zero " + Version;
         }
