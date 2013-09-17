@@ -10,7 +10,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The table giving the hash value for a given piece on a given square. 
         /// </summary>
-        public static readonly UInt64[][] PiecePosition = new UInt64[14][];
+        public static readonly UInt64[][] PiecePosition = new UInt64[Piece.Max + 1][];
 
         /// <summary>
         /// The table giving the hash value for ability to castle on the king side 

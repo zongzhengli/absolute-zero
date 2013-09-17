@@ -146,7 +146,7 @@ namespace AbsoluteZero {
         private void SavePGNClick(Object sender, EventArgs e) {
             using (SaveFileDialog dialog = new SaveFileDialog()) {
                 dialog.Title = "Save PGN";
-                dialog.Filter = "PGN File|.pgn|Text File|*.txt";
+                dialog.Filter = "PGN File|*.pgn|Text File|*.txt";
                 if (dialog.ShowDialog() == DialogResult.OK)
                     game.SavePGN(dialog.FileName);
             }
