@@ -74,8 +74,9 @@ namespace AbsoluteZero {
 
             Terminal.WriteLine(String.Format(formatString, "Move", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
-            Int64 totalNodes = 0;
+
             List<Int32> moves = position.LegalMoves();
+            Int64 totalNodes = 0;
             foreach (Int32 move in moves) {
                 position.Make(move);
                 Int64 nodes = Nodes(position, depth - 1);
@@ -99,9 +100,11 @@ namespace AbsoluteZero {
         public static Int64 Nodes(Position position, Int32 depth) {
             if (depth <= 0)
                 return 1;
+
             Int32 movesCount = position.LegalMoves(_moves[depth]);
             if (depth == 1)
                 return movesCount;
+
             Int64 nodes = 0;
             for (Int32 i = 0; i < movesCount; i++) {
                 position.Make(_moves[depth][i]);
@@ -143,6 +146,7 @@ namespace AbsoluteZero {
             Int32 movesCount = position.LegalMoves(_moves[depth]);
             if (depth <= 1)
                 return Random.Double() < epsilon ? movesCount : 0;
+
             Int64 nodes = 0;
             for (Int32 i = 0; i < movesCount; i++)
                 if (Random.Double() < epsilon) {

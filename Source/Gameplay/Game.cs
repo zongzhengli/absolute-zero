@@ -96,7 +96,7 @@ namespace AbsoluteZero {
             VisualPosition.Set(position);
             _state = GameState.Ingame;
 
-            _thread = new Thread(new ThreadStart(delegate {
+            _thread = new Thread(new ThreadStart(() => {
                 while (true) {
                     IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();

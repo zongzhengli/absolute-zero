@@ -80,7 +80,8 @@ namespace AbsoluteZero {
                         piece = _pieces[i];
                         break;
                     }
-            new Thread(new ThreadStart(delegate {
+
+            new Thread(new ThreadStart(() => {
                 piece.MoveTo(final);
                 if (Move.IsPromotion(move))
                     piece.Promote(Move.Special(move));

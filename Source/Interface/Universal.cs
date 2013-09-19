@@ -92,7 +92,7 @@ namespace AbsoluteZero {
                                     // TODO: implement command. 
                                     break;
                             }
-                        new Thread(new ThreadStart(delegate {
+                        new Thread(new ThreadStart(() => {
                             Int32 bestMove = engine.GetMove(position);
                             Terminal.WriteLine("bestmove " + Identify.Move(bestMove));
                         })) {

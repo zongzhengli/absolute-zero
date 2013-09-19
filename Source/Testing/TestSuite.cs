@@ -68,7 +68,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="parameters">Command-line parameters giving the conditions of the test. </param>
         public static void Run(String[] parameters) {
-            new Thread(new ThreadStart(delegate {
+            new Thread(new ThreadStart(() => {
                 Execute(Parse(parameters));
             })) {
                 IsBackground = true

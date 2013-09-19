@@ -14,7 +14,9 @@ namespace AbsoluteZero {
         private SelectionBox() {
             InitializeComponent();
             Button b = new Button();
-            b.Click += delegate { Close(); };
+            b.Click += (sender, e) => { 
+                Close();
+            };
             CancelButton = b;
         }
 

@@ -37,7 +37,7 @@ namespace AbsoluteZero {
             ClientSize = new Size(VisualPosition.Width, VisualPosition.Width + MenuHeight);
             MouseUp += new MouseEventHandler(MouseUpEvent);
             Paint += new PaintEventHandler(DrawEvent);
-            FormClosed += delegate {
+            FormClosed += (sender, e) => {
                 Application.Exit();
             };
 
@@ -46,7 +46,7 @@ namespace AbsoluteZero {
             BackColor = VisualPosition.LightColor;
 
             // Start draw thread. 
-            new Thread(new ThreadStart(delegate {
+            new Thread(new ThreadStart(() => {
                 while (true) {
                     Invalidate();
                     Thread.Sleep(DrawInterval);
