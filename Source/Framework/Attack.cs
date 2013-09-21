@@ -6,112 +6,130 @@ namespace AbsoluteZero {
     /// Provides attack bitboard generation methods. 
     /// </summary>
     static class Attack {
-        
+
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly north of the given 
-        /// square.
+        /// The collection of bitboard rays pointing to the north of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the north of 
+        /// square s. 
         /// </summary>
         public static UInt64[] RayN = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly east of the given 
-        /// square.
+        /// The collection of bitboard rays pointing to the east of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the east of 
+        /// square s. 
         /// </summary>
         public static UInt64[] RayE = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly south of the given 
-        /// square.
+        /// The collection of bitboard rays pointing to the south of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the south of 
+        /// square s. 
         /// </summary>
         public static UInt64[] RayS = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly west of the given 
-        /// square.
+        /// The collection of bitboard rays pointing to the west of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the west of 
+        /// square s. 
         /// </summary>
         public static UInt64[] RayW = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly northeast of the 
-        /// given square.
+        /// The collection of bitboard rays pointing to the northeast of a given 
+        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
+        /// northeast of square s. 
         /// </summary>
         public static UInt64[] RayNE = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly northwest of the 
-        /// given square.
+        /// The collection of bitboard rays pointing to the northwest of a given 
+        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
+        /// northwest of square s. 
         /// </summary>
         public static UInt64[] RayNW = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly southeast of the 
-        /// given square.
+        /// The collection of bitboard rays pointing to the southeast of a given 
+        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
+        /// southeast of square s. 
         /// </summary>
         public static UInt64[] RaySE = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard ray that is strictly southwest of the 
-        /// given square.
+        /// The collection of bitboard rays pointing to the southwest. RayN[s] gives 
+        /// a bitboard of the ray of squares strictly to the southwest of square s. 
         /// </summary>
         public static UInt64[] RaySW = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard that has all the non-diagonal rays set 
-        /// for a given square.
+        /// The collection of horizontal and vertical bitboard rays extending from a 
+        /// given square. Axes[s] gives a bitboard of the squares on the same rank 
+        /// and file as square s but does not include s itself. 
         /// </summary>
         public static UInt64[] Axes = new UInt64[64];
 
         /// <summary>
-        /// The table for getting a bitboard that has all the diagonal rays set for 
-        /// a given square. 
+        /// The collection of diagonal bitboard rays extending from a given square. 
+        /// Diagonals[s] gives a bitboard of the squares along the diagonals of 
+        /// square s but does not include s itself. 
         /// </summary>
         public static UInt64[] Diagonals = new UInt64[64];
 
         /// <summary>
-        // The king attack bitboard table. 
+        /// The collection of king attack bitboards. KingAttack[s] gives a bitboard 
+        /// of the squares attacked by a king on square s. 
         /// </summary>
         private static UInt64[] KingAttack = new UInt64[64];
 
         /// <summary>
-        /// The knight attack bitboard table.
+        /// The collection of knight attack bitboards. KnightAttack[s] gives a 
+        /// bitboard of the squares attacked by a knight on square s. 
         /// </summary>
         private static UInt64[] KnightAttack = new UInt64[64];
 
         /// <summary>
-        /// The pawn attack bitboard table.
+        /// The collection of pawn attack bitboards. PawnAttack[c][s] gives a 
+        /// bitboard of the squares attacked by a pawn of colour c on square s. 
         /// </summary>
         private static UInt64[][] PawnAttack = { new UInt64[64], new UInt64[64] };
 
         /// <summary>
-        /// The cached queen attack bitboard. 
+        /// The collection of cached queen attack bitboards. _cachedQueenAttack[s] 
+        /// gives the last generated queen attack bitboard for square s. 
         /// </summary>
         private static UInt64[] _cachedQueenAttack = new UInt64[64];
 
         /// <summary>
-        /// The cached queen block bitboard used to verify the validity of the 
-        /// cached attack bitboard.
+        /// The collection of cached queen block bitboards. _cachedQueenBlock[s] 
+        /// gives the bitboard of the squares where a queen's attack from square s 
+        /// was last blocked. 
         /// </summary>
         private static UInt64[] _cachedQueenBlock = new UInt64[64];
 
         /// <summary>
-        /// The cached rook attack bitboard.
+        /// The collection of cached rook attack bitboards. _cachedRookAttack[s] 
+        /// gives the last generated rook attack bitboard for square s. 
         /// </summary>
         private static UInt64[] _cachedRookAttack = new UInt64[64];
 
         /// <summary>
-        /// The cached rook block bitboard used to verify the validity of the cached 
-        /// attack bitboard.
+        /// The collection of cached rook block bitboards. _cachedRookBlock[s] gives 
+        /// the bitboard of the squares where a rook's attack from square s was last 
+        /// blocked. 
         /// </summary>
         private static UInt64[] _cachedRookBlock = new UInt64[64];
 
         /// <summary>
-        /// The cached bishop attack bitboard.
+        /// The collection of cached bishop attack bitboards. _cachedBishopAttack[s] 
+        /// gives the last generated bishop attack bitboard for square s. 
         /// </summary>
         private static UInt64[] _cachedBishopAttack = new UInt64[64];
 
         /// <summary>
-        /// The cached bishop block bitboard used to verify the validity of the 
-        /// cached attack bitboard.
+        /// The collection of cached bishop block bitboards. _cachedBishopBlock[s] 
+        /// gives the bitboard of the squares where a bishop's attack from square s 
+        /// was last blocked. 
         /// </summary>
         private static UInt64[] _cachedBishopBlock = new UInt64[64];
 
@@ -141,19 +159,19 @@ namespace AbsoluteZero {
                 Int32 file = Position.File(square);
                 Int32 rank = Position.Rank(square);
 
-                // Initialize king attack table. 
+                // Initialize king attack bitboards. 
                 for (Int32 a = -1; a <= 1; a++)
                     for (Int32 b = -1; b <= 1; b++)
                         if (a != 0 || b != 0)
                             KingAttack[square] ^= TryGetBitboard(file + a, rank + b);
 
-                // Initialize knight attack table. 
+                // Initialize knight attack bitboards. 
                 for (Int32 a = -2; a <= 2; a++)
                     for (Int32 b = -2; b <= 2; b++)
                         if (Math.Abs(a) + Math.Abs(b) == 3)
                             KnightAttack[square] ^= TryGetBitboard(file + a, rank + b);
 
-                // Initialize pawn attack table. 
+                // Initialize pawn attack bitboards. 
                 PawnAttack[Piece.White][square] ^= TryGetBitboard(file - 1, rank - 1);
                 PawnAttack[Piece.White][square] ^= TryGetBitboard(file + 1, rank - 1);
                 PawnAttack[Piece.Black][square] ^= TryGetBitboard(file - 1, rank + 1);

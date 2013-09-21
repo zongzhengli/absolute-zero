@@ -40,7 +40,7 @@ namespace AbsoluteZero {
         public UInt64[] Bitboard = new UInt64[16];
 
         /// <summary>
-        /// The bitboard containing all pieces. 
+        /// The bitboard of all pieces in play. 
         /// </summary>
         public UInt64 OccupiedBitboard = 0;
 
