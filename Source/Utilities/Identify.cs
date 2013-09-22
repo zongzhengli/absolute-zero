@@ -16,7 +16,7 @@ namespace AbsoluteZero {
     /// Provides methods that identify, or give text representations of, various 
     /// chess data types. 
     /// </summary>
-    class Identify {
+    static class Identify {
 
         /// <summary>
         /// Returns the text representation of the file for the given square. 
@@ -24,7 +24,7 @@ namespace AbsoluteZero {
         /// <param name="square">The square to identify.</param>
         /// <returns>The name of the file for the given square.</returns>
         public static String File(Int32 square) {
-            return ((Char)(Position.File(square) + 97)).ToString();
+            return ((Char)(Position.File(square) + 'a')).ToString();
         }
 
         /// <summary>
@@ -37,7 +37,8 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns the text representation of the given square.
+        /// Returns the text representation of the given square in coordinate 
+        /// notation.
         /// </summary>
         /// <param name="square">The square to identify.</param>
         /// <returns>The name of the given square.</returns>
@@ -124,13 +125,11 @@ namespace AbsoluteZero {
         public static String MoveAlgebraically(Position position, Int32 move) {
             if (MoveClass.IsCastle(move))
                 return MoveClass.To(move) < MoveClass.From(move) ? "O-O-O" : "O-O";
-            
+
             // Determine the piece associated with the move. Pawns are not explicitly 
             // identified. 
-            String piece = PieceInitial(MoveClass.Piece(move));
-            if (piece == "P")
-                piece = String.Empty;
-   
+            String piece = MoveClass.Piece(move) == PieceClass.Pawn ? String.Empty : PieceInitial(MoveClass.Piece(move));
+
             // Determine the necessary disambiguation property for the move. If two or 
             // more pieces of the same type are moving to the same square, disambiguate 
             // with the square that it is moving from's file, rank, or both, in that 
@@ -140,6 +139,7 @@ namespace AbsoluteZero {
             foreach (Int32 alt in position.LegalMoves())
                 if (alt != move && MoveClass.Piece(alt) == MoveClass.Piece(move) && MoveClass.To(alt) == MoveClass.To(move))
                     alternatives.Add(alt);
+
             if (alternatives.Count > 0) {
                 Boolean uniqueFile = true;
                 Boolean uniqueRank = true;
@@ -156,7 +156,7 @@ namespace AbsoluteZero {
                 else
                     disambiguation = Square(MoveClass.From(move));
             }
- 
+
             // Determine if the capture flag is necessary for the move. If the capturing 
             // piece is a pawn, it is identified by the file it is moving from. 
             Boolean isCapture = MoveClass.IsCapture(move) || MoveClass.IsEnPassant(move);
@@ -192,8 +192,10 @@ namespace AbsoluteZero {
         public static String MovesAlgebraically(Position position, List<Int32> moves, IdentificationOptions options = IdentificationOptions.None) {
             if (moves.Count == 0)
                 return String.Empty;
+
             StringBuilder sequence = new StringBuilder(5 * moves.Count);
             Int32 halfMoves = 0;
+
             if (options == IdentificationOptions.Proper) {
                 halfMoves = position.HalfMoves;
                 if (position.SideToMove == Piece.Black) {
@@ -215,6 +217,7 @@ namespace AbsoluteZero {
             }
             for (Int32 i = moves.Count - 1; i >= 0; i--)
                 position.Unmake(moves[i]);
+
             return sequence.ToString(0, sequence.Length - 1);
         }
     }
