@@ -8,7 +8,7 @@ using MoveClass = AbsoluteZero.Move;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Specifies whether or not to use absolutely proper identification. 
+    /// Specifies whether to use proper identification. 
     /// </summary>
     public enum IdentificationOptions { None, Proper };
 
@@ -78,10 +78,10 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns the text representation of the given move. 
+        /// Returns the text representation of the given move in coordinate notation. 
         /// </summary>
         /// <param name="move">The move to identify.</param>
-        /// <returns>The text representation of the given move.</returns>
+        /// <returns>The text representation of the given move in coordinate notation.</returns>
         public static String Move(Int32 move) {
             String coordinates = Identify.Square(MoveClass.From(move)) + Identify.Square(MoveClass.To(move));
             switch (MoveClass.Special(move) & PieceClass.Type) {
@@ -99,10 +99,11 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns the text representation of the given sequence of moves. 
+        /// Returns the text representation of the given sequence of moves in 
+        /// coordinate notation. 
         /// </summary>
         /// <param name="moves">The sequence of moves to identify.</param>
-        /// <returns>The text representation of the given sequence of moves.</returns>
+        /// <returns>The text representation of the given sequence of moves in coordinate notation.</returns>
         public static String Moves(List<Int32> moves) {
             if (moves.Count == 0)
                 return String.Empty;
