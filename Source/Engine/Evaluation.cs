@@ -3,7 +3,7 @@
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The evaluation component of the Absolute Zero chess engine. 
+    /// Encapsulates the evaluation component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero {
 

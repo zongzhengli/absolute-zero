@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace AbsoluteZero {
-
+    
     /// <summary>
-    /// The search component of the Absolute Zero chess engine. 
+    /// Encapsulates the search component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero {
 

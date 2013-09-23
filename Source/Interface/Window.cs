@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The code component of the Form for the GUI interface. 
+    /// Encapsulates the main GUI interface. 
     /// </summary>
     partial class Window : Form {
 

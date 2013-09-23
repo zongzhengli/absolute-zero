@@ -1,10 +1,10 @@
 ﻿using System;
 
 namespace AbsoluteZero {
-
+    
     /// <summary>
-    /// The transposition table entry component of the Absolute Zero chess 
-    /// engine. 
+    /// Encapsulates the transposition table entry component of the Absolute Zero 
+    /// chess engine. 
     /// </summary>
     partial class Zero {
 

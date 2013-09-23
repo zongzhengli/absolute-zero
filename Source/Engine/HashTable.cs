@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The transposition table component of the Absolute Zero chess engine. 
+    /// Encapsulates the transposition table component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero {
 

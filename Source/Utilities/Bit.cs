@@ -9,12 +9,14 @@ namespace AbsoluteZero {
     static class Bit {
 
         /// <summary>
-        /// The table for getting the bitboard file for a given square. 
+        /// The collection of bitboard files for a given square. File[s] gives the a 
+        /// bitboard of the squares along the file of square s. 
         /// </summary>
         public static readonly UInt64[] File = new UInt64[64];
 
         /// <summary>
-        /// The table for getting the bitboard rank for a given square.
+        /// The collection of bitboard ranks for a given square. Rank[s] gives the a 
+        /// bitboard of the squares along the rank of square s. 
         /// </summary>
         public static readonly UInt64[] Rank = new UInt64[64];
 
@@ -93,7 +95,7 @@ namespace AbsoluteZero {
         public const UInt64 LightSquares = 12273903644374837845UL;
 
         /// <summary>
-        /// The table for getting the index of a single bit. 
+        /// The collection of indices for calculating the index of a single bit. 
         /// </summary>
         private static readonly Int32[] BitIndex = new Int32[64];
 

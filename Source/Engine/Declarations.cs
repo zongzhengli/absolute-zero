@@ -6,7 +6,8 @@ using System.Reflection;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The declarations component of the Absolute Zero chess engine. 
+    /// Encapsulates the declarations component of the Absolute Zero chess 
+    /// engine. 
     /// </summary>
     partial class Zero {
 
