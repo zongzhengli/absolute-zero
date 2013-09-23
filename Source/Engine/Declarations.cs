@@ -166,20 +166,20 @@ namespace AbsoluteZero {
                     ShortAdjacentFilesBitboard[square] |= Bit.File[square + 1] & Bit.FloodFill(square + 1, 3);
 
                 // Initialize pawn blockade bitboard table. 
-                PawnBlockadeBitboard[Piece.White][square] = Attack.RayN[square];
+                PawnBlockadeBitboard[Piece.White][square] = Bit.RayN[square];
                 if (Position.File(square) > 0)
-                    PawnBlockadeBitboard[Piece.White][square] |= Attack.RayN[square - 1];
+                    PawnBlockadeBitboard[Piece.White][square] |= Bit.RayN[square - 1];
                 if (Position.File(square) < 7)
-                    PawnBlockadeBitboard[Piece.White][square] |= Attack.RayN[square + 1];
-                PawnBlockadeBitboard[Piece.Black][square] = Attack.RayS[square];
+                    PawnBlockadeBitboard[Piece.White][square] |= Bit.RayN[square + 1];
+                PawnBlockadeBitboard[Piece.Black][square] = Bit.RayS[square];
                 if (Position.File(square) > 0)
-                    PawnBlockadeBitboard[Piece.Black][square] |= Attack.RayS[square - 1];
+                    PawnBlockadeBitboard[Piece.Black][square] |= Bit.RayS[square - 1];
                 if (Position.File(square) < 7)
-                    PawnBlockadeBitboard[Piece.Black][square] |= Attack.RayS[square + 1];
+                    PawnBlockadeBitboard[Piece.Black][square] |= Bit.RayS[square + 1];
 
                 // Initialize short forward file bitboard table.
-                ShortForwardFileBitboard[Piece.White][square] = Attack.RayN[square] & Bit.FloodFill(square, 3);
-                ShortForwardFileBitboard[Piece.Black][square] = Attack.RayS[square] & Bit.FloodFill(square, 3);
+                ShortForwardFileBitboard[Piece.White][square] = Bit.RayN[square] & Bit.FloodFill(square, 3);
+                ShortForwardFileBitboard[Piece.Black][square] = Bit.RayS[square] & Bit.FloodFill(square, 3);
 
                 // Initialize rectilinear distance table.
                 RectilinearDistance[square] = new Int32[64];

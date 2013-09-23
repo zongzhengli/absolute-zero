@@ -209,39 +209,39 @@ namespace AbsoluteZero {
 
             checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Knight] & Attack.Knight(kingSquare);
             checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Pawn] & Attack.Pawn(kingSquare, SideToMove);
-            if ((bishopQueenBitboard & Attack.Diagonals[kingSquare]) != 0) {
+            if ((bishopQueenBitboard & Bit.Diagonals[kingSquare]) != 0) {
                 checkBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
 
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
-                UInt64 pinnedBitboard = Attack.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
+                UInt64 pinnedBitboard = Bit.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
-                pinnedBitboard = Attack.RayNW[kingSquare] & Bitboard[SideToMove | Piece.All];
+                pinnedBitboard = Bit.RayNW[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
-                pinnedBitboard = Attack.RaySE[kingSquare] & Bitboard[SideToMove | Piece.All];
+                pinnedBitboard = Bit.RaySE[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
-                pinnedBitboard = Attack.RaySW[kingSquare] & Bitboard[SideToMove | Piece.All];
+                pinnedBitboard = Bit.RaySW[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
 
                 pinBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, occupiedBitboardCopy);
             }
-            if ((rookQueenBitboard & Attack.Axes[kingSquare]) != 0) {
+            if ((rookQueenBitboard & Bit.Axes[kingSquare]) != 0) {
                 checkBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
 
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
-                UInt64 pinnedBitboard = Attack.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
+                UInt64 pinnedBitboard = Bit.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
-                pinnedBitboard = Attack.RayE[kingSquare] & Bitboard[SideToMove | Piece.All];
+                pinnedBitboard = Bit.RayE[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
-                pinnedBitboard = Attack.RayS[kingSquare] & Bitboard[SideToMove | Piece.All];
+                pinnedBitboard = Bit.RayS[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
-                pinnedBitboard = Attack.RayW[kingSquare] & Bitboard[SideToMove | Piece.All];
+                pinnedBitboard = Bit.RayW[kingSquare] & Bitboard[SideToMove | Piece.All];
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
 
@@ -806,11 +806,11 @@ namespace AbsoluteZero {
             if ((Bitboard[(1 - colour) | Piece.King] & Attack.King(square)) != 0)
                 return true;
             UInt64 bishopQueenBitboard = Bitboard[(1 - colour) | Piece.Bishop] | Bitboard[(1 - colour) | Piece.Queen];
-            if ((bishopQueenBitboard & Attack.Diagonals[square]) != 0)
+            if ((bishopQueenBitboard & Bit.Diagonals[square]) != 0)
                 if ((bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) != 0)
                     return true;
             UInt64 rookQueenBitboard = Bitboard[(1 - colour) | Piece.Rook] | Bitboard[(1 - colour) | Piece.Queen];
-            if ((rookQueenBitboard & Attack.Axes[square]) != 0)
+            if ((rookQueenBitboard & Bit.Axes[square]) != 0)
                 if ((rookQueenBitboard & Attack.Rook(square, OccupiedBitboard)) != 0)
                     return true;
             return false;

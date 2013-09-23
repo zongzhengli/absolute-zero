@@ -19,6 +19,75 @@ namespace AbsoluteZero {
         public static readonly UInt64[] Rank = new UInt64[64];
 
         /// <summary>
+        /// The collection of bitboard rays pointing to the north of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the north of 
+        /// square s. 
+        /// </summary>
+        public static readonly UInt64[] RayN = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the east of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the east of 
+        /// square s. 
+        /// </summary>
+        public static readonly UInt64[] RayE = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the south of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the south of 
+        /// square s. 
+        /// </summary>
+        public static readonly UInt64[] RayS = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the west of a given square. 
+        /// RayN[s] gives a bitboard of the ray of squares strictly to the west of 
+        /// square s. 
+        /// </summary>
+        public static readonly UInt64[] RayW = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the northeast of a given 
+        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
+        /// northeast of square s. 
+        /// </summary>
+        public static readonly UInt64[] RayNE = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the northwest of a given 
+        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
+        /// northwest of square s. 
+        /// </summary>
+        public static readonly UInt64[] RayNW = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the southeast of a given 
+        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
+        /// southeast of square s. 
+        /// </summary>
+        public static readonly UInt64[] RaySE = new UInt64[64];
+
+        /// <summary>
+        /// The collection of bitboard rays pointing to the southwest. RayN[s] gives 
+        /// a bitboard of the ray of squares strictly to the southwest of square s. 
+        /// </summary>
+        public static readonly UInt64[] RaySW = new UInt64[64];
+
+        /// <summary>
+        /// The collection of horizontal and vertical bitboard rays extending from a 
+        /// given square. Axes[s] gives a bitboard of the squares on the same rank 
+        /// and file as square s but does not include s itself. 
+        /// </summary>
+        public static readonly UInt64[] Axes = new UInt64[64];
+
+        /// <summary>
+        /// The collection of diagonal bitboard rays extending from a given square. 
+        /// Diagonals[s] gives a bitboard of the squares along the diagonals of 
+        /// square s but does not include s itself. 
+        /// </summary>
+        public static readonly UInt64[] Diagonals = new UInt64[64];
+
+        /// <summary>
         /// The bitboard of all light squares. 
         /// </summary>
         public const UInt64 LightSquares = 12273903644374837845UL;
@@ -33,15 +102,29 @@ namespace AbsoluteZero {
         /// </summary>
         static Bit() {
 
+            for (Int32 square = 0; square < 64; square++) {
+
+                // Initialize file and rank bitboard tables. 
+                File[square] = LineFill(Position.File(square), 0, 1);
+                Rank[square] = LineFill(Position.Rank(square) * 8, 1, 0);
+
+                // Initialize ray tables. 
+                RayN[square] = Bit.LineFill(square, 0, -1) ^ (1UL << square);
+                RayE[square] = Bit.LineFill(square, 1, 0) ^ (1UL << square);
+                RayS[square] = Bit.LineFill(square, 0, 1) ^ (1UL << square);
+                RayW[square] = Bit.LineFill(square, -1, 0) ^ (1UL << square);
+                RayNE[square] = Bit.LineFill(square, 1, -1) ^ (1UL << square);
+                RayNW[square] = Bit.LineFill(square, -1, -1) ^ (1UL << square);
+                RaySE[square] = Bit.LineFill(square, 1, 1) ^ (1UL << square);
+                RaySW[square] = Bit.LineFill(square, -1, 1) ^ (1UL << square);
+                Axes[square] = RayN[square] | RayE[square] | RayS[square] | RayW[square];
+                Diagonals[square] = RayNE[square] | RayNW[square] | RaySE[square] | RaySW[square];
+            }
+
             // Initialize bit index table. 
             for (Int32 i = 0; i < 64; i++)
                 BitIndex[((1UL << i) * 0x07EDD5E59A4E28C2UL) >> 58] = i;
 
-            // Initialize file and rank bitboard tables. 
-            for (Int32 square = 0; square < 64; square++) {
-                File[square] = LineFill(Position.File(square), 0, 1);
-                Rank[square] = LineFill(Position.Rank(square) * 8, 1, 0);
-            }
         }
 
         /// <summary>
@@ -169,7 +252,7 @@ namespace AbsoluteZero {
             return bitboard;
 
         }
-        
+
         /// <summary>
         /// Returns a string giving the binary representation of the move.
         /// </summary>

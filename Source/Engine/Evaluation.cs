@@ -245,7 +245,7 @@ namespace AbsoluteZero {
             // Try bishops. 
             UInt64 bishopAttackBitboard = UInt64.MaxValue;
 
-            if ((position.Bitboard[colour | Piece.Bishop] & Attack.Diagonals[square]) != 0) {
+            if ((position.Bitboard[colour | Piece.Bishop] & Bit.Diagonals[square]) != 0) {
                 bishopAttackBitboard = Attack.Bishop(square, position.OccupiedBitboard);
                 sourceBitboard = position.Bitboard[colour | Piece.Bishop] & bishopAttackBitboard;
                 if (sourceBitboard != 0)
@@ -255,7 +255,7 @@ namespace AbsoluteZero {
             // Try rooks. 
             UInt64 rookAttackBitboard = UInt64.MaxValue;
 
-            if ((position.Bitboard[colour | Piece.Rook] & Attack.Axes[square]) != 0) {
+            if ((position.Bitboard[colour | Piece.Rook] & Bit.Axes[square]) != 0) {
                 rookAttackBitboard = Attack.Rook(square, position.OccupiedBitboard);
                 sourceBitboard = position.Bitboard[colour | Piece.Rook] & rookAttackBitboard;
                 if (sourceBitboard != 0)
@@ -263,7 +263,7 @@ namespace AbsoluteZero {
             }
 
             // Try queens. 
-            if ((position.Bitboard[colour | Piece.Queen] & (Attack.Diagonals[square] | Attack.Axes[square])) != 0) {
+            if ((position.Bitboard[colour | Piece.Queen] & (Bit.Diagonals[square] | Bit.Axes[square])) != 0) {
                 if (bishopAttackBitboard == UInt64.MaxValue)
                     bishopAttackBitboard = Attack.Bishop(square, position.OccupiedBitboard);
                 if (rookAttackBitboard == UInt64.MaxValue)

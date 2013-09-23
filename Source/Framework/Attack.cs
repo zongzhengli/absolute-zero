@@ -8,75 +8,6 @@ namespace AbsoluteZero {
     static class Attack {
 
         /// <summary>
-        /// The collection of bitboard rays pointing to the north of a given square. 
-        /// RayN[s] gives a bitboard of the ray of squares strictly to the north of 
-        /// square s. 
-        /// </summary>
-        public static UInt64[] RayN = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the east of a given square. 
-        /// RayN[s] gives a bitboard of the ray of squares strictly to the east of 
-        /// square s. 
-        /// </summary>
-        public static UInt64[] RayE = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the south of a given square. 
-        /// RayN[s] gives a bitboard of the ray of squares strictly to the south of 
-        /// square s. 
-        /// </summary>
-        public static UInt64[] RayS = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the west of a given square. 
-        /// RayN[s] gives a bitboard of the ray of squares strictly to the west of 
-        /// square s. 
-        /// </summary>
-        public static UInt64[] RayW = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the northeast of a given 
-        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
-        /// northeast of square s. 
-        /// </summary>
-        public static UInt64[] RayNE = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the northwest of a given 
-        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
-        /// northwest of square s. 
-        /// </summary>
-        public static UInt64[] RayNW = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the southeast of a given 
-        /// square. RayN[s] gives a bitboard of the ray of squares strictly to the 
-        /// southeast of square s. 
-        /// </summary>
-        public static UInt64[] RaySE = new UInt64[64];
-
-        /// <summary>
-        /// The collection of bitboard rays pointing to the southwest. RayN[s] gives 
-        /// a bitboard of the ray of squares strictly to the southwest of square s. 
-        /// </summary>
-        public static UInt64[] RaySW = new UInt64[64];
-
-        /// <summary>
-        /// The collection of horizontal and vertical bitboard rays extending from a 
-        /// given square. Axes[s] gives a bitboard of the squares on the same rank 
-        /// and file as square s but does not include s itself. 
-        /// </summary>
-        public static UInt64[] Axes = new UInt64[64];
-
-        /// <summary>
-        /// The collection of diagonal bitboard rays extending from a given square. 
-        /// Diagonals[s] gives a bitboard of the squares along the diagonals of 
-        /// square s but does not include s itself. 
-        /// </summary>
-        public static UInt64[] Diagonals = new UInt64[64];
-
-        /// <summary>
         /// The collection of king attack bitboards. KingAttack[s] gives a bitboard 
         /// of the squares attacked by a king on square s. 
         /// </summary>
@@ -138,18 +69,6 @@ namespace AbsoluteZero {
         /// </summary>
         static Attack() {
             for (Int32 square = 0; square < 64; square++) {
-
-                // Initialize ray tables. 
-                RayN[square] = Bit.LineFill(square, 0, -1) ^ (1UL << square);
-                RayE[square] = Bit.LineFill(square, 1, 0) ^ (1UL << square);
-                RayS[square] = Bit.LineFill(square, 0, 1) ^ (1UL << square);
-                RayW[square] = Bit.LineFill(square, -1, 0) ^ (1UL << square);
-                RayNE[square] = Bit.LineFill(square, 1, -1) ^ (1UL << square);
-                RayNW[square] = Bit.LineFill(square, -1, -1) ^ (1UL << square);
-                RaySE[square] = Bit.LineFill(square, 1, 1) ^ (1UL << square);
-                RaySW[square] = Bit.LineFill(square, -1, 1) ^ (1UL << square);
-                Axes[square] = RayN[square] | RayE[square] | RayS[square] | RayW[square];
-                Diagonals[square] = RayNE[square] | RayNW[square] | RaySE[square] | RaySW[square];
 
                 // Initialize cached block bitboards. 
                 _cachedQueenBlock[square] = UInt64.MaxValue;
@@ -226,27 +145,27 @@ namespace AbsoluteZero {
         /// <returns>The rook's attack bitboard.</returns>
         public static UInt64 Rook(Int32 square, UInt64 occupiedBitboard) {
             if ((_cachedRookAttack[square] & occupiedBitboard) != _cachedRookBlock[square]) {
-                UInt64 attackBitboard = RayN[square];
+                UInt64 attackBitboard = Bit.RayN[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    attackBitboard ^= RayN[Bit.ScanReverse(blockBitboard)];
+                    attackBitboard ^= Bit.RayN[Bit.ScanReverse(blockBitboard)];
 
-                UInt64 partialBitboard = RayE[square];
+                UInt64 partialBitboard = Bit.RayE[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    partialBitboard ^= RayE[Bit.Scan(blockBitboard)];
+                    partialBitboard ^= Bit.RayE[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
-                partialBitboard = RayS[square];
+                partialBitboard = Bit.RayS[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    partialBitboard ^= RayS[Bit.Scan(blockBitboard)];
+                    partialBitboard ^= Bit.RayS[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
-                partialBitboard = RayW[square];
+                partialBitboard = Bit.RayW[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    partialBitboard ^= RayW[Bit.ScanReverse(blockBitboard)];
+                    partialBitboard ^= Bit.RayW[Bit.ScanReverse(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
                 _cachedRookAttack[square] = attackBitboard;
@@ -264,27 +183,27 @@ namespace AbsoluteZero {
         /// <returns>The bishop's attack bitboard.</returns>
         public static UInt64 Bishop(Int32 square, UInt64 occupiedBitboard) {
             if ((_cachedBishopAttack[square] & occupiedBitboard) != _cachedBishopBlock[square]) {
-                UInt64 attackBitboard = RayNE[square];
+                UInt64 attackBitboard = Bit.RayNE[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    attackBitboard ^= RayNE[Bit.ScanReverse(blockBitboard)];
+                    attackBitboard ^= Bit.RayNE[Bit.ScanReverse(blockBitboard)];
 
-                UInt64 partialBitboard = RayNW[square];
+                UInt64 partialBitboard = Bit.RayNW[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    partialBitboard ^= RayNW[Bit.ScanReverse(blockBitboard)];
+                    partialBitboard ^= Bit.RayNW[Bit.ScanReverse(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
-                partialBitboard = RaySE[square];
+                partialBitboard = Bit.RaySE[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    partialBitboard ^= RaySE[Bit.Scan(blockBitboard)];
+                    partialBitboard ^= Bit.RaySE[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
-                partialBitboard = RaySW[square];
+                partialBitboard = Bit.RaySW[square];
                 blockBitboard = partialBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
-                    partialBitboard ^= RaySW[Bit.Scan(blockBitboard)];
+                    partialBitboard ^= Bit.RaySW[Bit.Scan(blockBitboard)];
                 attackBitboard |= partialBitboard;
 
                 _cachedBishopAttack[square] = attackBitboard;
