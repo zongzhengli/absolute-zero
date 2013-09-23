@@ -128,7 +128,7 @@ namespace AbsoluteZero {
 
             // Determine the piece associated with the move. Pawns are not explicitly 
             // identified. 
-            String piece = MoveClass.Piece(move) == PieceClass.Pawn ? String.Empty : PieceInitial(MoveClass.Piece(move));
+            String piece = (MoveClass.Piece(move) & Piece.Type) == PieceClass.Pawn ? String.Empty : PieceInitial(MoveClass.Piece(move));
 
             // Determine the necessary disambiguation property for the move. If two or 
             // more pieces of the same type are moving to the same square, disambiguate 
