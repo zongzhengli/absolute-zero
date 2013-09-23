@@ -19,24 +19,24 @@ namespace AbsoluteZero {
             private HashEntry[] _entries;
 
             /// <summary>
-            /// The value used to index into the array storing the HashEntrys.
+            /// The value used to index into the array storing the hash entries.
             /// </summary>
             private UInt64 _indexer;
 
             /// <summary>
-            /// The number of entries stored in the HashTable. 
+            /// The number of entries stored in the hash table. 
             /// </summary>
             public Int32 Count = 0;
 
             /// <summary>
-            /// The number of entries that can be stored in the HashTable. 
+            /// The number of entries that can be stored in the hash table. 
             /// </summary>
             public Int32 Capacity;
 
             /// <summary>
-            /// Constructs a HashTable of the given size in megabytes. 
+            /// Constructs a hash table of the given size in megabytes. 
             /// </summary>
-            /// <param name="megabytes">The size of the new HashTable in megabytes.</param>
+            /// <param name="megabytes">The size of the new hash table in megabytes.</param>
             public HashTable(Int32 megabytes) {
                 Capacity = (megabytes << 20) / HashEntry.Size;
                 _indexer = (UInt64)Capacity;
@@ -44,18 +44,18 @@ namespace AbsoluteZero {
             }
 
             /// <summary>
-            /// Finds the entry in the HashTable for the given key. The return value 
+            /// Finds the entry in the hash table for the given key. The return value 
             /// indicates whether the entry was found. 
             /// </summary>
             /// <param name="key">The key to find the entry for.</param>
             /// <param name="entry">Contains the entry found when the method returns.</param>
-            /// <returns>Whether the entry was found in the HashTable.</returns>
+            /// <returns>Whether the entry was found in the hash table.</returns>
             public bool TryProbe(UInt64 key, out HashEntry entry) {
                 return (entry = _entries[key % _indexer]).Key == key;
             }
             
             /// <summary>
-            /// Stores the given entry in the HashTable. 
+            /// Stores the given entry in the hash table. 
             /// </summary>
             /// <param name="entry">The entry to store.</param>
             public void Store(HashEntry entry) {
@@ -66,7 +66,7 @@ namespace AbsoluteZero {
             }
 
             /// <summary>
-            /// Clears the HashTable of all entries. 
+            /// Clears the hash table of all entries. 
             /// </summary>
             public void Clear() {
                 _entries = new HashEntry[Capacity];
@@ -74,7 +74,7 @@ namespace AbsoluteZero {
             }
 
             /// <summary>
-            /// The size of the HashTable in bytes. 
+            /// The size of the hash table in bytes. 
             /// </summary>
             public Int32 Size {
                 get {

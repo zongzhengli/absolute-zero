@@ -14,23 +14,23 @@ namespace AbsoluteZero {
         private struct HashEntry {
 
             /// <summary>
-            /// Specifies the HashEntry is invalid. 
+            /// Specifies the hash entry is invalid. 
             /// </summary>
             public const Int32 Invalid = 0;
-
+            
             /// <summary>
-            /// Specifies the value associated with the HashEntry gives an exact value.
+            /// Specifies the value associated with the hash entry gives an exact value.
             /// </summary>
             public const Int32 Exact = 1;
 
             /// <summary>
-            /// Specifies the value associated with the HashEntry gives a lower bound 
+            /// Specifies the value associated with the hash entry gives a lower bound 
             /// value.
             /// </summary>
             public const Int32 Alpha = 2;
 
             /// <summary>
-            /// Specifies the value associated with the HashEntry gives an upper bound 
+            /// Specifies the value associated with the hash entry gives an upper bound 
             /// value.
             /// </summary>
             public const Int32 Beta = 3;
@@ -68,43 +68,42 @@ namespace AbsoluteZero {
             private const Int32 ValueNormal = Int16.MaxValue;
 
             /// <summary>
-            /// The mask used to extract the unshifted type from the miscellaneous
-            /// field.
+            /// The mask used to extract the unshifted type from the miscellaneous field.
             /// </summary>
             private const Int32 TypeMask = (1 << TypeBits) - 1;
 
             /// <summary>
-            /// The mask used to extract the unshifted depth from the miscellaneous
+            /// The mask used to extract the unshifted depth from the miscellaneous 
             /// field.
             /// </summary>
             private const Int32 DepthMask = (1 << DepthBits) - 1;
 
             /// <summary>
-            /// The size of a HashEntry in bytes. 
+            /// The size of a hash entry in bytes. 
             /// </summary>
             public const Int32 Size = 16;
 
             /// <summary>
-            /// The zobrist key of the position associated with the HashEntry. 
+            /// The zobrist key of the position associated with the hash entry. 
             /// </summary>
             public readonly UInt64 Key;
 
             /// <summary>
-            /// The best move for the position associated with the HashEntry. 
+            /// The best move for the position associated with the hash entry. 
             /// </summary>
             public readonly Int32 Move;
 
             /// <summary>
             /// Contains the entry type, search depth, and search value associated with 
-            /// the HashEntry. The properties are rolled into a single value to save 
-            /// space. 
+            /// the hash entry. The properties are rolled into a single value for space
+            /// efficiency. 
             /// </summary>
             public readonly Int32 Misc;
 
             /// <summary>
-            /// Constructs a HashEntry.
+            /// Constructs a hash entry.
             /// </summary>
-            /// <param name="position">The position to associate with the HashEntry.</param>
+            /// <param name="position">The position to associate with the hash entry.</param>
             /// <param name="depth">The depth of the search.</param>
             /// <param name="ply">The ply of the search.</param>
             /// <param name="move">The best move for the position.</param>
@@ -119,27 +118,27 @@ namespace AbsoluteZero {
             }
 
             /// <summary>
-            /// Returns the type of the value associated with the HashEntry.
+            /// Returns the type of the value associated with the hash entry.
             /// </summary>
-            /// <returns>The type of the value associated with the HashEntry.</returns>
+            /// <returns>The type of the value associated with the hash entry.</returns>
             public new Int32 GetType() {
                 return Misc & TypeMask;
             }
 
             /// <summary>
-            /// Returns the search depth associated with the HashEntry. 
+            /// Returns the search depth associated with the hash entry. 
             /// </summary>
-            /// <returns>The search depth associated with the HashEntry.</returns>
+            /// <returns>The search depth associated with the hash entry.</returns>
             public Int32 GetDepth() {
                 return ((Misc >> DepthShift) - DepthNormal) & DepthMask;
             }
             
             /// <summary>
-            /// Returns the value associated with the HashEntry. The search ply is 
+            /// Returns the value associated with the hash entry. The search ply is 
             /// required to determine correct checkmate values. 
             /// </summary>
             /// <param name="ply">The ply of the search routine that is requesting the value.</param>
-            /// <returns>The value associated with the HashEntry.</returns>
+            /// <returns>The value associated with the hash entry.</returns>
             public Int32 GetValue(Int32 ply) {
                 Int32 value = (Misc >> ValueShift) - ValueNormal;
                 if (Math.Abs(value) > NearCheckmateValue)
