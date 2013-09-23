@@ -34,17 +34,17 @@ namespace AbsoluteZero {
         private const Int32 SpecialShift = CaptureShift + 4;
 
         /// <summary>
-        /// The mask used to extract the unshifted square from the move.
+        /// The mask for extracting the unshifted square from a move.
         /// </summary>
         private const Int32 SquareMask = (1 << 6) - 1;
 
         /// <summary>
-        /// The mask used to extract the unshifted square from the move.
+        /// The mask for extracting the unshifted square from a move.
         /// </summary>
         private const Int32 PieceMask = (1 << 4) - 1;
 
         /// <summary>
-        /// The mask used to extract the shifted type of the captured piece from the 
+        /// The mask for extracting the shifted type of the captured piece from a 
         /// move. 
         /// </summary>
         private const Int32 TypeCaptureShifted = PieceClass.Type << CaptureShift;
@@ -56,8 +56,7 @@ namespace AbsoluteZero {
         private const Int32 EmptyCaptureShifted = PieceClass.Empty << CaptureShift;
 
         /// <summary>
-        /// The mask used to extract the shifted type of the special piece from the 
-        /// move. 
+        /// The mask for extracting the shifted type of the special piece from a move. 
         /// </summary>
         private const Int32 TypeSpecialShifted = PieceClass.Type << SpecialShift;
 
@@ -80,8 +79,7 @@ namespace AbsoluteZero {
         private const Int32 QueenSpecialShifted = PieceClass.Queen << SpecialShift;
 
         /// <summary>
-        /// The mask used to extract the shifted type of the moving piece from the 
-        /// move. 
+        /// The mask for extracting the shifted type of the moving piece from a move. 
         /// </summary>
         private const Int32 TypePieceShifted = PieceClass.Type << PieceShift;
 

@@ -56,25 +56,24 @@ namespace AbsoluteZero {
             private const Int32 ValueShift = DepthShift + DepthBits;
 
             /// <summary>
-            /// The value used to normalize the depth in the miscellaneous field. Adding 
-            /// this factor will make the depth positive. 
+            /// The value for normalizing the depth in the miscellaneous field. Adding 
+            /// this factor will guarantee a positive depth. 
             /// </summary>
             private const Int32 DepthNormal = 1 << (DepthBits - 1);
 
             /// <summary>
-            /// The value used to normalize the value in the miscellaneous field. Adding 
-            /// this factor will make the value positive. 
+            /// The value for normalizing the value in the miscellaneous field. Adding 
+            /// this factor will guarantee a position value. 
             /// </summary>
             private const Int32 ValueNormal = Int16.MaxValue;
 
             /// <summary>
-            /// The mask used to extract the unshifted type from the miscellaneous field.
+            /// The mask for extracting the unshifted type from the miscellaneous field.
             /// </summary>
             private const Int32 TypeMask = (1 << TypeBits) - 1;
-
+            
             /// <summary>
-            /// The mask used to extract the unshifted depth from the miscellaneous 
-            /// field.
+            /// The mask for extracting the unshifted depth from the miscellaneous field.
             /// </summary>
             private const Int32 DepthMask = (1 << DepthBits) - 1;
 
