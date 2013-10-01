@@ -4,8 +4,8 @@ using System.Threading;
 
 namespace AbsoluteZero {
     class VisualPiece {
-        private static readonly Point PieceOffset = new Point(-4, 6);
-        private static readonly Font PieceFont = new Font("Arial", 30);
+        private static readonly Point PieceOffset = new Point(-4, 2);
+        private static readonly Font PieceFont = new Font("Tahoma", 30);
         private static readonly Brush PieceBrush = new SolidBrush(Color.Black);
 
         private Int32 _piece;
