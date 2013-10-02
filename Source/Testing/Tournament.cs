@@ -12,7 +12,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The string that determines output formatting. 
         /// </summary>
-        private static readonly String FormatString = String.Format("     {{0,-{0}}}{{1,-{0}}}{{2,-{0}}}{{3,-{0}}}{{4,-{0}}}{{5}}", ColumnWidth);
+        private static readonly String ResultFormat = String.Format("     {{0,-{0}}}{{1,-{0}}}{{2,-{0}}}{{3,-{0}}}{{4,-{0}}}{{5}}", ColumnWidth);
 
         /// <summary>
         /// The number of matches between file updates. 
@@ -46,7 +46,7 @@ namespace AbsoluteZero {
             Int32 draws = 0;
 
             using (StreamWriter sw = new StreamWriter(ID + ".txt")) {
-                sw.WriteLine(new String(' ', UpdateInterval) + String.Format(FormatString, "Games", "Wins", "Losses", "Draws", "Elo", "Error"));
+                sw.WriteLine(new String(' ', UpdateInterval) + String.Format(ResultFormat, "Games", "Wins", "Losses", "Draws", "Elo", "Error"));
                 sw.WriteLine("-----------------------------------------------------------------");
 
                 // Play the tournament. 
@@ -82,7 +82,7 @@ namespace AbsoluteZero {
                         String elo = Format.PrecisionAndSign(Elo.GetDifference(wins, losses, draws));
                         String error = "±" + Math.Round(Elo.GetError(wins, losses, draws));
 
-                        sw.WriteLine(String.Format(FormatString, games, wins, losses, draws, elo, error));
+                        sw.WriteLine(String.Format(ResultFormat, games, wins, losses, draws, elo, error));
                     }
                 }
             }

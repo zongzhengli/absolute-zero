@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace AbsoluteZero {
-    
+
     /// <summary>
     /// Encapsulates the interface component of the Absolute Zero chess engine. 
     /// </summary>
@@ -16,7 +16,7 @@ namespace AbsoluteZero {
         /// <returns>The best move as determined by the engine.</returns>
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {
-                Terminal.WriteLine(String.Format(FormatString, "Depth", "Value", "Principal Variation"));
+                Terminal.WriteLine(String.Format(PVFormat, "Depth", "Value", "Principal Variation"));
                 Terminal.WriteLine("-----------------------------------------------------------------------");
             }
 
@@ -35,11 +35,11 @@ namespace AbsoluteZero {
                 Terminal.WriteLine(position.ToStringAppend(
                     "Absolute Zero " + 8 * IntPtr.Size + "-bit",
                     "Version " + Version,
-                    String.Empty,
+                    "",
                     "Nodes visited: " + _totalNodes,
                     "Search time: " + Format.Precision(elapsed) + " ms",
                     "Search speed: " + Format.Precision(_totalNodes / elapsed) + " kN/s",
-                    String.Empty,
+                    "",
                     "Quiescence nodes: " + Format.Precision(100D * _quiescenceNodes / _totalNodes, 2) + "%",
                     "Hash usage: " + Format.Precision(100D * _table.Count / _table.Capacity, 2) + "%",
                     "Hash cutoffs: " + Format.Precision(100D * _hashCutoffs / _hashProbes, 2) + "%",
@@ -65,23 +65,21 @@ namespace AbsoluteZero {
             switch (Restrictions.Output) {
                 case OutputType.Standard:
                     String depthString = depth.ToString();
-                    String valueString = Format.PrecisionAndSign(.01 * value, 2);
-                    if (isMate)
-                        valueString = (value > 0 ? "+Mate " : "-Mate ") + movesToMate;
+                    String valueString = isMate ? (value > 0 ? "+Mate " : "-Mate ") + movesToMate :
+                                                  Format.PrecisionAndSign(.01 * value, 2);
                     String movesString = Identify.MovesAlgebraically(position, pv);
 
-                    return String.Format(FormatString, depthString, valueString, movesString);
+                    return String.Format(PVFormat, depthString, valueString, movesString);
 
                 case OutputType.Universal:
-                    String score = "cp " + value;
-                    if (isMate)
-                        score = "mate " + (value < 0 ? "-" : String.Empty) + movesToMate;
+                    String score = isMate ? "mate " + (value < 0 ? "-" : "") + movesToMate : 
+                                            "cp " + value;
                     Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
                     Int64 nps = (Int64)(1000 * _totalNodes / elapsed);
 
                     return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + _totalNodes + " nps " + nps + " pv " + Identify.Moves(pv);
             }
-            return String.Empty;
+            return "";
         }
 
         /// <summary>

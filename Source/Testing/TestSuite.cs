@@ -15,7 +15,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The string that determines output formatting. 
         /// </summary>
-        private static readonly String FormatString = String.Format("{{0,-{0}}}{{1,-{0}}}{{2,-{0}}}{{3}}", ColumnWidth);
+        private static readonly String ResultFormat = String.Format("{{0,-{0}}}{{1,-{0}}}{{2,-{0}}}{{3}}", ColumnWidth);
 
         /// <summary>
         /// The number of characters in a column for output. 
@@ -36,7 +36,7 @@ namespace AbsoluteZero {
         /// <returns>A list of positions in EPD form.</returns>
         public static List<String> Parse(String[] parameters) {
             Restrictions.Reset();
-            String fileName = String.Empty;
+            String fileName = null;
             for (Int32 i = 0; i < parameters.Length; i++)
                 if (parameters[i].EndsWith(".epd"))
                     fileName = parameters[i];
@@ -52,6 +52,8 @@ namespace AbsoluteZero {
                             Restrictions.Nodes = Int32.Parse(parameters[i + 1]);
                             break;
                     }
+            if (fileName == null)
+                return new List<String>() { Position.StartingFEN };
 
             List<String> epd = new List<String>();
             using (StreamReader sr = new StreamReader(fileName))
@@ -88,7 +90,7 @@ namespace AbsoluteZero {
             Int64 totalNodes = 0;
             Double totalTime = 0;
 
-            Terminal.WriteLine(String.Format(FormatString, "Position", "Result", "Time", "Nodes"));
+            Terminal.WriteLine(String.Format(ResultFormat, "Position", "Result", "Time", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
             foreach (String line in epd) {
                 List<String> terms = new List<String>(line.Replace(";", " ;").Split(' '));
@@ -107,7 +109,7 @@ namespace AbsoluteZero {
 
                 // Get the ID of the position. 
                 Int32 idIndex = line.IndexOf("id ") + 3;
-                String id = line.Substring(idIndex, line.IndexOf(';', idIndex) - idIndex).Replace("\"", String.Empty);
+                String id = line.Substring(idIndex, line.IndexOf(';', idIndex) - idIndex).Replace(@"\", "");
                 if (id.Length > IDWidthLimit)
                     id = id.Remove(IDWidthLimit) + "..";
 
@@ -133,7 +135,7 @@ namespace AbsoluteZero {
                 }
 
                 // Print the result for the search on the position. 
-                Terminal.WriteLine(String.Format(FormatString, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
+                Terminal.WriteLine(String.Format(ResultFormat, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
             }
 
             // Print final results after all positions have been searched. 

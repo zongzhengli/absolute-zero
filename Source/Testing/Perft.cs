@@ -42,9 +42,9 @@ namespace AbsoluteZero {
             const Int32 DepthWidth = 10;
             const Int32 TimeWidth = 11;
             const Int32 SpeedWidth = 14;
-            String formatString = "{0,-" + DepthWidth + "}{1,-" + TimeWidth + "}{2,-" + SpeedWidth + "}{3}";
+            String format = "{0,-" + DepthWidth + "}{1,-" + TimeWidth + "}{2,-" + SpeedWidth + "}{3}";
 
-            Terminal.WriteLine(String.Format(formatString, "Depth", "Time", "Speed", "Nodes"));
+            Terminal.WriteLine(String.Format(format, "Depth", "Time", "Speed", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
             for (Int32 d = 1; d <= depth; d++) {
                 Stopwatch stopwatch = Stopwatch.StartNew();
@@ -55,7 +55,7 @@ namespace AbsoluteZero {
                 String t = Format.Precision(elapsed) + " ms";
                 String s = Format.Precision(nodes / elapsed) + " kN/s";
 
-                Terminal.WriteLine(String.Format(formatString, d, t, s, nodes));
+                Terminal.WriteLine(String.Format(format, d, t, s, nodes));
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
         }
@@ -70,9 +70,9 @@ namespace AbsoluteZero {
         /// <param name="depth">The depth to perform divide with.</param>
         public static void Divide(Position position, Int32 depth) {
             const Int32 MoveWidth = 8;
-            String formatString = "{0,-" + MoveWidth + "}{1}";
+            String format = "{0,-" + MoveWidth + "}{1}";
 
-            Terminal.WriteLine(String.Format(formatString, "Move", "Nodes"));
+            Terminal.WriteLine(String.Format(format, "Move", "Nodes"));
             Terminal.WriteLine("-----------------------------------------------------------------------");
 
             List<Int32> moves = position.LegalMoves();
@@ -83,7 +83,7 @@ namespace AbsoluteZero {
                 position.Unmake(move);
                 totalNodes += nodes;
 
-                Terminal.WriteLine(String.Format(formatString, Identify.Move(move), nodes));
+                Terminal.WriteLine(String.Format(format, Identify.Move(move), nodes));
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
             Terminal.WriteLine("Moves: " + moves.Count);

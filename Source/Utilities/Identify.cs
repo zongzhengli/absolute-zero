@@ -107,7 +107,7 @@ namespace AbsoluteZero {
         /// <returns>The text representation of the given sequence of moves in coordinate notation.</returns>
         public static String Moves(List<Int32> moves) {
             if (moves.Count == 0)
-                return String.Empty;
+                return "";
             StringBuilder sequence = new StringBuilder(6 * moves.Count);
             foreach (Int32 move in moves) {
                 sequence.Append(Move(move));
@@ -128,13 +128,13 @@ namespace AbsoluteZero {
 
             // Determine the piece associated with the move. Pawns are not explicitly 
             // identified. 
-            String piece = (MoveClass.Piece(move) & Piece.Type) == PieceClass.Pawn ? String.Empty : PieceInitial(MoveClass.Piece(move));
+            String piece = (MoveClass.Piece(move) & Piece.Type) == PieceClass.Pawn ? "" : PieceInitial(MoveClass.Piece(move));
 
             // Determine the necessary disambiguation property for the move. If two or 
             // more pieces of the same type are moving to the same square, disambiguate 
             // with the square that it is moving from's file, rank, or both, in that 
             // order. 
-            String disambiguation = String.Empty;
+            String disambiguation = "";
             List<Int32> alternatives = new List<Int32>();
             foreach (Int32 alt in position.LegalMoves())
                 if (alt != move && MoveClass.Piece(alt) == MoveClass.Piece(move) && MoveClass.To(alt) == MoveClass.To(move))
@@ -160,19 +160,19 @@ namespace AbsoluteZero {
             // Determine if the capture flag is necessary for the move. If the capturing 
             // piece is a pawn, it is identified by the file it is moving from. 
             Boolean isCapture = MoveClass.IsCapture(move) || MoveClass.IsEnPassant(move);
-            String capture = isCapture ? "x" : String.Empty;
+            String capture = isCapture ? "x" : "";
             if ((MoveClass.Piece(move) & Piece.Type) == Piece.Pawn && isCapture)
-                if (disambiguation == String.Empty)
+                if (disambiguation == "")
                     disambiguation = File(MoveClass.From(move));
 
             // Determine the square property for the move. 
             String square = Square(MoveClass.To(move));
 
             // Determine the necessary promotion property for the move. 
-            String promotion = MoveClass.IsPromotion(move) ? "=" + PieceInitial(MoveClass.Special(move)) : String.Empty;
+            String promotion = MoveClass.IsPromotion(move) ? "=" + PieceInitial(MoveClass.Special(move)) : "";
 
             // Determine the necessary check property for the move. 
-            String check = String.Empty;
+            String check = "";
             position.Make(move);
             if (position.InCheck(position.SideToMove))
                 check = position.LegalMoves().Count > 0 ? "+" : "#";
@@ -191,7 +191,7 @@ namespace AbsoluteZero {
         /// <returns>The text representation of the given sequence of moves in algebraic notation</returns>
         public static String MovesAlgebraically(Position position, List<Int32> moves, IdentificationOptions options = IdentificationOptions.None) {
             if (moves.Count == 0)
-                return String.Empty;
+                return "";
 
             StringBuilder sequence = new StringBuilder(5 * moves.Count);
             Int32 halfMoves = 0;

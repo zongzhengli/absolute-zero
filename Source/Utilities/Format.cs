@@ -18,7 +18,7 @@ namespace AbsoluteZero {
         public static String Precision(Double value, Int32 digits = 0) {
             Double result = Math.Round(value, digits, MidpointRounding.AwayFromZero);
             if (digits > 0)
-                return result.ToString("N" + digits).Replace(",", String.Empty);
+                return result.ToString("N" + digits).Replace(",", "");
             return result.ToString();
         }
 
