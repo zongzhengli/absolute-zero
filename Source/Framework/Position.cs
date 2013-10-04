@@ -76,7 +76,7 @@ namespace AbsoluteZero {
         public Int32[] CastleQueenside = new Int32[2];
 
         /// <summary>
-        /// The square indicating enpassant is permitted and giving where a pawn 
+        /// The square indicating en passant is permitted and giving where a pawn 
         /// performing enpassant would move to. 
         /// </summary>
         public Int32 EnPassantSquare = InvalidSquare;
@@ -298,32 +298,77 @@ namespace AbsoluteZero {
             // Initialize move array index for populating moves. 
             Int32 index = 0;
 
-            // Populate castling moves. This is always fully tested for legality. 
+            // Consider castling. This is always fully tested for legality. 
             if (checkBitboard == 0) {
                 Int32 rank = -56 * SideToMove + 56;
+
                 if (CastleQueenside[SideToMove] > 0 && (Square[1 + rank] | Square[2 + rank] | Square[3 + rank]) == Piece.Empty)
                     if (!IsAttacked(SideToMove, 3 + rank) && !IsAttacked(SideToMove, 2 + rank))
                         moves[index++] = Move.Create(this, kingSquare, 2 + rank, SideToMove | Piece.King);
+
                 if (CastleKingside[SideToMove] > 0 && (Square[5 + rank] | Square[6 + rank]) == Piece.Empty)
                     if (!IsAttacked(SideToMove, 5 + rank) && !IsAttacked(SideToMove, 6 + rank))
                         moves[index++] = Move.Create(this, kingSquare, 6 + rank, SideToMove | Piece.King);
             }
 
+            // Consider en passant. This is always fully tested for legality. 
+            if (EnPassantSquare != InvalidSquare) {
+
+                UInt64 enPassantPawnBitboard = Bitboard[SideToMove | Piece.Pawn] & Attack.Pawn(EnPassantSquare, 1 - SideToMove);
+                UInt64 enPassantVictimBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
+                while (enPassantPawnBitboard != 0) {
+
+                    // Perform minimal state changes to mimick en passant and check for 
+                    // legality. 
+                    Int32 from = Bit.Pop(ref enPassantPawnBitboard);
+                    Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantVictimBitboard;
+                    OccupiedBitboard ^= enPassantVictimBitboard;
+                    OccupiedBitboard ^= (1UL << from) | (1UL << EnPassantSquare);
+
+                    // Check for legality and add move. 
+                    if (!IsAttacked(SideToMove, kingSquare))
+                        moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - SideToMove) | Piece.Pawn);
+
+                    // Revert state changes. 
+                    Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantVictimBitboard;
+                    OccupiedBitboard ^= enPassantVictimBitboard;
+                    OccupiedBitboard ^= (1UL << from) | (1UL << EnPassantSquare);
+                }
+            }
+
             // Initialize bitboards for determining move validity. 
             UInt64 opponentBitboard = Bitboard[(1 - SideToMove) | Piece.All];
             UInt64 targetBitboard = ~Bitboard[SideToMove | Piece.All];
-            UInt64 enPassantBitboard = 0;
-            UInt64 enPassantPawnBitboard = 0;
-            if (EnPassantSquare != InvalidSquare) {
-                enPassantBitboard = 1UL << EnPassantSquare;
-                enPassantPawnBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
+
+            // Consider king moves. This is always fully tested for legality. 
+            {
+                Int32 from = kingSquare;
+                UInt64 moveBitboard = targetBitboard & Attack.King(from);
+                while (moveBitboard != 0) {
+
+                    // Perform minimal state changes to mimick real move and check for legality. 
+                    Int32 to = Bit.Pop(ref moveBitboard);
+                    UInt64 occupiedBitboardCopy = OccupiedBitboard;
+                    Int32 capture = Square[to];
+                    Bitboard[capture] ^= 1UL << to;
+                    OccupiedBitboard ^= 1UL << from;
+                    OccupiedBitboard |= 1UL << to;
+
+                    // Check for legality and add move. 
+                    if (!IsAttacked(SideToMove, to))
+                        moves[index++] = Move.Create(this, from, to);
+
+                    // Revert state changes. 
+                    Bitboard[capture] ^= 1UL << to;
+                    OccupiedBitboard = occupiedBitboardCopy;
+                }
             }
 
             // Case 1. If we are not in check and there are no pinned pieces. We don't 
             //         need to test normal moves for legality. 
             if (checkBitboard == 0 & pinBitboard == 0) {
 
-                // Consider pawn moves. 
+                // Consider normal pawn moves. 
                 UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
                 while (pieceBitboard != 0) {
 
@@ -351,36 +396,13 @@ namespace AbsoluteZero {
                         } else
                             moves[index++] = Move.Create(this, from, to);
                     }
-
-                    // En passant is always fully tested for legality. 
-                    if ((enPassantBitboard & attackBitboard) != 0) {
-
-                        // Perform minimal state changes to mimick en passant and check for 
-                        // legality. 
-                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
-
-                        // Check for legality and add en passant. 
-                        if (!IsAttacked(SideToMove, kingSquare))
-                            moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - SideToMove) | Piece.Pawn);
-
-                        // Revert state changes. 
-                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
-                    }
                 }
 
                 // Consider knight moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Knight];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Knight(from);
-
-                    // Populate knight moves.
                     while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
@@ -390,12 +412,8 @@ namespace AbsoluteZero {
                 // Consider bishop moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
-
-                    // Populate bishop moves.
                     while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
@@ -405,12 +423,8 @@ namespace AbsoluteZero {
                 // Consider queen moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Queen];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
-
-                    // Populate queen moves.
                     while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
@@ -420,12 +434,8 @@ namespace AbsoluteZero {
                 // Consider rook moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Rook];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
-
-                    // Populate rook moves.
                     while (moveBitboard != 0) {
                         Int32 to = Bit.Pop(ref moveBitboard);
                         moves[index++] = Move.Create(this, from, to);
@@ -465,7 +475,7 @@ namespace AbsoluteZero {
                         OccupiedBitboard ^= 1UL << from;
                         OccupiedBitboard |= 1UL << to;
 
-                        // Check for legality and add pawn moves. 
+                        // Check for legality and add moves. 
                         if (!IsAttacked(SideToMove, kingSquare))
                             if ((to - 8) * (to - 55) > 0) {
                                 moves[index++] = Move.Create(this, from, to, SideToMove | Piece.Queen);
@@ -479,29 +489,13 @@ namespace AbsoluteZero {
                         Bitboard[capture] ^= 1UL << to;
                         OccupiedBitboard = occupiedBitboardCopy;
                     }
-
-                    // Generate en passant moves. 
-                    if ((enPassantBitboard & attackBitboard) > 0) {
-                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
-                        if (!IsAttacked(SideToMove, kingSquare))
-                            moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - SideToMove) | Piece.Pawn);
-                        Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= enPassantPawnBitboard;
-                        OccupiedBitboard ^= (1UL << from) | enPassantBitboard;
-                    }
                 }
 
                 // Consider knight moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Knight];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Knight(from);
-
-                    // Populate knight moves.
                     while (moveBitboard != 0) {
 
                         // Perform minimal state changes to mimick real move and check for legality. 
@@ -512,7 +506,7 @@ namespace AbsoluteZero {
                         OccupiedBitboard ^= 1UL << from;
                         OccupiedBitboard |= 1UL << to;
 
-                        // Check for legality and add knight moves. 
+                        // Check for legality and add move. 
                         if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
 
@@ -525,12 +519,8 @@ namespace AbsoluteZero {
                 // Consider bishop moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Bishop(from, OccupiedBitboard);
-
-                    // Populate bishop moves.
                     while (moveBitboard != 0) {
 
                         // Perform minimal state changes to mimick real move and check for legality. 
@@ -541,7 +531,7 @@ namespace AbsoluteZero {
                         OccupiedBitboard ^= 1UL << from;
                         OccupiedBitboard |= 1UL << to;
 
-                        // Check for legality and add bishop moves. 
+                        // Check for legality and add move. 
                         if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
 
@@ -554,12 +544,8 @@ namespace AbsoluteZero {
                 // Consider queen moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Queen];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Queen(from, OccupiedBitboard);
-
-                    // Populate queen moves.
                     while (moveBitboard != 0) {
 
                         // Perform minimal state changes to mimick real move and check for legality. 
@@ -570,7 +556,7 @@ namespace AbsoluteZero {
                         OccupiedBitboard ^= 1UL << from;
                         OccupiedBitboard |= 1UL << to;
 
-                        // Check for legality and add queen moves. 
+                        // Check for legality and add move. 
                         if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
 
@@ -583,12 +569,8 @@ namespace AbsoluteZero {
                 // Consider rook moves. 
                 pieceBitboard = Bitboard[SideToMove | Piece.Rook];
                 while (pieceBitboard != 0) {
-
-                    // Determine moves bitboard. 
                     Int32 from = Bit.Pop(ref pieceBitboard);
                     UInt64 moveBitboard = targetBitboard & Attack.Rook(from, OccupiedBitboard);
-
-                    // Populate rook moves.
                     while (moveBitboard != 0) {
 
                         // Perform minimal state changes to mimick real move and check for legality. 
@@ -599,7 +581,7 @@ namespace AbsoluteZero {
                         OccupiedBitboard ^= 1UL << from;
                         OccupiedBitboard |= 1UL << to;
 
-                        // Check for legality and add rook moves. 
+                        // Check for legality and add move. 
                         if (!IsAttacked(SideToMove, kingSquare))
                             moves[index++] = Move.Create(this, from, to);
 
@@ -607,33 +589,6 @@ namespace AbsoluteZero {
                         Bitboard[capture] ^= 1UL << to;
                         OccupiedBitboard = occupiedBitboardCopy;
                     }
-                }
-            }
-
-            // Consider king moves. This is always tested for legality. 
-            {
-                // Determine moves bitboard. 
-                Int32 from = kingSquare;
-                UInt64 moveBitboard = targetBitboard & Attack.King(from);
-
-                // Populate king moves.
-                while (moveBitboard != 0) {
-
-                    // Perform minimal state changes to mimick real move and check for legality. 
-                    Int32 to = Bit.Pop(ref moveBitboard);
-                    UInt64 occupiedBitboardCopy = OccupiedBitboard;
-                    Int32 capture = Square[to];
-                    Bitboard[capture] ^= 1UL << to;
-                    OccupiedBitboard ^= 1UL << from;
-                    OccupiedBitboard |= 1UL << to;
-
-                    // Check for legality and add king moves. 
-                    if (!IsAttacked(SideToMove, to))
-                        moves[index++] = Move.Create(this, from, to);
-
-                    // Revert state changes. 
-                    Bitboard[capture] ^= 1UL << to;
-                    OccupiedBitboard = occupiedBitboardCopy;
                 }
             }
             return index;
