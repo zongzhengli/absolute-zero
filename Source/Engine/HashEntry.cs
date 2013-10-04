@@ -83,7 +83,7 @@ namespace AbsoluteZero {
             public const Int32 Size = 16;
 
             /// <summary>
-            /// The zobrist key of the position associated with the hash entry. 
+            /// The Zobrist key of the position associated with the hash entry. 
             /// </summary>
             public readonly UInt64 Key;
 

@@ -108,8 +108,11 @@ namespace AbsoluteZero {
         /// </summary>
         public UInt64[] ZobristKeyHistory = new UInt64[HalfMovesLimit];
 
-        public Position() { }
-
+        /// <summary>
+        /// Constructs a position with the given FEN string. If the FEN string is 
+        /// invalid the start position is used. 
+        /// </summary>
+        /// <param name="fen">The FEN of the position. </param>
         public Position(String fen) {
             try {
                 ParseFen(fen);
@@ -118,23 +121,47 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Constructs a position with an invalid state. This constructor is used for 
+        /// cloning. 
+        /// </summary>
+        private Position() { }
+
+        /// <summary>
+        /// Parses the given FEN string and changes the position's state to represent 
+        /// that of the FEN string. 
+        /// </summary>
+        /// <param name="fen">The FEN string to parse.</param>
         private void ParseFen(String fen) {
+
+            // Clear squares. 
             Array.Clear(Square, 0, Square.Length);
-            String[] terms = fen.Trim().Split(' ');
+
+            // Split FEN into terms based on whitespace. 
+            String[] terms = fen.Split(new Char[0], StringSplitOptions.RemoveEmptyEntries);
+
             Int32 file = 0;
             Int32 rank = 0;
 
+            // Determine piece locations and populate squares. 
             foreach (Char c in terms[0]) {
-                Char upperC = Char.ToUpperInvariant(c);
-                Int32 colour = (c == upperC) ? Piece.White : Piece.Black;
-                switch (upperC) {
+                Char uc = Char.ToUpperInvariant(c);
+                Int32 colour = (c == uc) ? Piece.White : Piece.Black;
+
+                switch (uc) {
+
+                    // Number denoting blank squares. 
                     default:
-                        file += upperC - '0';
+                        file += uc - '0';
                         break;
+
+                    // Separator denoting new rank. 
                     case '/':
                         file = 0;
                         rank++;
                         break;
+
+                    // Piece abbreviations. 
                     case 'K':
                         Square[file++ + rank * 8] = colour | Piece.King;
                         break;
@@ -156,8 +183,10 @@ namespace AbsoluteZero {
                 }
             }
 
+            // Determine side to move. 
             SideToMove = (terms[1] == "w") ? Piece.White : Piece.Black;
 
+            // Determine castling rights. 
             if (terms.Length > 2) {
                 if (terms[2].Contains("Q"))
                     CastleQueenside[Piece.White] = 1;
@@ -169,10 +198,12 @@ namespace AbsoluteZero {
                     CastleKingside[Piece.Black] = 1;
             }
 
+            // Determine en passant square. 
             if (terms.Length > 3)
                 if (terms[3] != "-")
                     EnPassantSquare = SquareAt(terms[3]);
 
+            // Determine fifty-moves clock and plies advanced. 
             if (terms.Length > 5) {
                 FiftyMovesClock = Int32.Parse(terms[4]);
                 Int32 moveNumber = Int32.Parse(terms[5]);
@@ -181,11 +212,13 @@ namespace AbsoluteZero {
                 FiftyMovesClock = Math.Min(FiftyMovesClock, HalfMoves);
             }
 
+            // Initialize history information. 
             for (Int32 i = 0; i < EnPassantHistory.Length; i++)
                 EnPassantHistory[i] = InvalidSquare;
             EnPassantHistory[HalfMoves] = EnPassantSquare;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
 
+            // Initialize bitboards and material information. 
             for (Int32 square = 0; square < Square.Length; square++)
                 if (Square[square] != Piece.Empty) {
                     Int32 colour = Square[square] & Piece.Colour;
@@ -196,21 +229,33 @@ namespace AbsoluteZero {
                         Material[colour] += Zero.PieceValue[Square[square]];
                 }
 
+            // Initialize Zobrist key and history. 
             ZobristKey = GenerateZobristKey();
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
 
+        /// <summary>
+        /// Populates the given array with the legal moves for the position and 
+        /// returns the number of legal moves. 
+        /// </summary>
+        /// <param name="moves">The array to populate with the legal moves.</param>
+        /// <returns>The number of legal moves for the position.</returns>
         public Int32 LegalMoves(Int32[] moves) {
-            UInt64 bishopQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Bishop] | Bitboard[(1 - SideToMove) | Piece.Queen];
-            UInt64 rookQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Rook] | Bitboard[(1 - SideToMove) | Piece.Queen];
+
+            // Initialize bitboards and king square for determining checks and pins. 
+            UInt64 enemyBishopQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Bishop] | Bitboard[(1 - SideToMove) | Piece.Queen];
+            UInt64 enemyRookQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Rook] | Bitboard[(1 - SideToMove) | Piece.Queen];
             UInt64 checkBitboard = 0;
             UInt64 pinBitboard = 0;
             Int32 kingSquare = Bit.Read(Bitboard[SideToMove | Piece.King]);
 
+            // Consider knight and pawn checks. 
             checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Knight] & Attack.Knight(kingSquare);
             checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Pawn] & Attack.Pawn(kingSquare, SideToMove);
-            if ((bishopQueenBitboard & Bit.Diagonals[kingSquare]) != 0) {
-                checkBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
+
+            // Consider bishop and queen checks and pins. 
+            if ((enemyBishopQueenBitboard & Bit.Diagonals[kingSquare]) != 0) {
+                checkBitboard |= enemyBishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
 
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
                 UInt64 pinnedBitboard = Bit.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
@@ -226,10 +271,12 @@ namespace AbsoluteZero {
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
 
-                pinBitboard |= bishopQueenBitboard & Attack.Bishop(kingSquare, occupiedBitboardCopy);
+                pinBitboard |= enemyBishopQueenBitboard & Attack.Bishop(kingSquare, occupiedBitboardCopy);
             }
-            if ((rookQueenBitboard & Bit.Axes[kingSquare]) != 0) {
-                checkBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
+
+            // Consider rook and queen checks and pins. 
+            if ((enemyRookQueenBitboard & Bit.Axes[kingSquare]) != 0) {
+                checkBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
 
                 UInt64 occupiedBitboardCopy = OccupiedBitboard;
                 UInt64 pinnedBitboard = Bit.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
@@ -245,12 +292,13 @@ namespace AbsoluteZero {
                 if (pinnedBitboard != 0)
                     occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
 
-                pinBitboard |= rookQueenBitboard & Attack.Rook(kingSquare, occupiedBitboardCopy);
+                pinBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, occupiedBitboardCopy);
             }
 
+            // Initialize move array index for populating moves. 
             Int32 index = 0;
 
-            // Castling is always fully tested for legality. 
+            // Populate castling moves. This is always fully tested for legality. 
             if (checkBitboard == 0) {
                 Int32 rank = -56 * SideToMove + 56;
                 if (CastleQueenside[SideToMove] > 0 && (Square[1 + rank] | Square[2 + rank] | Square[3 + rank]) == Piece.Empty)
@@ -261,6 +309,7 @@ namespace AbsoluteZero {
                         moves[index++] = Move.Create(this, kingSquare, 6 + rank, SideToMove | Piece.King);
             }
 
+            // Initialize bitboards for determining move validity. 
             UInt64 opponentBitboard = Bitboard[(1 - SideToMove) | Piece.All];
             UInt64 targetBitboard = ~Bitboard[SideToMove | Piece.All];
             UInt64 enPassantBitboard = 0;
@@ -270,8 +319,11 @@ namespace AbsoluteZero {
                 enPassantPawnBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
             }
 
-            // Case 1. If we are not in check and there are no pinned pieces, we don't need to test normal moves for legality. 
+            // Case 1. If we are not in check and there are no pinned pieces, we don't 
+            //         need to test normal moves for legality. 
             if (checkBitboard == 0 & pinBitboard == 0) {
+
+                // Consider pawn moves. 
                 UInt64 pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
                 while (pieceBitboard != 0) {
                     Int32 from = Bit.Pop(ref pieceBitboard);
@@ -281,6 +333,7 @@ namespace AbsoluteZero {
                         moveBitboard |= ~OccupiedBitboard & (1UL << (from + 32 * SideToMove - 16));
                     UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
                     moveBitboard |= opponentBitboard & attackBitboard;
+
                     while (moveBitboard != 0) {
                         to = Bit.Pop(ref moveBitboard);
                         if ((to - 8) * (to - 55) > 0) {
