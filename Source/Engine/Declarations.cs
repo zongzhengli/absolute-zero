@@ -85,8 +85,8 @@ namespace AbsoluteZero {
         private static readonly UInt64[] ShortAdjacentFilesBitboard = new UInt64[64];
         private static readonly UInt64[][] PawnBlockadeBitboard = { new UInt64[64], new UInt64[64] };
         private static readonly UInt64[][] ShortForwardFileBitboard = { new UInt64[64], new UInt64[64] };
-        private const UInt64 NotAFileBitboard = 18374403900871474942UL;
-        private const UInt64 NotHFileBitboard = 9187201950435737471UL;
+        private const UInt64 NotAFileBitboard = 0xFEFEFEFEFEFEFEFEUL;
+        private const UInt64 NotHFileBitboard = 0x7F7F7F7F7F7F7F7FUL;
 
         private static readonly Int32[][] RectilinearDistance = new Int32[64][];
         private static readonly Int32[][] ChebyshevDistance = new Int32[64][];

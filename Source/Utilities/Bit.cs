@@ -92,7 +92,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The bitboard of all light squares. 
         /// </summary>
-        public const UInt64 LightSquares = 12273903644374837845UL;
+        public const UInt64 LightSquares = 0xAA55AA55AA55AA55UL;
 
         /// <summary>
         /// The collection of indices for calculating the index of a single bit. 
@@ -157,7 +157,7 @@ namespace AbsoluteZero {
         /// <param name="bitboard">The bitboard to scan.</param>
         /// <returns>The index of the least significant set bit.</returns>
         public static Int32 Scan(UInt64 bitboard) {
-            return BitIndex[((bitboard & (UInt64)(-(Int64)bitboard)) * 0x07EDD5E59A4E28C2UL) >> 58];
+            return BitIndex[((bitboard & (0UL - bitboard)) * 0x07EDD5E59A4E28C2UL) >> 58];
         }
 
         /// <summary>
