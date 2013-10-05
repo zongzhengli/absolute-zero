@@ -242,57 +242,64 @@ namespace AbsoluteZero {
         /// <returns>The number of legal moves for the position.</returns>
         public Int32 LegalMoves(Int32[] moves) {
 
-            // Initialize bitboards and king square for determining checks and pins. 
-            UInt64 enemyBishopQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Bishop] | Bitboard[(1 - SideToMove) | Piece.Queen];
-            UInt64 enemyRookQueenBitboard = Bitboard[(1 - SideToMove) | Piece.Rook] | Bitboard[(1 - SideToMove) | Piece.Queen];
-            UInt64 checkBitboard = 0;
-            UInt64 pinBitboard = 0;
+            // Initialize common bitboards and squares. 
+            Int32 enemy = 1 - SideToMove;
             Int32 kingSquare = Bit.Read(Bitboard[SideToMove | Piece.King]);
 
+            UInt64 enemyBishopQueenBitboard = Bitboard[enemy | Piece.Bishop] | Bitboard[enemy | Piece.Queen];
+            UInt64 enemyRookQueenBitboard = Bitboard[enemy | Piece.Rook] | Bitboard[enemy | Piece.Queen];
+            UInt64 friendlyBitboard = Bitboard[SideToMove | Piece.All];
+
+            // Initialize check and pin source bitboards. 
+            UInt64 checkBitboard = 0;
+            UInt64 pinBitboard = 0;
+
             // Consider knight and pawn checks. 
-            checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Knight] & Attack.Knight(kingSquare);
-            checkBitboard |= Bitboard[(1 - SideToMove) | Piece.Pawn] & Attack.Pawn(kingSquare, SideToMove);
+            checkBitboard |= Bitboard[enemy | Piece.Knight] & Attack.Knight(kingSquare);
+            checkBitboard |= Bitboard[enemy | Piece.Pawn] & Attack.Pawn(kingSquare, SideToMove);
 
             // Consider bishop and queen checks and pins. 
             if ((enemyBishopQueenBitboard & Bit.Diagonals[kingSquare]) != 0) {
                 checkBitboard |= enemyBishopQueenBitboard & Attack.Bishop(kingSquare, OccupiedBitboard);
 
-                UInt64 occupiedBitboardCopy = OccupiedBitboard;
-                UInt64 pinnedBitboard = Bit.RayNE[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
-                pinnedBitboard = Bit.RayNW[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
-                pinnedBitboard = Bit.RaySE[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
-                pinnedBitboard = Bit.RaySW[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
+                UInt64 defencelessBitboard = OccupiedBitboard;
+                UInt64 defenceBitboard = Bit.RayNE[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                defenceBitboard = Bit.RayNW[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                defenceBitboard = Bit.RaySE[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                defenceBitboard = Bit.RaySW[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.Scan(defenceBitboard);
 
-                pinBitboard |= enemyBishopQueenBitboard & Attack.Bishop(kingSquare, occupiedBitboardCopy);
+                if (defencelessBitboard != OccupiedBitboard)
+                    pinBitboard |= enemyBishopQueenBitboard & Attack.Bishop(kingSquare, defencelessBitboard);
             }
 
             // Consider rook and queen checks and pins. 
             if ((enemyRookQueenBitboard & Bit.Axes[kingSquare]) != 0) {
                 checkBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, OccupiedBitboard);
 
-                UInt64 occupiedBitboardCopy = OccupiedBitboard;
-                UInt64 pinnedBitboard = Bit.RayN[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
-                pinnedBitboard = Bit.RayE[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
-                pinnedBitboard = Bit.RayS[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.Scan(pinnedBitboard);
-                pinnedBitboard = Bit.RayW[kingSquare] & Bitboard[SideToMove | Piece.All];
-                if (pinnedBitboard != 0)
-                    occupiedBitboardCopy ^= 1UL << Bit.ScanReverse(pinnedBitboard);
+                UInt64 defencelessBitboard = OccupiedBitboard;
+                UInt64 defenceBitboard = Bit.RayN[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                defenceBitboard = Bit.RayE[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                defenceBitboard = Bit.RayS[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                defenceBitboard = Bit.RayW[kingSquare] & friendlyBitboard;
+                if (defenceBitboard != 0)
+                    defencelessBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
 
-                pinBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, occupiedBitboardCopy);
+                if (defencelessBitboard != OccupiedBitboard)
+                    pinBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, defencelessBitboard);
             }
 
             // Initialize move array index for populating moves. 
@@ -314,31 +321,31 @@ namespace AbsoluteZero {
             // Consider en passant. This is always fully tested for legality. 
             if (EnPassantSquare != InvalidSquare) {
 
-                UInt64 enPassantPawnBitboard = Bitboard[SideToMove | Piece.Pawn] & Attack.Pawn(EnPassantSquare, 1 - SideToMove);
-                UInt64 enPassantVictimBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
+                UInt64 enPassantPawnBitboard = Bitboard[SideToMove | Piece.Pawn] & Attack.Pawn(EnPassantSquare, enemy);
+                UInt64 enPassantVictimBitboard = Move.Pawn(EnPassantSquare, enemy);
                 while (enPassantPawnBitboard != 0) {
 
                     // Perform minimal state changes to mimick en passant and check for 
                     // legality. 
                     Int32 from = Bit.Pop(ref enPassantPawnBitboard);
-                    Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantVictimBitboard;
+                    Bitboard[enemy | Piece.Pawn] ^= enPassantVictimBitboard;
                     OccupiedBitboard ^= enPassantVictimBitboard;
                     OccupiedBitboard ^= (1UL << from) | (1UL << EnPassantSquare);
 
                     // Check for legality and add move. 
                     if (!IsAttacked(SideToMove, kingSquare))
-                        moves[index++] = Move.Create(this, from, EnPassantSquare, (1 - SideToMove) | Piece.Pawn);
+                        moves[index++] = Move.Create(this, from, EnPassantSquare, enemy | Piece.Pawn);
 
                     // Revert state changes. 
-                    Bitboard[(1 - SideToMove) | Piece.Pawn] ^= enPassantVictimBitboard;
+                    Bitboard[enemy | Piece.Pawn] ^= enPassantVictimBitboard;
                     OccupiedBitboard ^= enPassantVictimBitboard;
                     OccupiedBitboard ^= (1UL << from) | (1UL << EnPassantSquare);
                 }
             }
 
             // Initialize bitboards for determining move validity. 
-            UInt64 opponentBitboard = Bitboard[(1 - SideToMove) | Piece.All];
-            UInt64 targetBitboard = ~Bitboard[SideToMove | Piece.All];
+            UInt64 enemyBitboard = Bitboard[enemy | Piece.All];
+            UInt64 targetBitboard = ~friendlyBitboard;
 
             // Consider king moves. This is always fully tested for legality. 
             {
@@ -383,7 +390,7 @@ namespace AbsoluteZero {
 
                     // Consider captures. 
                     UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
-                    moveBitboard |= opponentBitboard & attackBitboard;
+                    moveBitboard |= enemyBitboard & attackBitboard;
 
                     // Populate pawn moves. 
                     while (moveBitboard != 0) {
@@ -462,7 +469,7 @@ namespace AbsoluteZero {
 
                     // Consider captures. 
                     UInt64 attackBitboard = Attack.Pawn(from, SideToMove);
-                    moveBitboard |= opponentBitboard & attackBitboard;
+                    moveBitboard |= enemyBitboard & attackBitboard;
 
                     // Populate pawn moves. 
                     while (moveBitboard != 0) {
@@ -593,6 +600,7 @@ namespace AbsoluteZero {
             }
             return index;
         }
+        public static double a = 0, b = 0, c = 0, d = 0, e = 0, x = 0, y = 0;
 
         public Int32 PseudoQuiescenceMoves(Int32[] moves) {
             Int32 index = 0;
