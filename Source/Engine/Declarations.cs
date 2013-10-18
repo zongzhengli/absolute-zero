@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace AbsoluteZero {
 
@@ -12,7 +11,6 @@ namespace AbsoluteZero {
     partial class Zero {
 
         // Miscellaneous constants. 
-        public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
         public Boolean NewFeature = false;
 
         // Formatting constants. 
@@ -22,10 +20,10 @@ namespace AbsoluteZero {
         private const Int32 ValueWidth = 9;
 
         // Search constants. 
-        private const Int32 DepthLimit = 64;
-        private const Int32 PlyLimit = DepthLimit + 64;
-        private const Int32 MovesLimit = 256;
-        public const Int32 HashAllocation = 64;
+        public const Int32 DepthLimit = 64;
+        public const Int32 PlyLimit = DepthLimit + 64;
+        public const Int32 MovesLimit = 256;
+        public const Int32 DefaultHashAllocation = 64;
         public const Int32 NodeResolution = 1000;
 
         public Int32 AspirationWindow = 17;
@@ -94,7 +92,7 @@ namespace AbsoluteZero {
         private static readonly Single PhaseCoefficient;
 
         // Search variables. 
-        private HashTable _table = new HashTable(HashAllocation);
+        private HashTable _table = new HashTable(DefaultHashAllocation << 20);
         private Int32[][] _generatedMoves = new Int32[PlyLimit][];
         private Int32[][] _pvMoves = new Int32[PlyLimit][];
         private Int32[] _pvLength = new Int32[PlyLimit];

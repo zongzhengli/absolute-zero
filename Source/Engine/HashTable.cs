@@ -26,12 +26,27 @@ namespace AbsoluteZero {
             /// <summary>
             /// The number of entries stored in the hash table. 
             /// </summary>
-            public Int32 Count = 0;
+            public Int32 Count {
+                get;
+                private set;
+            }
 
             /// <summary>
             /// The number of entries that can be stored in the hash table. 
             /// </summary>
-            public Int32 Capacity;
+            public Int32 Capacity {
+                get;
+                private set;
+            }
+
+            /// <summary>
+            /// The size of the hash table in bytes. 
+            /// </summary>
+            public Int32 Size {
+                get {
+                    return HashEntry.Size * Capacity;
+                }
+            }
 
             /// <summary>
             /// Constructs a hash table of the given size in bytes. 
@@ -53,7 +68,7 @@ namespace AbsoluteZero {
             public bool TryProbe(UInt64 key, out HashEntry entry) {
                 return (entry = _entries[key % _indexer]).Key == key;
             }
-            
+
             /// <summary>
             /// Stores the given entry in the hash table. 
             /// </summary>
@@ -71,15 +86,6 @@ namespace AbsoluteZero {
             public void Clear() {
                 _entries = new HashEntry[Capacity];
                 Count = 0;
-            }
-
-            /// <summary>
-            /// The size of the hash table in bytes. 
-            /// </summary>
-            public Int32 Size {
-                get {
-                    return HashEntry.Size * Capacity;
-                }
             }
         }
     }

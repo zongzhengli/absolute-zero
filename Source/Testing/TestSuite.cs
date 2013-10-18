@@ -125,7 +125,7 @@ namespace AbsoluteZero {
                 Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
                 totalPositions++;
                 totalTime += elapsed;
-                totalNodes += engine.GetNodes();
+                totalNodes += engine.Nodes;
 
                 // Determine whether the engine found a solution. 
                 String result = "fail";
@@ -135,7 +135,7 @@ namespace AbsoluteZero {
                 }
 
                 // Print the result for the search on the position. 
-                Terminal.WriteLine(String.Format(ResultFormat, id, result, Format.Precision(elapsed) + " ms", engine.GetNodes()));
+                Terminal.WriteLine(String.Format(ResultFormat, id, result, Format.Precision(elapsed) + " ms", engine.Nodes));
             }
 
             // Print final results after all positions have been searched. 

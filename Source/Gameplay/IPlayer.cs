@@ -2,11 +2,11 @@
 
 namespace AbsoluteZero {
     interface IPlayer {
+        String Name { get; }
+
+        Boolean AcceptDraw { get; }
+
         Int32 GetMove(Position position);
-
-        String GetName();
-
-        Boolean AcceptDraw();
 
         void Stop();
 

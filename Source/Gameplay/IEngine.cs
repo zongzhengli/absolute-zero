@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace AbsoluteZero {
     interface IEngine : IPlayer {
-        List<Int32> GetPV();
+        List<Int32> PrincipalVariation { get; }
 
-        Int64 GetNodes();
+        Int64 Nodes { get; }
 
-        void AllocateHash(Int32 megabytes);
+        Int32 HashAllocation { get; set; }
     }
 }

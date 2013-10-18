@@ -119,7 +119,7 @@ namespace AbsoluteZero {
                         _state = GameState.Draw;
                         return;
                     }
-                    if (player is IEngine && player.AcceptDraw()) {
+                    if (player is IEngine && player.AcceptDraw) {
                         if (position.FiftyMovesClock >= 100) {
                             _message = "Draw by fifty-move rule!";
                             _state = GameState.Draw;
@@ -178,7 +178,7 @@ namespace AbsoluteZero {
         /// </summary>
         public void OfferDraw() {
             IPlayer offeree = White is IEngine ? White : Black;
-            if (offeree.AcceptDraw()) {
+            if (offeree.AcceptDraw) {
                 End();
                 _message = "Draw by agreement!";
                 _state = GameState.Draw;
@@ -263,9 +263,9 @@ namespace AbsoluteZero {
             StringBuilder sequence = new StringBuilder();
             sequence.Append("[Date \"" + _date + "\"]");
             sequence.Append(Environment.NewLine);
-            sequence.Append("[White \"" + White.GetName() + "\"]");
+            sequence.Append("[White \"" + White.Name + "\"]");
             sequence.Append(Environment.NewLine);
-            sequence.Append("[Black \"" + Black.GetName() + "\"]");
+            sequence.Append("[Black \"" + Black.Name + "\"]");
             sequence.Append(Environment.NewLine);
             String result = "*";
             switch (_state) {

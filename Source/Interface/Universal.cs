@@ -29,7 +29,7 @@ namespace AbsoluteZero {
                         Terminal.WriteLine("Unknown command. Enter 'help' for assistance.");
                         break;
                     case "uci":
-                        Terminal.WriteLine("id name Absolute Zero " + Zero.Version);
+                        Terminal.WriteLine("id name " + engine.Name);
                         Terminal.WriteLine("id author Zong Zheng Li");
                         Terminal.WriteLine("uciok");
                         break;

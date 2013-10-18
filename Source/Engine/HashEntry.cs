@@ -36,6 +36,11 @@ namespace AbsoluteZero {
             public const Int32 Beta = 3;
 
             /// <summary>
+            /// The size of a hash entry in bytes. 
+            /// </summary>
+            public const Int32 Size = 16;
+
+            /// <summary>
             /// The number of bits used for encoding the type in the miscellaneous field. 
             /// </summary>
             private const Int32 TypeBits = 2;
@@ -76,11 +81,6 @@ namespace AbsoluteZero {
             /// The mask for extracting the unshifted depth from the miscellaneous field.
             /// </summary>
             private const Int32 DepthMask = (1 << DepthBits) - 1;
-
-            /// <summary>
-            /// The size of a hash entry in bytes. 
-            /// </summary>
-            public const Int32 Size = 16;
 
             /// <summary>
             /// The Zobrist key of the position associated with the hash entry. 

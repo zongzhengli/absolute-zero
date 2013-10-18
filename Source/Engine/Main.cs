@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace AbsoluteZero {
 
@@ -7,6 +9,65 @@ namespace AbsoluteZero {
     /// Encapsulates the interface component of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero : IEngine {
+
+        /// <summary>
+        /// The version string of the engine. 
+        /// </summary>
+        public static String Version {
+            get {
+                return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+            }
+        }
+
+        /// <summary>
+        /// The principal variation for the most recent search. 
+        /// </summary>
+        public List<Int32> PrincipalVariation {
+            get {
+                return _pv;
+            }
+        }
+
+        /// <summary>
+        /// The number of nodes visited during the most recent search. 
+        /// </summary>
+        public Int64 Nodes {
+            get {
+                return _totalNodes;
+            }
+        }
+
+        /// <summary>
+        /// The size of the transposition table in megabytes. Entries in the table 
+        /// are cleared when the size changes. 
+        /// </summary>
+        public Int32 HashAllocation {
+            get {
+                return _table.Size >> 20;
+            }
+            set {
+                if (value != _table.Size >> 20)
+                    _table = new HashTable(value << 20);
+            }
+        }
+
+        /// <summary>
+        /// The name of the engine. 
+        /// </summary>
+        public String Name {
+            get {
+                return "Absolute Zero " + Version;
+            }
+        }
+
+        /// <summary>
+        /// Whether the engine is willing to accept a draw offer. 
+        /// </summary>
+        public Boolean AcceptDraw {
+            get {
+                return _finalAlpha <= DrawValue;
+            }
+        }
 
         /// <summary>
         /// Returns the best move as determined by the engine. This method may write 
@@ -24,7 +85,7 @@ namespace AbsoluteZero {
             _stopwatch.Reset();
             _stopwatch.Start();
 
-            Int32 move = SearchRoot(position);
+            Int32 move = Search(position);
             _stopwatch.Stop();
             Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
 
@@ -51,6 +112,13 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Terminates the ongoing search if applicable. 
+        /// </summary>
+        public void Stop() {
+            _abortSearch = true;
+        }
+
+        /// <summary>
         /// Returns a string that describes the given principal variation. 
         /// </summary>
         /// <param name="position">The position the principal variation is to be played on.</param>
@@ -72,7 +140,7 @@ namespace AbsoluteZero {
                     return String.Format(PVFormat, depthString, valueString, movesString);
 
                 case OutputType.Universal:
-                    String score = isMate ? "mate " + (value < 0 ? "-" : "") + movesToMate : 
+                    String score = isMate ? "mate " + (value < 0 ? "-" : "") + movesToMate :
                                             "cp " + value;
                     Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
                     Int64 nps = (Int64)(1000 * _totalNodes / elapsed);
@@ -99,41 +167,6 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns the principal variation for the last completed search. 
-        /// </summary>
-        /// <returns>The principal variation for the last completed search.</returns>
-        public List<Int32> GetPV() {
-            return _pv;
-        }
-
-        /// <summary>
-        /// Returns the number of nodes visited during the most recent search, which 
-        /// may be an ongoing search or the last completed search. 
-        /// </summary>
-        /// <returns>The number of nodes visited during the most recent search.</returns>
-        public Int64 GetNodes() {
-            return _totalNodes;
-        }
-
-        /// <summary>
-        /// Sets the size of the transposition table to the given size in megabytes. 
-        /// Unless the given size is the same as the current size, all entries in the 
-        /// table are removed. 
-        /// </summary>
-        /// <param name="megabytes">The number of megabytes to allocate for the tranposition table.</param>
-        public void AllocateHash(Int32 megabytes) {
-            if (megabytes << 20 != _table.Size)
-                _table = new HashTable(megabytes << 20);
-        }
-
-        /// <summary>
-        /// Terminates the ongoing search if applicable. 
-        /// </summary>
-        public void Stop() {
-            _abortSearch = true;
-        }
-
-        /// <summary>
         /// Resets the engine to its initial state. 
         /// </summary>
         public void Reset() {
@@ -142,22 +175,6 @@ namespace AbsoluteZero {
                 Array.Clear(_killerMoves[i], 0, _killerMoves[i].Length);
             _finalAlpha = 0;
             _rootAlpha = 0;
-        }
-
-        /// <summary>
-        /// Returns whether the engine is willing to accept a draw offer. 
-        /// </summary>
-        /// <returns>Whether the engine is willing to accept a draw offer.</returns>
-        public Boolean AcceptDraw() {
-            return _finalAlpha <= DrawValue;
-        }
-
-        /// <summary>
-        /// Returns the name of the engine. 
-        /// </summary>
-        /// <returns>The name of the engine.</returns>
-        public String GetName() {
-            return "Absolute Zero " + Version;
         }
 
         /// <summary>

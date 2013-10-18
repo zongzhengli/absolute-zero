@@ -42,6 +42,25 @@ namespace AbsoluteZero {
         private Position _currentPosition;
 
         /// <summary>
+        /// The name of the player. 
+        /// </summary>
+        /// <returns>The name of the player.</returns>
+        public String Name {
+            get {
+                return "Human";
+            }
+        }
+
+        /// <summary>
+        /// Whether the player is willing to accept a draw offer. 
+        /// </summary>
+        public Boolean AcceptDraw {
+            get {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Returns the player's move for the given position. 
         /// </summary>
         /// <param name="position">The position to make a move on.</param>
@@ -53,14 +72,6 @@ namespace AbsoluteZero {
             _waitForMove.WaitOne();
             _isMoving = false;
             return CreateMove(position, _initialSquare, _finalSquare);
-        }
-
-        /// <summary>
-        /// Return whether the player is willing to accept a draw offer. 
-        /// </summary>
-        /// <returns>Whether the player is willing to accept a draw offer.</returns>
-        public Boolean AcceptDraw() {
-            return false;
         }
         
         /// <summary>
@@ -81,11 +92,33 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns the name of the player. 
+        /// Handles a mouse up event.
         /// </summary>
-        /// <returns>The name of the player.</returns>
-        public String GetName() {
-            return "Human";
+        /// <param name="e">The mouse event.</param>
+        public void MouseUpEvent(MouseEventArgs e) {
+            if (!_isMoving)
+                return;
+            Int32 square = Position.SquareAt(e.Location);
+            if (_currentPosition.Square[square] != Piece.Empty && (_currentPosition.Square[square] & Piece.Colour) == _currentPosition.SideToMove) {
+                if (_initialSquare == square)
+                    _initialSquare = Position.InvalidSquare;
+                else {
+                    _finalSquare = Position.InvalidSquare;
+                    _initialSquare = square;
+                }
+            } else {
+                _finalSquare = square;
+                _waitForMove.Set();
+            }
+        }
+
+        /// <summary>
+        /// Draws the player's graphical elements. 
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
+        public void Draw(Graphics g) {
+            if (_isMoving && _initialSquare != Position.InvalidSquare)
+                VisualPosition.FillSquare(g, SelectionBrush, _initialSquare);
         }
 
         /// <summary>
@@ -117,36 +150,6 @@ namespace AbsoluteZero {
                     return Move.Create(position, from, to, special);
                 }
             return Move.Invalid;
-        }
-
-        /// <summary>
-        /// Handles a mouse up event.
-        /// </summary>
-        /// <param name="e">The mouse event.</param>
-        public void MouseUpEvent(MouseEventArgs e) {
-            if (!_isMoving)
-                return;
-            Int32 square = Position.SquareAt(e.Location);
-            if (_currentPosition.Square[square] != Piece.Empty && (_currentPosition.Square[square] & Piece.Colour) == _currentPosition.SideToMove) {
-                if (_initialSquare == square)
-                    _initialSquare = Position.InvalidSquare;
-                else {
-                    _finalSquare = Position.InvalidSquare;
-                    _initialSquare = square;
-                }
-            } else {
-                _finalSquare = square;
-                _waitForMove.Set();
-            }
-        }
-
-        /// <summary>
-        /// Draws the player's graphical elements. 
-        /// </summary>
-        /// <param name="g">The drawing surface.</param>
-        public void Draw(Graphics g) {
-            if (_isMoving && _initialSquare != Position.InvalidSquare)
-                VisualPosition.FillSquare(g, SelectionBrush, _initialSquare);
         }
     }
 }

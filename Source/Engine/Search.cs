@@ -15,7 +15,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="position">The position to search on. </param>
         /// <returns>The predicted best move. </returns>
-        private Int32 SearchRoot(Position position) {
+        private Int32 Search(Position position) {
 
             // Generate legal moves. Return immediately if there is only one legal move. 
             List<Int32> moves = position.LegalMoves();

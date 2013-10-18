@@ -282,14 +282,15 @@ namespace AbsoluteZero {
         /// <param name="e">The raised event.</param>
         private void HashSizeClick(Object sender, EventArgs e) {
             while (true) {
-                String input = InputBox.Show("Please specify the hash size in megabytes.", Zero.HashAllocation.ToString());
+                IEngine engine = game.White as IEngine ?? game.Black as IEngine;
+                String input = InputBox.Show("Please specify the hash size in megabytes.", engine.HashAllocation.ToString());
                 Int32 value;
                 if (Int32.TryParse(input, out value) && value > 0) {
                     if (game.White is IEngine)
-                        (game.White as IEngine).AllocateHash(value);
+                        (game.White as IEngine).HashAllocation = value;
                     if (game.Black is IEngine)
-                        (game.Black as IEngine).AllocateHash(value);
-                    break;
+                        (game.Black as IEngine).HashAllocation = value;
+                    return;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
             }
