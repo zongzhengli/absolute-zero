@@ -22,9 +22,9 @@ namespace AbsoluteZero {
         private const Int32 ValueWidth = 9;
 
         // Search constants. 
-        public const Int32 DepthLimit = 64;
-        public const Int32 PlyLimit = DepthLimit + 64;
-        public const Int32 MovesLimit = 256;
+        private const Int32 DepthLimit = 64;
+        private const Int32 PlyLimit = DepthLimit + 64;
+        private const Int32 MovesLimit = 256;
         public const Int32 HashAllocation = 64;
         public const Int32 NodeResolution = 1000;
 

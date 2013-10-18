@@ -230,7 +230,7 @@ namespace AbsoluteZero {
         /// <param name="colour">The side to find the square for.</param>
         /// <param name="square">The square to move to.</param>
         /// <returns>The square of the piece with the lowest material value that can move to the given square.</returns>
-        public static Int32 SmallestAttackerSquare(Position position, Int32 colour, Int32 square) {
+        private static Int32 SmallestAttackerSquare(Position position, Int32 colour, Int32 square) {
 
             // Try pawns.
             UInt64 sourceBitboard = position.Bitboard[colour | Piece.Pawn] & Attack.Pawn(square, 1 - colour);

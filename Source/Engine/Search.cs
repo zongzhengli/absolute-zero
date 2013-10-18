@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace AbsoluteZero {
-    
+
     /// <summary>
     /// Encapsulates the search component of the Absolute Zero chess engine. 
     /// </summary>
@@ -53,16 +53,20 @@ namespace AbsoluteZero {
                     // most recent preceding search. If the result does not lie within the 
                     // window, a re-search is initiated with an open window. 
                     if (i == 0) {
-                        value = -Search(position, depth - 1, 1, -_rootAlpha - AspirationWindow, -_rootAlpha + AspirationWindow, causesCheck);
-                        if (value <= _rootAlpha - AspirationWindow || value >= _rootAlpha + AspirationWindow) {
+                        Int32 lower = _rootAlpha - AspirationWindow;
+                        Int32 upper = _rootAlpha + AspirationWindow;
+
+                        value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck);
+                        if (value <= lower || value >= upper) {
                             TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
                             value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
                         }
+                    }
 
                         // Subsequent moves are searched with a zero window search. If the result is 
                         // better than the best value so far, a re-search is initiated with a wider 
-                        // window. 
-                    } else {
+                        // window.
+                    else {
                         value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
                         if (value > alpha)
                             value = -Search(position, depth - 1, 1, -Infinity, -alpha, causesCheck);
@@ -162,14 +166,13 @@ namespace AbsoluteZero {
             _hashProbes++;
             HashEntry hashEntry;
             Int32 hashMove = Move.Invalid;
-            
+
             if (_table.TryProbe(position.ZobristKey, out hashEntry)) {
                 hashMove = hashEntry.Move;
 
                 if (hashEntry.GetDepth() >= depth) {
                     Int32 hashType = hashEntry.GetType();
                     Int32 hashValue = hashEntry.GetValue(ply);
-
                     if ((hashType == HashEntry.Beta && hashValue >= beta) || (hashType == HashEntry.Alpha && hashValue <= alpha)) {
                         _hashCutoffs++;
                         return hashValue;

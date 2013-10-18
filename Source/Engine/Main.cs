@@ -122,8 +122,8 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="megabytes">The number of megabytes to allocate for the tranposition table.</param>
         public void AllocateHash(Int32 megabytes) {
-            if (megabytes != _table.Size >> 20)
-                _table = new HashTable(megabytes);
+            if (megabytes << 20 != _table.Size)
+                _table = new HashTable(megabytes << 20);
         }
 
         /// <summary>

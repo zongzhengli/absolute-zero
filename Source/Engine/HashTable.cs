@@ -34,11 +34,11 @@ namespace AbsoluteZero {
             public Int32 Capacity;
 
             /// <summary>
-            /// Constructs a hash table of the given size in megabytes. 
+            /// Constructs a hash table of the given size in bytes. 
             /// </summary>
-            /// <param name="megabytes">The size of the new hash table in megabytes.</param>
-            public HashTable(Int32 megabytes) {
-                Capacity = (megabytes << 20) / HashEntry.Size;
+            /// <param name="megabytes">The size of the new hash table in bytes.</param>
+            public HashTable(Int32 bytes) {
+                Capacity = bytes / HashEntry.Size;
                 _indexer = (UInt64)Capacity;
                 _entries = new HashEntry[Capacity];
             }
