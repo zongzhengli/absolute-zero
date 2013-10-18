@@ -28,14 +28,24 @@ namespace AbsoluteZero {
                     default:
                         Terminal.WriteLine("Unknown command. Enter 'help' for assistance.");
                         break;
+
                     case "uci":
                         Terminal.WriteLine("id name " + engine.Name);
                         Terminal.WriteLine("id author Zong Zheng Li");
+                        Terminal.WriteLine("option name Hash type spin default " + Zero.DefaultHashAllocation + " min 1 max 2047");
                         Terminal.WriteLine("uciok");
                         break;
+
                     case "ucinewgame":
                         engine.Reset();
                         break;
+
+                    case "setoption":
+                        for (Int32 i = 1; i < terms.Count; i++)
+                            if (terms[i] == "name" && terms[i + 1] == "Hash")
+                                engine.HashAllocation = Int32.Parse(terms[terms.IndexOf("value") + 1]);
+                        break;
+
                     case "position":
                         String fen = Position.StartingFEN;
                         if (terms[1] != "startpos")
@@ -47,6 +57,7 @@ namespace AbsoluteZero {
                             for (Int32 i = movesIndex + 1; i < terms.Count; i++)
                                 position.Make(Move.Create(position, terms[i]));
                         break;
+
                     case "go":
                         Restrictions.Reset();
                         for (Int32 i = 1; i < terms.Count; i++)
@@ -99,47 +110,60 @@ namespace AbsoluteZero {
                             IsBackground = true
                         }.Start();
                         break;
+
                     case "stop":
                         engine.Stop();
                         break;
-                    case "ponderhit":
-                        // TODO: implement command. 
-                        break;
+
                     case "isready":
                         Terminal.WriteLine("readyok");
                         break;
-                    case "register":
-                        // TODO: implement command. 
-                        break;
+
                     case "quit":
                         return;
+
                     case "perft":
                         Perft.Iterate(position, Int32.Parse(terms[1]));
                         break;
+
                     case "divide":
                         Perft.Divide(position, Int32.Parse(terms[1]));
                         break;
+
                     case "draw":
                         Terminal.WriteLine(position);
                         break;
+
                     case "fen":
                         Terminal.WriteLine(position.GetFEN());
                         break;
+
+                    case "ponderhit":
+                        // TODO: implement command. 
+                        break;
+
+                    case "register":
+                        // TODO: implement command. 
+                        break;
+
                     case "help":
-                        Terminal.WriteLine("Command          Function");
+                        Terminal.WriteLine("Command             Function");
                         Terminal.WriteLine("-----------------------------------------------------------------------");
-                        Terminal.WriteLine("perft x          Runs perft(x) on the current position.");
-                        Terminal.WriteLine("divide x         Runs divide(x) on the current position.");
-                        Terminal.WriteLine("fen              Prints the FEN for the current position.");
-                        Terminal.WriteLine("draw             Draws the current position.");
+                        Terminal.WriteLine("perft [number]      Runs perft() on the current position to the given");
+                        Terminal.WriteLine("                    depth.");
+                        Terminal.WriteLine("divide [number]     Runs divide() on the current position for the given");
+                        Terminal.WriteLine("                    depth.");
+                        Terminal.WriteLine("fen                 Prints the FEN of the current position.");
+                        Terminal.WriteLine("draw                Draws the current position.");
                         Terminal.WriteLine("-----------------------------------------------------------------------");
-                        Terminal.WriteLine("position x       Sets the current position. Requires \"startpos\" or");
-                        Terminal.WriteLine("                 \"fen x\".");
-                        Terminal.WriteLine("go x             Searches the current position. Optional parameters");
-                        Terminal.WriteLine("                 include \"movetime x\", \"depth x\", \"nodes x\", \"wtime x\",");
-                        Terminal.WriteLine("                 \"btime x\", \"winc x\", and \"binc x\".");
-                        Terminal.WriteLine("stop             Stops an ongoing search.");
-                        Terminal.WriteLine("quit             Terminates the application.");
+                        Terminal.WriteLine("position [fen]      Sets the current position to the position denoted");
+                        Terminal.WriteLine("                    by the given FEN. \"startpos\" is accepted for the");
+                        Terminal.WriteLine("                    starting position.");
+                        Terminal.WriteLine("go [type] [number]  Searches the current position. Search types include");
+                        Terminal.WriteLine("                    \"movetime\", \"depth\", \"nodes\", \"wtime\", \"btime\",");
+                        Terminal.WriteLine("                    \"winc\", and \"binc\".");
+                        Terminal.WriteLine("stop                Stops an ongoing search.");
+                        Terminal.WriteLine("quit                Exits the application.");
                         Terminal.WriteLine("-----------------------------------------------------------------------");
                         break;
                 }
