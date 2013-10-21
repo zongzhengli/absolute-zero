@@ -370,6 +370,54 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Returns a string that describes the given principal variation. 
+        /// </summary>
+        /// <param name="position">The position the principal variation is to be played on.</param>
+        /// <param name="depth">The depth of the search that yielded the principal variation. </param>
+        /// <param name="value">The value of the search that yielded the principal variation.</param>
+        /// <param name="pv">The principle variation to describe.</param>
+        /// <returns>A string that describes the given principal variation.</returns>
+        private String GetPVString(Position position, Int32 depth, Int32 value, List<Int32> pv) {
+            Boolean isMate = Math.Abs(value) > NearCheckmateValue;
+            Int32 movesToMate = (CheckmateValue - Math.Abs(value) + 1) / 2;
+
+            switch (Restrictions.Output) {
+                case OutputType.Standard:
+                    String depthString = depth.ToString();
+                    String valueString = isMate ? (value > 0 ? "+Mate " : "-Mate ") + movesToMate :
+                                                  (value / 100.0).ToString("+0.00;-0.00");
+                    String movesString = Identify.MovesAlgebraically(position, pv);
+
+                    return String.Format(PVFormat, depthString, valueString, movesString);
+
+                case OutputType.Universal:
+                    String score = isMate ? "mate " + (value < 0 ? "-" : "") + movesToMate :
+                                            "cp " + value;
+                    Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
+                    Int64 nps = (Int64)(1000 * _totalNodes / elapsed);
+
+                    return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + _totalNodes + " nps " + nps + " pv " + Identify.Moves(pv);
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// Collects and returns the principal variation for the last completed 
+        /// search at the given depth. 
+        /// </summary>
+        /// <param name="position">The position the principal variation is to be played on.</param>
+        /// <param name="depth">The depth of the search to collect the principal variation for.</param>
+        /// <param name="firstMove">The first move of the principal variation.</param>
+        /// <returns>The principal variation for the last completed search.</returns>
+        private List<Int32> CollectPV(Position position, Int32 depth, Int32 firstMove) {
+            List<Int32> variation = new List<Int32>(depth);
+            variation.Add(firstMove);
+            for (Int32 i = 0; i < _pvLength[1]; i++)
+                variation.Add(_pvMoves[1][i]);
+            return variation;
+        }
+
+        /// <summary>
         /// Attempts to apply the time extension given. The time extension is applied 
         /// when playing under time controls if it is longer than the existing time 
         /// extension and if the proportion of time elapsed to the total time 
