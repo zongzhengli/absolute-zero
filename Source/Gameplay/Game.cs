@@ -119,7 +119,7 @@ namespace AbsoluteZero {
                         _state = GameState.Draw;
                         return;
                     }
-                    if (player is IEngine && player.AcceptDraw) {
+                    if (player is IEngine && player.AcceptsDraw) {
                         if (position.FiftyMovesClock >= 100) {
                             _message = "Draw by fifty-move rule!";
                             _state = GameState.Draw;
@@ -178,7 +178,7 @@ namespace AbsoluteZero {
         /// </summary>
         public void OfferDraw() {
             IPlayer offeree = White is IEngine ? White : Black;
-            if (offeree.AcceptDraw) {
+            if (offeree.AcceptsDraw) {
                 End();
                 _message = "Draw by agreement!";
                 _state = GameState.Draw;

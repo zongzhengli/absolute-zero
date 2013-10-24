@@ -54,7 +54,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Whether the player is willing to accept a draw offer. 
         /// </summary>
-        public Boolean AcceptDraw {
+        public Boolean AcceptsDraw {
             get {
                 return false;
             }

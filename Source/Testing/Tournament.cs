@@ -35,7 +35,7 @@ namespace AbsoluteZero {
         /// <param name="parameters">Command-line parameters giving the conditions of the tournament.</param>
         public static void Run(String[] parameters) {
             IEngine experimental = new Zero() {
-                NewFeature = true
+                IsExperimental = true
             };
             IEngine standard = new Zero();
 

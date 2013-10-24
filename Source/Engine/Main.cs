@@ -1,23 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Encapsulates the interface component of the Absolute Zero chess engine. 
+    /// Encapsulates the main interface of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero : IEngine {
-
-        /// <summary>
-        /// The version string of the engine. 
-        /// </summary>
-        public static String Version {
-            get {
-                return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
-            }
-        }
 
         /// <summary>
         /// The principal variation for the most recent search. 
@@ -63,10 +52,18 @@ namespace AbsoluteZero {
         /// <summary>
         /// Whether the engine is willing to accept a draw offer. 
         /// </summary>
-        public Boolean AcceptDraw {
+        public Boolean AcceptsDraw {
             get {
                 return _finalAlpha <= DrawValue;
             }
+        }
+
+        /// <summary>
+        /// Whether to use experimental features. 
+        /// </summary>
+        public Boolean IsExperimental {
+            get;
+            set;
         }
 
         /// <summary>
@@ -103,17 +100,17 @@ namespace AbsoluteZero {
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();
                 Terminal.WriteLine(position.ToStringAppend(
-                    String.Format("Absolute Zero {0}-bit", 8 * IntPtr.Size),
-                    String.Format("Version {0}", Version),
+                    String.Format("Absolute Zero {0}", Version),
+                    String.Format("{0} MB / x{1}", HashAllocation, IntPtr.Size == 4 ? "86" : "64"),
                     "",
-                    String.Format("Nodes visited: {0}", _totalNodes),
-                    String.Format("Search time: {0:F0} ms", elapsed),
-                    String.Format("Search speed: {0:F0} kN/s", _totalNodes / elapsed),
+                    String.Format("Nodes visited      {0}", _totalNodes),
+                    String.Format("Search time        {0:F0} ms", elapsed),
+                    String.Format("Search speed       {0:F0} kN/s", _totalNodes / elapsed),
                     "",
-                    String.Format("Quiescence nodes: {0:0.00%}", (Double)_quiescenceNodes / _totalNodes),
-                    String.Format("Hash usage: {0:0.00%}", (Double)_table.Count / _table.Capacity),
-                    String.Format("Hash cutoffs: {0:0.00%}", (Double)_hashCutoffs / _hashProbes),
-                    String.Format("Static evaluation: {0:+0.00;-0.00}", Evaluate(position) / 100.0)));
+                    String.Format("Quiescence nodes   {0:0.00%}", (Double)_quiescenceNodes / _totalNodes),
+                    String.Format("Hash usage         {0:0.00%}", (Double)_table.Count / _table.Capacity),
+                    String.Format("Hash cutoffs       {0:0.00%}", (Double)_hashCutoffs / _hashProbes),
+                    String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position) / 100.0)));
                 Terminal.WriteLine();
             }
             return move;

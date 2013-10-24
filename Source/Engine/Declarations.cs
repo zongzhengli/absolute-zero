@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace AbsoluteZero {
 
@@ -11,7 +12,7 @@ namespace AbsoluteZero {
     partial class Zero {
 
         // Miscellaneous constants. 
-        public Boolean NewFeature = false;
+        public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
         // Formatting constants. 
         private static readonly String PVFormat = "{0,-" + DepthWidth + "}{1,-" + ValueWidth + "}{2}";
