@@ -90,7 +90,6 @@
     <Compile Include="Source\Engine\Evaluation.cs" />
     <Compile Include="Source\Interface\Launch.cs" />
     <Compile Include="Source\Utilities\Identify.cs" />
-    <Compile Include="Source\Utilities\Format.cs" />
     <Compile Include="Source\Utilities\Native.cs" />
     <Compile Include="Source\Framework\Piece.cs" />
     <Compile Include="Source\Interface\SelectionBox.cs">

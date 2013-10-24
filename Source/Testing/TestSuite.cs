@@ -135,14 +135,14 @@ namespace AbsoluteZero {
                 }
 
                 // Print the result for the search on the position. 
-                Terminal.WriteLine(String.Format(ResultFormat, id, result, Format.Precision(elapsed) + " ms", engine.Nodes));
+                Terminal.WriteLine(String.Format(ResultFormat, id, result, String.Format("{0:0} ms", elapsed), engine.Nodes));
             }
 
             // Print final results after all positions have been searched. 
             Terminal.WriteLine("-----------------------------------------------------------------------");
-            Terminal.WriteLine("Result: " + totalSolved + " / " + totalPositions);
-            Terminal.WriteLine("Time elapsed: " + Format.Precision(totalTime) + " ms");
-            Terminal.WriteLine("Average nodes: " + Format.Precision(totalNodes / (Double)totalPositions));
+            Terminal.WriteLine(String.Format("Result         {0} / {1}", totalSolved, totalPositions));
+            Terminal.WriteLine(String.Format("Time           {0:0} ms", totalTime));
+            Terminal.WriteLine(String.Format("Average nodes  {0:0}", (Double)totalNodes / totalPositions));
         }
     }
 }

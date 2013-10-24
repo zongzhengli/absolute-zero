@@ -52,8 +52,8 @@ namespace AbsoluteZero {
                 stopwatch.Stop();
 
                 Double elapsed = stopwatch.Elapsed.TotalMilliseconds;
-                String t = Format.Precision(elapsed) + " ms";
-                String s = Format.Precision(nodes / elapsed) + " kN/s";
+                String t = String.Format("{0:0} ms", elapsed);
+                String s = String.Format("{0:0} kN/s", nodes / elapsed);
 
                 Terminal.WriteLine(String.Format(format, d, t, s, nodes));
             }

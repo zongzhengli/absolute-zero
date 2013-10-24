@@ -79,8 +79,8 @@ namespace AbsoluteZero {
 
                     // Write the cummulative results. 
                     if (games % UpdateInterval == 0) {
-                        String elo = Format.PrecisionAndSign(Elo.GetDifference(wins, losses, draws));
-                        String error = "±" + Math.Round(Elo.GetError(wins, losses, draws));
+                        String elo = Elo.GetDifference(wins, losses, draws).ToString("+0;-0");
+                        String error = String.Format("±{0:0}", Elo.GetError(wins, losses, draws));
 
                         sw.WriteLine(String.Format(ResultFormat, games, wins, losses, draws, elo, error));
                     }
