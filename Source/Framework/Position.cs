@@ -600,7 +600,6 @@ namespace AbsoluteZero {
             }
             return index;
         }
-        public static double a = 0, b = 0, c = 0, d = 0, e = 0, x = 0, y = 0;
 
         public Int32 PseudoQuiescenceMoves(Int32[] moves) {
             Int32 index = 0;

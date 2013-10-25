@@ -199,7 +199,6 @@ namespace AbsoluteZero {
                 return inCheck ? -(CheckmateValue - ply) : drawValue;
             for (Int32 i = 0; i < movesCount; i++)
                 _moveValues[i] = MoveOrderingValue(moves[i]);
-            _moveValues[movesCount] = -Infinity;
 
             // Apply single reply and check extensions. 
             if (movesCount == 1 || inCheck)
@@ -234,7 +233,7 @@ namespace AbsoluteZero {
             // Sort the moves based on their ordering values and initialize variables. 
             Sort(moves, _moveValues, movesCount);
             Int32 irreducibleMoves = 1;
-            while (_moveValues[irreducibleMoves] > 0)
+            while (irreducibleMoves < movesCount && _moveValues[irreducibleMoves] > 0)
                 irreducibleMoves++;
             UInt64 preventionBitboard = PassedPawnPreventionBitboard(position);
             Int32 bestType = HashEntry.Alpha;

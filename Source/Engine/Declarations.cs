@@ -121,14 +121,14 @@ namespace AbsoluteZero {
         static Zero() {
 
             // Initialize piece values. 
-            PieceValue[Piece.White | Piece.King] = 3000;
-            PieceValue[Piece.White | Piece.Queen] = 1025;
-            PieceValue[Piece.White | Piece.Rook] = 575;
-            PieceValue[Piece.White | Piece.Bishop] = 370;
-            PieceValue[Piece.White | Piece.Knight] = 350;
-            PieceValue[Piece.White | Piece.Pawn] = 100;
+            PieceValue[Piece.King] = 3000;
+            PieceValue[Piece.Queen] = 1025;
+            PieceValue[Piece.Rook] = 575;
+            PieceValue[Piece.Bishop] = 370;
+            PieceValue[Piece.Knight] = 350;
+            PieceValue[Piece.Pawn] = 100;
             for (Int32 piece = Piece.Min; piece <= Piece.Max; piece += 2)
-                PieceValue[Piece.Black | piece] = -PieceValue[Piece.White | piece];
+                PieceValue[Piece.Black | piece] = -PieceValue[piece];
             PieceValue[Piece.Empty] = 0;
 
             PhaseCoefficient += PieceValue[Piece.Queen];

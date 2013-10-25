@@ -23,6 +23,12 @@ namespace AbsoluteZero {
         public static Int32 HalfMovesLimit = 200;
 
         /// <summary>
+        /// The material difference at which an unresolved match is given to the side 
+        /// with more material. 
+        /// </summary>
+        public static Int32 MaterialLimit = Zero.PieceValue[Piece.Bishop] + 1;
+
+        /// <summary>
         /// Facilitates play between the two engines for the given position with the 
         /// given match option. 
         /// </summary>
@@ -37,16 +43,13 @@ namespace AbsoluteZero {
             // of swapping white and black. The result is still returned from the 
             // original white's perspective. 
             if (option == MatchOptions.RandomizeColour) {
-                MatchResult result;
                 if (Random.Boolean()) {
-                    result = Play(black, white, position);
-                    if (result == MatchResult.Win)
-                        result = MatchResult.Loss;
-                    else if (result == MatchResult.Loss)
-                        result = MatchResult.Win;
+                    MatchResult result = Play(black, white, position, MatchOptions.None);
+                    return result == MatchResult.Win ? MatchResult.Loss :
+                           result == MatchResult.Loss ? MatchResult.Win :
+                                                        result;
                 } else
-                    result = Play(white, black, position);
-                return result;
+                    return Play(white, black, position, MatchOptions.None);
             }
 
             Int32 halfMovesLimit = HalfMovesLimit;
@@ -63,10 +66,16 @@ namespace AbsoluteZero {
                         return player.Equals(white) ? MatchResult.Win : MatchResult.Loss;
                     else
                         return MatchResult.Draw;
+
                 if (position.FiftyMovesClock >= 100 || position.InsufficientMaterial() || position.HasRepeated(3))
                     return MatchResult.Draw;
-                if (position.HalfMoves >= halfMovesLimit)
+
+                if (position.HalfMoves >= halfMovesLimit) {
+                    int materialDifference = position.Material[Piece.White] + position.Material[Piece.Black];
+                    if (Math.Abs(materialDifference) >= MaterialLimit)
+                        return materialDifference > 0 ? MatchResult.Win : MatchResult.Loss;
                     return MatchResult.Unresolved;
+                }
             }
         }
     }
