@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Facilitates a game between two players. 
+    /// Represents a game between two players. 
     /// </summary>
     class Game {
 

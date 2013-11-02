@@ -3,7 +3,7 @@
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Provides attack bitboard generation methods. 
+    /// Provides methods for attack bitboard generation. 
     /// </summary>
     static class Attack {
 

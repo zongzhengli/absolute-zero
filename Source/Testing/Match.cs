@@ -13,7 +13,7 @@ namespace AbsoluteZero {
     public enum MatchOptions { None, RandomizeColour, UnlimitedLength }
 
     /// <summary>
-    /// Facilitates a match between two engine instances. 
+    /// Provides methods for playing matches between two engine. 
     /// </summary>
     static class Match {
 

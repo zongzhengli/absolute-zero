@@ -18,12 +18,12 @@ namespace AbsoluteZero {
         public const Int32 Colour = Black;                                           // 0001
 
         /// <summary>
-        /// Represents the colour white. 
+        /// The colour white. 
         /// </summary>
         public const Int32 White = 0;                                                // 0000
 
         /// <summary>
-        /// Represents the colour black. 
+        /// The colour black. 
         /// </summary>
         public const Int32 Black = 1;                                                // 0001
 
@@ -38,42 +38,42 @@ namespace AbsoluteZero {
         public const Int32 Max = Black | King;
 
         /// <summary>
-        /// Represents the empty, or non-existent, piece. 
+        /// The empty, or non-existent, piece. 
         /// </summary>
         public const Int32 Empty = 0;                                                // 0000
 
         /// <summary>
-        /// Represents the pawn. 
+        /// The pawn piece. 
         /// </summary>
         public const Int32 Pawn = 2;                                                 // 0010
 
         /// <summary>
-        /// Represents the knight. 
+        /// The knight piece. 
         /// </summary>
         public const Int32 Knight = 4;                                               // 0100
 
         /// <summary>
-        /// Represents the bishop. 
+        /// The bishop piece. 
         /// </summary>
         public const Int32 Bishop = 6;                                               // 0110
 
         /// <summary>
-        /// Represents the rook. 
+        /// The rook piece. 
         /// </summary>
         public const Int32 Rook = 8;                                                 // 1000
 
         /// <summary>
-        /// Represents the queen. 
+        /// The queen piece. 
         /// </summary>
         public const Int32 Queen = 10;                                               // 1010
 
         /// <summary>
-        /// Represents the king. 
+        /// The king piece. 
         /// </summary>
         public const Int32 King = 12;                                                // 1100
 
         /// <summary>
-        /// Represents all the pieces. 
+        /// The set of all pieces. 
         /// </summary>
         public const Int32 All = 14;                                                 // 1110
     }

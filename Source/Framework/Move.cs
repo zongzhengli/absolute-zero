@@ -4,7 +4,7 @@ using PieceClass = AbsoluteZero.Piece;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Provides move encoding and decoding methods. 
+    /// Provides methods for move encoding and decoding. 
     /// </summary>
     static class Move {
 

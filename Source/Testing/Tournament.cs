@@ -5,7 +5,7 @@ using System.IO;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Facilitates a tournament between two engine instances. 
+    /// Provides methods for playing a tournament between two engines. 
     /// </summary>
     static class Tournament {
 

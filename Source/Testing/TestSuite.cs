@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Facilitates engine analysis on test suites. 
+    /// Provides methods for evaluating engine analysis on test suites. 
     /// </summary>
     static class TestSuite {
 

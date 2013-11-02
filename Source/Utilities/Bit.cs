@@ -4,7 +4,7 @@ using System.Text;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Provides useful bitwise functions. 
+    /// Provides methods and constants for bitwise operations. 
     /// </summary>
     static class Bit {
 
