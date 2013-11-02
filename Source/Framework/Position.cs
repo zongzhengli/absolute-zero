@@ -150,18 +150,18 @@ namespace AbsoluteZero {
 
                 switch (uc) {
 
-                    // Number denoting blank squares. 
+                    // Parse number denoting blank squares. 
                     default:
                         file += uc - '0';
                         break;
 
-                    // Separator denoting new rank. 
+                    // Parse separator denoting new rank. 
                     case '/':
                         file = 0;
                         rank++;
                         break;
 
-                    // Piece abbreviations. 
+                    // Parse piece abbreviations. 
                     case 'K':
                         Square[file++ + rank * 8] = colour | Piece.King;
                         break;
@@ -242,17 +242,21 @@ namespace AbsoluteZero {
         /// <returns>The number of legal moves for the position.</returns>
         public Int32 LegalMoves(Int32[] moves) {
 
-            // Initialize common bitboards and squares. 
+            // Initialize bitboards and squares that describe the position. 
             Int32 enemy = 1 - SideToMove;
             Int32 kingSquare = Bit.Read(Bitboard[SideToMove | Piece.King]);
 
+            UInt64 friendlyBitboard = Bitboard[SideToMove | Piece.All];
+            UInt64 enemyBitboard = Bitboard[enemy | Piece.All];
+            UInt64 targetBitboard = ~friendlyBitboard;
+
             UInt64 enemyBishopQueenBitboard = Bitboard[enemy | Piece.Bishop] | Bitboard[enemy | Piece.Queen];
             UInt64 enemyRookQueenBitboard = Bitboard[enemy | Piece.Rook] | Bitboard[enemy | Piece.Queen];
-            UInt64 friendlyBitboard = Bitboard[SideToMove | Piece.All];
 
-            // Initialize check and pin source bitboards. 
+            // Initialize variables for move generation. 
             UInt64 checkBitboard = 0;
             UInt64 pinBitboard = 0;
+            Int32 index = 0;
 
             // Consider knight and pawn checks. 
             checkBitboard |= Bitboard[enemy | Piece.Knight] & Attack.Knight(kingSquare);
@@ -302,9 +306,6 @@ namespace AbsoluteZero {
                     pinBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, defencelessBitboard);
             }
 
-            // Initialize move array index for populating moves. 
-            Int32 index = 0;
-
             // Consider castling. This is always fully tested for legality. 
             if (checkBitboard == 0) {
                 Int32 rank = -56 * SideToMove + 56;
@@ -342,10 +343,6 @@ namespace AbsoluteZero {
                     OccupiedBitboard ^= (1UL << from) | (1UL << EnPassantSquare);
                 }
             }
-
-            // Initialize bitboards for determining move validity. 
-            UInt64 enemyBitboard = Bitboard[enemy | Piece.All];
-            UInt64 targetBitboard = ~friendlyBitboard;
 
             // Consider king moves. This is always fully tested for legality. 
             {
@@ -601,10 +598,17 @@ namespace AbsoluteZero {
             return index;
         }
 
+        /// <summary>
+        /// Populates the given array with the pseudo-legal capturing and queen 
+        /// promotion moves for the position and returns the number of moves. 
+        /// </summary>
+        /// <param name="moves">The array to populate with the pseudo-legal moves.</param>
+        /// <returns>The number of moves generated for the position.</returns>
         public Int32 PseudoQuiescenceMoves(Int32[] moves) {
-            Int32 index = 0;
             UInt64 targetBitboard = Bitboard[(1 - SideToMove) | Piece.All];
+            Int32 index = 0;
 
+            // Consider king moves. 
             UInt64 pieceBitboard = Bitboard[SideToMove | Piece.King];
             Int32 from = Bit.Read(pieceBitboard);
             UInt64 moveBitboard = targetBitboard & Attack.King(from);
@@ -613,6 +617,8 @@ namespace AbsoluteZero {
                 moves[index++] = Move.Create(this, from, to);
             }
 
+
+            // Consider queen moves. 
             pieceBitboard = Bitboard[SideToMove | Piece.Queen];
             while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
@@ -623,6 +629,7 @@ namespace AbsoluteZero {
                 }
             }
 
+            // Consider rook moves. 
             pieceBitboard = Bitboard[SideToMove | Piece.Rook];
             while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
@@ -633,6 +640,7 @@ namespace AbsoluteZero {
                 }
             }
 
+            // Consider knight moves. 
             pieceBitboard = Bitboard[SideToMove | Piece.Knight];
             while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
@@ -643,6 +651,7 @@ namespace AbsoluteZero {
                 }
             }
 
+            // Consider bishop moves. 
             pieceBitboard = Bitboard[SideToMove | Piece.Bishop];
             while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
@@ -653,6 +662,7 @@ namespace AbsoluteZero {
                 }
             }
 
+            // Consider pawn moves. 
             pieceBitboard = Bitboard[SideToMove | Piece.Pawn];
             while (pieceBitboard != 0) {
                 from = Bit.Pop(ref pieceBitboard);
