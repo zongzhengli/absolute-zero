@@ -682,15 +682,23 @@ namespace AbsoluteZero {
             return index;
         }
 
+        /// <summary>
+        /// Returns the list of legal moves for the position. 
+        /// </summary>
+        /// <returns>The list of legal mvoes for the position.</returns>
         public List<Int32> LegalMoves() {
             Int32[] moves = new Int32[256];
-            Int32 movesCount = LegalMoves(moves);
-            List<Int32> list = new List<Int32>(45);
+            Int32 movesCount = LegalMoves(moves).;
+            List<Int32> list = new List<Int32>();
             for (Int32 i = 0; i < movesCount; i++)
                 list.Add(moves[i]);
             return list;
         }
 
+        /// <summary>
+        /// Makes the given move on the position.
+        /// </summary>
+        /// <param name="move">The move to make.</param>
         public void Make(Int32 move) {
             Int32 from = Move.From(move);
             Int32 to = Move.To(move);
@@ -802,6 +810,10 @@ namespace AbsoluteZero {
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
 
+        /// <summary>
+        /// Unmakes the given move from the position.
+        /// </summary>
+        /// <param name="move">The move to unmake.</param>
         public void Unmake(Int32 move) {
             Int32 from = Move.From(move);
             Int32 to = Move.To(move);
@@ -885,6 +897,9 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Makes the null move on the position.
+        /// </summary>
         public void MakeNull() {
             ZobristKey ^= Zobrist.Colour;
             if (EnPassantSquare != InvalidSquare) {
@@ -897,6 +912,9 @@ namespace AbsoluteZero {
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
 
+        /// <summary>
+        /// Unmakes the null move on the position.
+        /// </summary>
         public void UnmakeNull() {
             ZobristKey = ZobristKeyHistory[HalfMoves - 1];
             EnPassantSquare = EnPassantHistory[HalfMoves - 1];
@@ -905,6 +923,10 @@ namespace AbsoluteZero {
             HalfMoves--;
         }
 
+        /// <summary>
+        /// Generates the hash key for the position from scratch. 
+        /// </summary>
+        /// <returns>The hash key for the position.</returns>
         public UInt64 GenerateZobristKey() {
             UInt64 key = 0;
             for (Int32 square = 0; square < Square.Length; square++)
@@ -923,10 +945,21 @@ namespace AbsoluteZero {
             return key;
         }
 
+        /// <summary>
+        /// Returns whether the given side is in check. 
+        /// </summary>
+        /// <param name="colour">The side to test for check.</param>
+        /// <returns>Whether the given side is in check.</returns>
         public Boolean InCheck(Int32 colour) {
             return IsAttacked(colour, Bit.Read(Bitboard[colour | Piece.King]));
         }
 
+        /// <summary>
+        /// Returns whether the given side is attacked on the given square. 
+        /// </summary>
+        /// <param name="colour">The side to test for being attacked.</param>
+        /// <param name="square">The square to test for attacks.</param>
+        /// <returns>Whether the given side is attacked on the given square</returns>
         public Boolean IsAttacked(Int32 colour, Int32 square) {
             if ((Bitboard[(1 - colour) | Piece.Knight] & Attack.Knight(square)) != 0)
                 return true;
@@ -945,6 +978,11 @@ namespace AbsoluteZero {
             return false;
         }
 
+        /// <summary>
+        /// Returns whether the given move puts the opponent in check.  
+        /// </summary>
+        /// <param name="move">The move to test for check.</param>
+        /// <returns>Whether the given move puts the opponent in check.</returns>
         public Boolean CausesCheck(Int32 move) {
             UInt64 fromBitboard = 1UL << Move.From(move);
             UInt64 toBitboard = 1UL << Move.To(move);
@@ -990,6 +1028,10 @@ namespace AbsoluteZero {
             return value;
         }
 
+        /// <summary>
+        /// Returns whether the position represents a draw by insufficient material. 
+        /// </summary>
+        /// <returns>Whether the position represents a draw by insufficient material.</returns>
         public Boolean InsufficientMaterial() {
             Int32 pieces = Bit.Count(OccupiedBitboard);
             if (pieces > 4)
@@ -1009,6 +1051,11 @@ namespace AbsoluteZero {
             return false;
         }
 
+        /// <summary>
+        /// Returns whether the position has repeated the given number of times. 
+        /// </summary>
+        /// <param name="times">The number of repetitions to test for.</param>
+        /// <returns>Whether the position has repeated the given number of times</returns>
         public Boolean HasRepeated(Int32 times) {
             Int32 repetitions = 1;
             for (Int32 i = HalfMoves - 4; i >= HalfMoves - FiftyMovesClock; i -= 2)
@@ -1018,6 +1065,11 @@ namespace AbsoluteZero {
             return false;
         }
 
+        /// <summary>
+        /// Returns whether the position is equal to another position.  
+        /// </summary>
+        /// <param name="other">The position to compare with.</param>
+        /// <returns>Whether the position is equal to another position</returns>
         public Boolean Equals(Position other) {
             if (ZobristKey != other.ZobristKey)
                 return false;
@@ -1046,6 +1098,10 @@ namespace AbsoluteZero {
             return true;
         }
 
+        /// <summary>
+        /// Returns a deep clone of the position.
+        /// </summary>
+        /// <returns>A deep clone of the position.</returns>
         public Position DeepClone() {
             return new Position() {
                 Square = this.Square.Clone() as Int32[],
@@ -1065,6 +1121,10 @@ namespace AbsoluteZero {
             };
         }
 
+        /// <summary>
+        /// Returns the FEN string that describes the position.
+        /// </summary>
+        /// <returns>The FEN string that describes the position.</returns>
         public String GetFEN() {
             StringBuilder fen = new StringBuilder();
             for (Int32 rank = 0; rank < 8; rank++) {
@@ -1114,10 +1174,19 @@ namespace AbsoluteZero {
             return fen.ToString();
         }
 
+        /// <summary>
+        /// Returns a text drawing of the position.
+        /// </summary>
+        /// <returns>A text drawing of the position</returns>
         public override String ToString() {
             return ToStringAppend();
         }
 
+        /// <summary>
+        /// Returns a text drawing of the position with the given comments displayed. 
+        /// </summary>
+        /// <param name="comments">The comments to display.</param>
+        /// <returns>A text drawing of the position with the given comments displayed</returns>
         public String ToStringAppend(params String[] comments) {
             StringBuilder result = new StringBuilder("   +------------------------+ ", 400);
             Int32 index = 0;
@@ -1154,22 +1223,42 @@ namespace AbsoluteZero {
             return result.ToString();
         }
 
+        /// <summary>
+        /// Returns the file of the given square.
+        /// </summary>
+        /// <param name="square">The square to determine the file of.</param>
+        /// <returns>The file of the given square.</returns>
         public static Int32 File(Int32 square) {
             return square & 7;
         }
 
+        /// <summary>
+        /// Returns the rank of the given square.
+        /// </summary>
+        /// <param name="square">The square to determine the rank of.</param>
+        /// <returns>The rank of the given square.</returns>
         public static Int32 Rank(Int32 square) {
             return square >> 3;
         }
 
-        public static Int32 SquareAt(Point e) {
-            Int32 file = e.X / VisualPosition.SquareWidth;
-            Int32 rank = (e.Y - Window.MenuHeight) / VisualPosition.SquareWidth;
+        /// <summary>
+        /// Returns the square at the given point. 
+        /// </summary>
+        /// <param name="point">The point to determine the square of.</param>
+        /// <returns>The square at the given point</returns>
+        public static Int32 SquareAt(Point point) {
+            Int32 file = point.X / VisualPosition.SquareWidth;
+            Int32 rank = (point.Y - Window.MenuHeight) / VisualPosition.SquareWidth;
             if (VisualPosition.Rotated)
                 return 7 - file + (7 - rank) * 8;
             return file + rank * 8;
         }
 
+        /// <summary>
+        /// Returns the square with the given name.
+        /// </summary>
+        /// <param name="name">The name of the square.</param>
+        /// <returns>The square with the given name</returns>
         public static Int32 SquareAt(String name) {
             return (Int32)(name[0] - 'a' + ('8' - name[1]) * 8);
         }
