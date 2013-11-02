@@ -9,7 +9,7 @@ namespace AbsoluteZero {
     partial class Zero : IEngine {
 
         /// <summary>
-        /// The principal variation for the most recent search. 
+        /// The principal variation of the most recent search. 
         /// </summary>
         public List<Int32> PrincipalVariation {
             get {
@@ -27,8 +27,7 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// The size of the transposition table in megabytes. Entries in the table 
-        /// are cleared when the size changes. 
+        /// The size of the transposition table in megabytes. 
         /// </summary>
         public Int32 HashAllocation {
             get {
@@ -38,6 +37,14 @@ namespace AbsoluteZero {
                 if (value != _table.Size >> 20)
                     _table = new HashTable(value << 20);
             }
+        }
+
+        /// <summary>
+        /// Whether to use experimental features. 
+        /// </summary>
+        public Boolean IsExperimental {
+            get;
+            set;
         }
 
         /// <summary>
@@ -56,14 +63,6 @@ namespace AbsoluteZero {
             get {
                 return _finalAlpha <= DrawValue;
             }
-        }
-
-        /// <summary>
-        /// Whether to use experimental features. 
-        /// </summary>
-        public Boolean IsExperimental {
-            get;
-            set;
         }
 
         /// <summary>
@@ -117,14 +116,14 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Terminates the ongoing search if applicable. 
+        /// Stops the  search if applicable. 
         /// </summary>
         public void Stop() {
             _abortSearch = true;
         }
 
         /// <summary>
-        /// Resets the engine to its initial state. 
+        /// Resets the engine. 
         /// </summary>
         public void Reset() {
             _table.Clear();

@@ -44,7 +44,6 @@ namespace AbsoluteZero {
         /// <summary>
         /// The name of the player. 
         /// </summary>
-        /// <returns>The name of the player.</returns>
         public String Name {
             get {
                 return "Human";
@@ -73,16 +72,16 @@ namespace AbsoluteZero {
             _isMoving = false;
             return CreateMove(position, _initialSquare, _finalSquare);
         }
-        
+
         /// <summary>
-        /// Stops the wait for the player's move if applicable. 
+        /// Stops the player's move if applicable. 
         /// </summary>
         public void Stop() {
             Reset();
         }
 
         /// <summary>
-        /// Resets the player's fields. 
+        /// Resets the player. 
         /// </summary>
         public void Reset() {
             _initialSquare = Position.InvalidSquare;
