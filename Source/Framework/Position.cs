@@ -685,10 +685,10 @@ namespace AbsoluteZero {
         /// <summary>
         /// Returns the list of legal moves for the position. 
         /// </summary>
-        /// <returns>The list of legal mvoes for the position.</returns>
+        /// <returns>The list of legal moves for the position.</returns>
         public List<Int32> LegalMoves() {
             Int32[] moves = new Int32[256];
-            Int32 movesCount = LegalMoves(moves).;
+            Int32 movesCount = LegalMoves(moves);
             List<Int32> list = new List<Int32>();
             for (Int32 i = 0; i < movesCount; i++)
                 list.Add(moves[i]);
@@ -961,20 +961,23 @@ namespace AbsoluteZero {
         /// <param name="square">The square to test for attacks.</param>
         /// <returns>Whether the given side is attacked on the given square</returns>
         public Boolean IsAttacked(Int32 colour, Int32 square) {
-            if ((Bitboard[(1 - colour) | Piece.Knight] & Attack.Knight(square)) != 0)
+            Int32 enemy = 1 - colour;
+
+            if ((Bitboard[enemy | Piece.Knight] & Attack.Knight(square)) != 0
+             || (Bitboard[enemy | Piece.Pawn] & Attack.Pawn(square, colour)) != 0
+             || (Bitboard[enemy | Piece.King] & Attack.King(square)) != 0)
                 return true;
-            if ((Bitboard[(1 - colour) | Piece.Pawn] & Attack.Pawn(square, colour)) != 0)
+
+            UInt64 bishopQueenBitboard = Bitboard[enemy | Piece.Bishop] | Bitboard[enemy | Piece.Queen];
+            if ((bishopQueenBitboard & Bit.Diagonals[square]) != 0 
+             && (bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) != 0)
                 return true;
-            if ((Bitboard[(1 - colour) | Piece.King] & Attack.King(square)) != 0)
+
+            UInt64 rookQueenBitboard = Bitboard[enemy | Piece.Rook] | Bitboard[enemy | Piece.Queen];
+            if ((rookQueenBitboard & Bit.Axes[square]) != 0
+             && (rookQueenBitboard & Attack.Rook(square, OccupiedBitboard)) != 0)
                 return true;
-            UInt64 bishopQueenBitboard = Bitboard[(1 - colour) | Piece.Bishop] | Bitboard[(1 - colour) | Piece.Queen];
-            if ((bishopQueenBitboard & Bit.Diagonals[square]) != 0)
-                if ((bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) != 0)
-                    return true;
-            UInt64 rookQueenBitboard = Bitboard[(1 - colour) | Piece.Rook] | Bitboard[(1 - colour) | Piece.Queen];
-            if ((rookQueenBitboard & Bit.Axes[square]) != 0)
-                if ((rookQueenBitboard & Attack.Rook(square, OccupiedBitboard)) != 0)
-                    return true;
+
             return false;
         }
 
