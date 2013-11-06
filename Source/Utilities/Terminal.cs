@@ -21,6 +21,11 @@ namespace AbsoluteZero {
         private const Int32 TerminalHeight = 25;
 
         /// <summary>
+        /// The width of the buffer area. 
+        /// </summary>
+        private const Int32 BufferWidth = 300;
+
+        /// <summary>
         /// The text that has been processed. 
         /// </summary>
         private static StringBuilder _text = new StringBuilder();
@@ -32,6 +37,7 @@ namespace AbsoluteZero {
             try {
                 Console.Title = "Engine Terminal";
                 Console.SetWindowSize(TerminalWidth, TerminalHeight);
+                Console.BufferWidth = BufferWidth;
             } catch { }
         }
 
