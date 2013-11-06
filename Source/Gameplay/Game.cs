@@ -111,26 +111,28 @@ namespace AbsoluteZero {
                             _message = "Stalemate. It's a draw!";
                             _state = GameState.Draw;
                         }
-                        return;
                     }
 
                     // Adjudicate draw.  
                     if (position.InsufficientMaterial()) {
                         _message = "Draw by insufficient material!";
                         _state = GameState.Draw;
-                        return;
                     }
                     if (player is IEngine && player.AcceptsDraw) {
                         if (position.FiftyMovesClock >= 100) {
                             _message = "Draw by fifty-move rule!";
                             _state = GameState.Draw;
-                            return;
                         }
                         if (position.HasRepeated(3)) {
                             _message = "Draw by threefold repetition!";
                             _state = GameState.Draw;
-                            return;
                         }
+                    }
+
+                    // Consider game end. 
+                    if (_state != GameState.Ingame) {
+                        _waitForStop.Set();
+                        return;
                     }
 
                     // Get move from player. 
@@ -139,6 +141,7 @@ namespace AbsoluteZero {
                     if (!position.Equals(copy))
                         Terminal.WriteLine("Board modified!");
 
+                    // Consider game stop. 
                     if (_state != GameState.Ingame) {
                         _waitForStop.Set();
                         return;
