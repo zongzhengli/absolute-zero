@@ -73,7 +73,7 @@ namespace AbsoluteZero {
         /// <returns>The best move as determined by the engine.</returns>
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.Standard) {
-                Terminal.WriteLine(String.Format(PVFormat, "Depth", "Value", "Principal Variation"));
+                Terminal.WriteLine(PVFormat, "Depth", "Value", "Principal Variation");
                 Terminal.WriteLine("-----------------------------------------------------------------------");
             }
 

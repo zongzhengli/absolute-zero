@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Provides Windows native methods. 
+    /// Provides methods that give access to the native Windows API. 
     /// </summary>
     class Native {
         public const Int32 SW_HIDE = 0;

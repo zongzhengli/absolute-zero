@@ -90,7 +90,7 @@ namespace AbsoluteZero {
             Int64 totalNodes = 0;
             Double totalTime = 0;
 
-            Terminal.WriteLine(String.Format(ResultFormat, "Position", "Result", "Time", "Nodes"));
+            Terminal.WriteLine(ResultFormat, "Position", "Result", "Time", "Nodes");
             Terminal.WriteLine("-----------------------------------------------------------------------");
             foreach (String line in epd) {
                 List<String> terms = new List<String>(line.Replace(";", " ;").Split(' '));
@@ -135,14 +135,14 @@ namespace AbsoluteZero {
                 }
 
                 // Print the result for the search on the position. 
-                Terminal.WriteLine(String.Format(ResultFormat, id, result, String.Format("{0:0} ms", elapsed), engine.Nodes));
+                Terminal.WriteLine(ResultFormat, id, result, String.Format("{0:0} ms", elapsed), engine.Nodes);
             }
 
             // Print final results after all positions have been searched. 
             Terminal.WriteLine("-----------------------------------------------------------------------");
-            Terminal.WriteLine(String.Format("Result         {0} / {1}", totalSolved, totalPositions));
-            Terminal.WriteLine(String.Format("Time           {0:0} ms", totalTime));
-            Terminal.WriteLine(String.Format("Average nodes  {0:0}", (Double)totalNodes / totalPositions));
+            Terminal.WriteLine("Result         {0} / {1}", totalSolved, totalPositions);
+            Terminal.WriteLine("Time           {0:0} ms", totalTime);
+            Terminal.WriteLine("Average nodes  {0:0}", (Double)totalNodes / totalPositions);
         }
     }
 }

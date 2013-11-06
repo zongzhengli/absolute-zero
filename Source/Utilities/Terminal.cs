@@ -6,7 +6,7 @@ using System.IO;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The terminal for engine input and output. 
+    /// Represents the terminal for engine input and output. 
     /// </summary>
     static class Terminal {
 
@@ -45,8 +45,8 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Writes the text representation of the specified object to the standard 
-        /// output stream. 
+        /// Writes the text representation of the given object to the standard output 
+        /// stream. 
         /// </summary>
         /// <param name="value">The value to write.</param>
         public static void Write(Object value) {
@@ -54,8 +54,19 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Writes the specified string, followed by the current line terminator, to 
-        /// the standard output stream. 
+        /// Writes the text representation of the given objects to the standard 
+        /// output stream using the given formatting. 
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="value">The value to write.</param>
+        public static void Write(string format, params Object[] values)
+        {
+            Write(String.Format(format, values));
+        }
+
+        /// <summary>
+        /// Writes the given string, followed by the current line terminator, to the 
+        /// standard output stream. 
         /// </summary>
         /// <param name="value">The value to write.</param>
         public static void WriteLine(String value = "") {
@@ -64,12 +75,24 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Writes the text representation of the specified object, followed by the 
+        /// Writes the text representation of the given object, followed by the 
         /// current line terminator, to the standard output stream. 
         /// </summary>
         /// <param name="value">The value to write.</param>
         public static void WriteLine(Object value) {
             WriteLine(value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the text representation of the given objects, followed by the 
+        /// current line terminator, to the standard output stream using the given 
+        /// formatting. 
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="value">The value to write.</param>
+        public static void WriteLine(string format, params Object[] values)
+        {
+            WriteLine(String.Format(format, values));
         }
 
         /// <summary>

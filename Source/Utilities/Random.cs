@@ -3,7 +3,7 @@
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Provides pseudorandom number generation methods. 
+    /// Provides methods for pseudorandom number generation. 
     /// </summary>
     static class Random {
 

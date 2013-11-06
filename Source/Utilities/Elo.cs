@@ -3,7 +3,7 @@
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Provides Elo calculation methods.
+    /// Provides methods for Elo calculation.
     /// </summary>
     static class Elo {
 

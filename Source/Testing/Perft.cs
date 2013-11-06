@@ -44,7 +44,7 @@ namespace AbsoluteZero {
             const Int32 SpeedWidth = 14;
             String format = "{0,-" + DepthWidth + "}{1,-" + TimeWidth + "}{2,-" + SpeedWidth + "}{3}";
 
-            Terminal.WriteLine(String.Format(format, "Depth", "Time", "Speed", "Nodes"));
+            Terminal.WriteLine(format, "Depth", "Time", "Speed", "Nodes");
             Terminal.WriteLine("-----------------------------------------------------------------------");
             for (Int32 d = 1; d <= depth; d++) {
                 Stopwatch stopwatch = Stopwatch.StartNew();
@@ -55,7 +55,7 @@ namespace AbsoluteZero {
                 String t = String.Format("{0:0} ms", elapsed);
                 String s = String.Format("{0:0} kN/s", nodes / elapsed);
 
-                Terminal.WriteLine(String.Format(format, d, t, s, nodes));
+                Terminal.WriteLine(format, d, t, s, nodes);
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
         }
@@ -72,7 +72,7 @@ namespace AbsoluteZero {
             const Int32 MoveWidth = 8;
             String format = "{0,-" + MoveWidth + "}{1}";
 
-            Terminal.WriteLine(String.Format(format, "Move", "Nodes"));
+            Terminal.WriteLine(format, "Move", "Nodes");
             Terminal.WriteLine("-----------------------------------------------------------------------");
 
             List<Int32> moves = position.LegalMoves();
@@ -83,7 +83,7 @@ namespace AbsoluteZero {
                 position.Unmake(move);
                 totalNodes += nodes;
 
-                Terminal.WriteLine(String.Format(format, Identify.Move(move), nodes));
+                Terminal.WriteLine(format, Identify.Move(move), nodes);
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
             Terminal.WriteLine("Moves: " + moves.Count);
