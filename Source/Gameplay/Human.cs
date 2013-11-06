@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -26,6 +27,10 @@ namespace AbsoluteZero {
         /// </summary>
         private Boolean _isMoving = false;
 
+        /// <summary>
+        /// Whether the player is to stop deciding on a move. 
+        /// </summary>
+        private Boolean _stop = false;
         /// <summary>
         /// The initial square for the player's move.
         /// </summary>
@@ -67,17 +72,31 @@ namespace AbsoluteZero {
         public Int32 GetMove(Position position) {
             Reset();
             _currentPosition = position;
+            _stop = false;
             _isMoving = true;
-            _waitForMove.WaitOne();
+
+            List<Int32> moves = position.LegalMoves();
+            Int32 move;
+            do {
+                _waitForMove.WaitOne();
+                move = CreateMove(position, _initialSquare, _finalSquare);
+
+                _initialSquare = Position.InvalidSquare;
+                _finalSquare = Position.InvalidSquare;
+                _waitForMove.Reset();
+            } while (!_stop && !moves.Contains(move));
+
             _isMoving = false;
-            return CreateMove(position, _initialSquare, _finalSquare);
+            return move;
         }
 
         /// <summary>
         /// Stops the player's move if applicable. 
         /// </summary>
         public void Stop() {
+            _waitForMove.Set();
             Reset();
+            _stop = true;
         }
 
         /// <summary>
@@ -87,6 +106,7 @@ namespace AbsoluteZero {
             _initialSquare = Position.InvalidSquare;
             _finalSquare = Position.InvalidSquare;
             _isMoving = false;
+            _stop = false;
             _waitForMove.Reset();
         }
 
@@ -95,19 +115,16 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="e">The mouse event.</param>
         public void MouseUpEvent(MouseEventArgs e) {
-            if (!_isMoving)
-                return;
-            Int32 square = Position.SquareAt(e.Location);
-            if (_currentPosition.Square[square] != Piece.Empty && (_currentPosition.Square[square] & Piece.Colour) == _currentPosition.SideToMove) {
-                if (_initialSquare == square)
-                    _initialSquare = Position.InvalidSquare;
+            if (_isMoving) {
+                Int32 square = Position.SquareAt(e.Location);
+                Int32 piece = _currentPosition.Square[square];
+
+                if (piece != Piece.Empty && (piece & Piece.Colour) == _currentPosition.SideToMove)
+                    _initialSquare = (_initialSquare == square) ? Position.InvalidSquare : square;
                 else {
-                    _finalSquare = Position.InvalidSquare;
-                    _initialSquare = square;
+                    _finalSquare = square;
+                    _waitForMove.Set();
                 }
-            } else {
-                _finalSquare = square;
-                _waitForMove.Set();
             }
         }
 

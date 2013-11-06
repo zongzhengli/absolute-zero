@@ -19,16 +19,16 @@ namespace AbsoluteZero {
         private static readonly Font MessageFont = new Font("Arial", 20);
 
         // Specifies the game state. 
-        private enum GameState { Default, Ingame, WhiteWon, BlackWon, Draw };
+        private enum GameState { NotStarted, Ingame, Stopped, WhiteWon, BlackWon, Draw };
 
         // Game fields. 
+        private Position _initialPosition;
         private List<Int32> _moves = new List<Int32>();
         private List<Type> _types = new List<Type>();
-        private Position _initialPosition;
-        private GameState _state = GameState.Default;
-        private String _date;
+        private GameState _state = GameState.NotStarted;
+        private ManualResetEvent _waitForStop = new ManualResetEvent(false);
         private String _message;
-        private Thread _thread;
+        private String _date;
 
         public IPlayer White;
         public IPlayer Black;
@@ -90,13 +90,14 @@ namespace AbsoluteZero {
         /// Starts play between the two players on the current position for the game. 
         /// This method is non-blocking and does not modify the given position. 
         /// </summary>
-        /// <param name="position">The position to start playing from.</param>
-        private void Play(Position pos) {
-            Position position = pos.DeepClone();
+        /// <param name="p">The position to start playing from.</param>
+        private void Play(Position p) {
+            Position position = p.DeepClone();
             VisualPosition.Set(position);
             _state = GameState.Ingame;
+            _waitForStop.Reset();
 
-            _thread = new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() => {
                 while (true) {
                     IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
@@ -134,11 +135,14 @@ namespace AbsoluteZero {
 
                     // Get move from player. 
                     Position copy = position.DeepClone();
-                    Int32 move = Move.Invalid;
-                    while (!legalMoves.Contains(move))
-                        move = player.GetMove(copy);
+                    Int32 move = player.GetMove(copy);
                     if (!position.Equals(copy))
                         Terminal.WriteLine("Board modified!");
+
+                    if (_state != GameState.Ingame) {
+                        _waitForStop.Set();
+                        return;
+                    }
 
                     // Make the move. 
                     position.Make(move);
@@ -148,17 +152,17 @@ namespace AbsoluteZero {
                 }
             })) {
                 IsBackground = true
-            };
-            _thread.Start();
+            }.Start();
         }
 
         /// <summary>
         /// Stops play between the two players. 
         /// </summary>
         public void End() {
+            _state = GameState.Stopped;
             White.Stop();
             Black.Stop();
-            _thread.Abort();
+            _waitForStop.WaitOne();
         }
 
         /// <summary>
@@ -166,7 +170,7 @@ namespace AbsoluteZero {
         /// state at which no moves have been played. 
         /// </summary>
         public void Reset() {
-            _state = GameState.Default;
+            _state = GameState.NotStarted;
             _moves.Clear();
             _types.Clear();
             White.Reset();
@@ -208,7 +212,8 @@ namespace AbsoluteZero {
             if (Black is Human)
                 (Black as Human).Draw(g);
             VisualPosition.DrawPieces(g);
-            if (_state != GameState.Ingame) {
+
+            if (_state != GameState.Ingame && _state != GameState.Stopped) {
                 g.FillRectangle(OverlayBrush, 0, 0, VisualPosition.Width, VisualPosition.Width);
                 g.DrawString(_message, MessageFont, MessageBrush, 20, 20);
             }
