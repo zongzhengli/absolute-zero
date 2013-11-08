@@ -66,7 +66,8 @@ namespace AbsoluteZero {
             /// <param name="entry">Contains the entry found when the method returns.</param>
             /// <returns>Whether the entry was found in the hash table.</returns>
             public bool TryProbe(UInt64 key, out HashEntry entry) {
-                return (entry = _entries[key % _indexer]).Key == key;
+                entry = _entries[key % _indexer];
+                return entry.Key == key;
             }
 
             /// <summary>

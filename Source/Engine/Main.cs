@@ -77,7 +77,7 @@ namespace AbsoluteZero {
                 Terminal.WriteLine("-----------------------------------------------------------------------");
             }
 
-            // Prepare for search. 
+            // Initialize variables to prepare for search. 
             _abortSearch = false;
             _totalNodes = 0;
             _quiescenceNodes = 0;

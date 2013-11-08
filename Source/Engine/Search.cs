@@ -17,21 +17,23 @@ namespace AbsoluteZero {
         /// <returns>The predicted best move. </returns>
         private Int32 Search(Position position) {
 
-            // Generate legal moves. Return immediately if there is only one legal move. 
+            // Generate legal moves. Return immediately if there is only one legal move 
+            // when playing with time controls. 
             List<Int32> moves = position.LegalMoves();
             if (Restrictions.UseTimeControls && moves.Count <= 1)
                 return moves[0];
 
-            // Initialize variables and determine time limits. The time limits only 
-            // apply when playing under time controls. 
+            // Initialize variables to prepare for search. 
             Int32 colour = position.SideToMove;
             Int32 depthLimit = Math.Min(DepthLimit, Restrictions.Depth);
             _timeLimit = Restrictions.MoveTime;
             _timeExtension = 0;
+
+            // Allocate search time when playing with time controls. 
             if (Restrictions.UseTimeControls) {
-                _timeLimit = Restrictions.TimeIncrement[colour] - TimeControlsExpectedLatency;
-                _timeLimit += Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-.007 * position.HalfMoves)));
-                _timeExtensionLimit = .3 * Restrictions.TimeControl[colour] + Restrictions.TimeIncrement[colour] - _timeLimit - TimeControlsExpectedLatency;
+                Double timeAllocation = Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-.007 * position.HalfMoves)));
+                _timeLimit = timeAllocation + Restrictions.TimeIncrement[colour] - TimeControlsExpectedLatency;
+                _timeExtensionLimit = .3 * Restrictions.TimeControl[colour] - timeAllocation;
             }
 
             // Apply iterative deepening. The search is repeated with incrementally 
@@ -164,12 +166,11 @@ namespace AbsoluteZero {
 
             // Perform hash probe. 
             _hashProbes++;
-            HashEntry hashEntry;
             Int32 hashMove = Move.Invalid;
+            HashEntry hashEntry;
 
             if (_table.TryProbe(position.ZobristKey, out hashEntry)) {
                 hashMove = hashEntry.Move;
-
                 if (hashEntry.GetDepth() >= depth) {
                     Int32 hashType = hashEntry.GetType();
                     Int32 hashValue = hashEntry.GetValue(ply);
@@ -250,9 +251,8 @@ namespace AbsoluteZero {
                 Boolean reducible = i + 1 > irreducibleMoves;
 
                 // Perform futility pruning. 
-                if (futileNode && !dangerous)
-                    if (futilityValue + PieceValue[Move.Capture(move) & Piece.Type] <= alpha)
-                        continue;
+                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move) & Piece.Type] <= alpha)
+                    continue;
 
                 // Make the move and initialize its value. 
                 position.Make(move);
