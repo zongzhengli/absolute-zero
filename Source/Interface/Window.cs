@@ -35,11 +35,14 @@ namespace AbsoluteZero {
             InitializeComponent();
             Icon = Properties.Resources.Icon;
             ClientSize = new Size(VisualPosition.Width, VisualPosition.Width + MenuHeight);
-            MouseUp += new MouseEventHandler(MouseUpEvent);
-            Paint += new PaintEventHandler(DrawEvent);
+            MouseUp += (sender, e) => {
+                if (game != null)
+                    game.MouseUpEvent(e);
+            };
             FormClosed += (sender, e) => {
                 Application.Exit();
             };
+            Paint += new PaintEventHandler(DrawEvent);
 
             // Set the background colour to the light colour of the chessboard so we 
             // don't need to draw the light squares. 
@@ -89,16 +92,6 @@ namespace AbsoluteZero {
                 VisualPosition.FillDarkSquares(g);
                 VisualPosition.DrawPieces(g);
             }
-        }
-
-        /// <summary>
-        /// Handles a mouse up event. 
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The mouse event.</param>
-        private void MouseUpEvent(Object sender, MouseEventArgs e) {
-            if (game != null)
-                game.MouseUpEvent(e);
         }
 
         /// <summary>

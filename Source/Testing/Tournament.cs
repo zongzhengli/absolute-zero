@@ -30,16 +30,15 @@ namespace AbsoluteZero {
         private static String ID = "Tournament " + DateTime.Now.ToString().Replace('/', '-').Replace(':', '.');
 
         /// <summary>
-        /// Begins the tournament with the given parameters. 
+        /// Begins the tournament with the given positions. 
         /// </summary>
-        /// <param name="parameters">Command-line parameters giving the conditions of the tournament.</param>
-        public static void Run(String[] parameters) {
+        /// <param name="epd">A list of positions to play in EPD format.</param>
+        public static void Run(List<String> epd) {
             IEngine experimental = new Zero() {
                 IsExperimental = true
             };
             IEngine standard = new Zero();
 
-            List<String> epd = TestSuite.Parse(parameters);
             Restrictions.Output = OutputType.None;
             Int32 wins = 0;
             Int32 losses = 0;

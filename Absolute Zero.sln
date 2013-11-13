@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Absolute Zero", "Absolute Zero.csproj", "{881C16A5-B117-47F8-8CFD-2C6D075524B6}"
 EndProject
 Global
