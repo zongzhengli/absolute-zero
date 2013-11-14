@@ -58,8 +58,6 @@ namespace AbsoluteZero {
                                 Terminal.WriteLine("-m [number]  Limit move time");
                                 Terminal.WriteLine("-d [number]  Limit depth");
                                 Terminal.WriteLine("-n [number]  Limit nodes");
-                                Terminal.Write("Press any key to continue . . . ");
-                                Console.ReadKey();
                                 break;
 
                             // Limit move time.

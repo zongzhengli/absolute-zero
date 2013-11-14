@@ -56,26 +56,37 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Returns the text representation of the given piece. 
+        /// </summary>
+        /// <param name="piece">The piece to identify.</param>
+        /// <returns>The text representation of the given piece.</returns>
+        public static String Piece(Int32 piece) {
+            switch (piece & PieceClass.Type) {
+                case PieceClass.King:
+                    return "King";
+                case PieceClass.Queen:
+                    return "Queen";
+                case PieceClass.Rook:
+                    return "Rook";
+                case PieceClass.Bishop:
+                    return "Bishop";
+                case PieceClass.Knight:
+                    return "Knight";
+                case PieceClass.Pawn:
+                    return "Pawn";
+            }
+            return "-";
+        }
+
+        /// <summary>
         /// Returns the text representation of the given piece as an initial. 
         /// </summary>
         /// <param name="piece">The piece to identify.</param>
         /// <returns>The text representation of the given piece as an initial.</returns>
         public static String PieceInitial(Int32 piece) {
-            switch (piece & PieceClass.Type) {
-                case PieceClass.King:
-                    return "K";
-                case PieceClass.Queen:
-                    return "Q";
-                case PieceClass.Rook:
-                    return "R";
-                case PieceClass.Bishop:
-                    return "B";
-                case PieceClass.Knight:
-                    return "N";
-                case PieceClass.Pawn:
-                    return "P";
-            }
-            return "-";
+            if (piece == PieceClass.Knight)
+                return "N";
+            return Piece(piece)[0].ToString();
         }
 
         /// <summary>
@@ -85,17 +96,16 @@ namespace AbsoluteZero {
         /// <returns>The text representation of the given move in coordinate notation.</returns>
         public static String Move(Int32 move) {
             String coordinates = Identify.Square(MoveClass.From(move)) + Identify.Square(MoveClass.To(move));
-            switch (MoveClass.Special(move) & PieceClass.Type) {
+            Int32 special = MoveClass.Special(move);
+
+            switch (special & PieceClass.Type) {
                 default:
                     return coordinates;
                 case PieceClass.Queen:
-                    return coordinates + "q";
                 case PieceClass.Rook:
-                    return coordinates + "r";
                 case PieceClass.Bishop:
-                    return coordinates + "b";
                 case PieceClass.Knight:
-                    return coordinates + "n";
+                    return coordinates + PieceInitial(special).ToLowerInvariant();
             }
         }
 
@@ -128,7 +138,7 @@ namespace AbsoluteZero {
 
             // Determine the piece associated with the move. Pawns are not explicitly 
             // identified. 
-            String piece = (MoveClass.Piece(move) & Piece.Type) == PieceClass.Pawn ? "" : PieceInitial(MoveClass.Piece(move));
+            String piece = (MoveClass.Piece(move) & PieceClass.Type) == PieceClass.Pawn ? "" : PieceInitial(MoveClass.Piece(move));
 
             // Determine the necessary disambiguation property for the move. If two or 
             // more pieces of the same type are moving to the same square, disambiguate 
@@ -161,7 +171,7 @@ namespace AbsoluteZero {
             // piece is a pawn, it is identified by the file it is moving from. 
             Boolean isCapture = MoveClass.IsCapture(move) || MoveClass.IsEnPassant(move);
             String capture = isCapture ? "x" : "";
-            if ((MoveClass.Piece(move) & Piece.Type) == Piece.Pawn && isCapture)
+            if ((MoveClass.Piece(move) & PieceClass.Type) == PieceClass.Pawn && isCapture)
                 if (disambiguation == "")
                     disambiguation = File(MoveClass.From(move));
 
@@ -198,7 +208,7 @@ namespace AbsoluteZero {
 
             if (options == IdentificationOptions.Proper) {
                 halfMoves = position.HalfMoves;
-                if (position.SideToMove == Piece.Black) {
+                if (position.SideToMove == PieceClass.Black) {
                     sequence.Append(halfMoves / 2 + 1);
                     sequence.Append("... ");
                 }

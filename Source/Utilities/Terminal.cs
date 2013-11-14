@@ -38,7 +38,9 @@ namespace AbsoluteZero {
                 Console.Title = "Engine Terminal";
                 Console.SetWindowSize(TerminalWidth, TerminalHeight);
                 Console.BufferWidth = BufferWidth;
-            } catch { }
+            } catch (Exception e) {
+                Terminal.WriteLine(e);
+            }
         }
 
         /// <summary>

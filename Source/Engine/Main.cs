@@ -98,7 +98,7 @@ namespace AbsoluteZero {
                 Terminal.WriteLine("-----------------------------------------------------------------------");
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();
-                Terminal.WriteLine(position.ToStringAppend(
+                Terminal.WriteLine(position.ToString(
                     String.Format("Absolute Zero {0}", Version),
                     String.Format("{0} MB / x{1}", HashAllocation, IntPtr.Size == 4 ? "86" : "64"),
                     "",

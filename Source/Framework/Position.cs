@@ -969,7 +969,7 @@ namespace AbsoluteZero {
                 return true;
 
             UInt64 bishopQueenBitboard = Bitboard[enemy | Piece.Bishop] | Bitboard[enemy | Piece.Queen];
-            if ((bishopQueenBitboard & Bit.Diagonals[square]) != 0 
+            if ((bishopQueenBitboard & Bit.Diagonals[square]) != 0
              && (bishopQueenBitboard & Attack.Bishop(square, OccupiedBitboard)) != 0)
                 return true;
 
@@ -1131,15 +1131,15 @@ namespace AbsoluteZero {
         public String GetFEN() {
             StringBuilder fen = new StringBuilder();
             for (Int32 rank = 0; rank < 8; rank++) {
-                Int32 space = 0;
+                Int32 spaces = 0;
                 for (Int32 file = 0; file < 8; file++) {
                     Int32 square = file + rank * 8;
                     if (Square[square] == Piece.Empty)
-                        space++;
+                        spaces++;
                     else {
-                        if (space > 0) {
-                            fen.Append(space);
-                            space = 0;
+                        if (spaces > 0) {
+                            fen.Append(spaces);
+                            spaces = 0;
                         }
                         String piece = Identify.PieceInitial(Square[square]);
                         if ((Square[square] & Piece.Colour) == Piece.Black)
@@ -1147,8 +1147,8 @@ namespace AbsoluteZero {
                         fen.Append(piece);
                     }
                 }
-                if (space > 0)
-                    fen.Append(space);
+                if (spaces > 0)
+                    fen.Append(spaces);
                 if (rank < 7)
                     fen.Append('/');
             }
@@ -1182,7 +1182,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>A text drawing of the position</returns>
         public override String ToString() {
-            return ToStringAppend();
+            return ToString();
         }
 
         /// <summary>
@@ -1190,7 +1190,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="comments">The comments to display.</param>
         /// <returns>A text drawing of the position with the given comments displayed</returns>
-        public String ToStringAppend(params String[] comments) {
+        public String ToString(params String[] comments) {
             StringBuilder result = new StringBuilder("   +------------------------+ ", 400);
             Int32 index = 0;
             if (index < comments.Length)
