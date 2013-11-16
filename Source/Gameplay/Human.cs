@@ -114,7 +114,7 @@ namespace AbsoluteZero {
         /// Handles a mouse up event.
         /// </summary>
         /// <param name="e">The mouse event.</param>
-        public void MouseUpEvent(MouseEventArgs e) {
+        public void MouseUpHandler(MouseEventArgs e) {
             if (_isMoving) {
                 Int32 square = Position.SquareAt(e.Location);
                 Int32 piece = _currentPosition.Square[square];

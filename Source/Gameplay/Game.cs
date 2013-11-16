@@ -197,11 +197,11 @@ namespace AbsoluteZero {
         /// Handles a mouse up event. 
         /// </summary>
         /// <param name="e">The mouse event.</param>
-        public void MouseUpEvent(MouseEventArgs e) {
+        public void MouseUpHandler(MouseEventArgs e) {
             if (White is Human)
-                (White as Human).MouseUpEvent(e);
+                (White as Human).MouseUpHandler(e);
             if (Black is Human)
-                (Black as Human).MouseUpEvent(e);
+                (Black as Human).MouseUpHandler(e);
         }
 
         /// <summary>
