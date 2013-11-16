@@ -84,7 +84,7 @@ namespace AbsoluteZero {
         /// <param name="piece">The piece to identify.</param>
         /// <returns>The text representation of the given piece as an initial.</returns>
         public static String PieceInitial(Int32 piece) {
-            if (piece == PieceClass.Knight)
+            if ((piece & PieceClass.Type) == PieceClass.Knight)
                 return "N";
             return Piece(piece)[0].ToString();
         }

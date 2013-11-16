@@ -217,7 +217,7 @@ namespace AbsoluteZero {
 
             // Perform hash move ordering. 
             if (hashMove != Move.Invalid)
-                for (Int32 i = 0; i < moves.Length; i++)
+                for (Int32 i = 0; i < movesCount; i++)
                     if (moves[i] == hashMove) {
                         _moveValues[i] = HashMoveValue;
                         break;

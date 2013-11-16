@@ -909,6 +909,7 @@ namespace AbsoluteZero {
             SideToMove = 1 - SideToMove;
             FiftyMovesClock++;
             HalfMoves++;
+            FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
             ZobristKeyHistory[HalfMoves] = ZobristKey;
         }
 
@@ -916,10 +917,10 @@ namespace AbsoluteZero {
         /// Unmakes the null move on the position.
         /// </summary>
         public void UnmakeNull() {
+            FiftyMovesClock = FiftyMovesHistory[HalfMoves - 1];
             ZobristKey = ZobristKeyHistory[HalfMoves - 1];
             EnPassantSquare = EnPassantHistory[HalfMoves - 1];
             SideToMove = 1 - SideToMove;
-            FiftyMovesClock--;
             HalfMoves--;
         }
 
@@ -1006,8 +1007,10 @@ namespace AbsoluteZero {
                 case Piece.King:
                     Int32 rookToBitboard = (toBitboard < fromBitboard ? 3 : 5) + Rank(Move.To(move)) * 8;
                     Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
+                    OccupiedBitboard ^= fromBitboard;
                     value = InCheck(1 - SideToMove);
                     Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
+                    OccupiedBitboard = occupiedBitboardCopy;
                     break;
                 case Piece.Pawn:
                     UInt64 enPassantPawnBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
@@ -1074,30 +1077,37 @@ namespace AbsoluteZero {
         /// <param name="other">The position to compare with.</param>
         /// <returns>Whether the position is equal to another position</returns>
         public Boolean Equals(Position other) {
-            if (ZobristKey != other.ZobristKey)
+            if (ZobristKey != other.ZobristKey
+             || OccupiedBitboard != other.OccupiedBitboard
+             || HalfMoves != other.HalfMoves
+             || FiftyMovesClock != other.FiftyMovesClock
+             || Material[Piece.White] != other.Material[Piece.White] 
+             || Material[Piece.Black] != other.Material[Piece.Black]
+             || SideToMove != other.SideToMove
+             || EnPassantSquare != other.EnPassantSquare)
                 return false;
-            if (HalfMoves != other.HalfMoves)
-                return false;
-            if (FiftyMovesClock != other.FiftyMovesClock)
-                return false;
-            if (Material != other.Material)
-                return false;
-            if (SideToMove != other.SideToMove)
-                return false;
-            if (EnPassantSquare != other.EnPassantSquare)
-                return false;
+
             for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) {
                 if (CastleKingside[colour] != other.CastleKingside[colour])
                     return false;
                 if (CastleQueenside[colour] != other.CastleQueenside[colour])
                     return false;
             }
+
+            for (Int32 ply = 0; ply < HalfMoves; ply++)
+                if (FiftyMovesHistory[ply] != other.FiftyMovesHistory[ply]
+                 || EnPassantHistory[ply] != other.EnPassantHistory[ply]
+                 || ZobristKeyHistory[ply] != other.ZobristKeyHistory[ply])
+                    return false;
+
             for (Int32 piece = 0; piece < Bitboard.Length; piece++)
                 if (Bitboard[piece] != other.Bitboard[piece])
                     return false;
+
             for (Int32 square = 0; square < Square.Length; square++)
                 if (Square[square] != other.Square[square])
                     return false;
+
             return true;
         }
 
@@ -1114,7 +1124,7 @@ namespace AbsoluteZero {
                 CastleQueenside = this.CastleQueenside.Clone() as Int32[],
                 EnPassantHistory = this.EnPassantHistory.Clone() as Int32[],
                 EnPassantSquare = this.EnPassantSquare,
-                Material = this.Material,
+                Material = this.Material.Clone() as Int32[],
                 SideToMove = this.SideToMove,
                 HalfMoves = this.HalfMoves,
                 FiftyMovesHistory = this.FiftyMovesHistory.Clone() as Int32[],
