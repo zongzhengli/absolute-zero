@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace AbsoluteZero {
 
@@ -381,14 +382,40 @@ namespace AbsoluteZero {
             Int32 movesToMate = (CheckmateValue - Math.Abs(value) + 1) / 2;
 
             switch (Restrictions.Output) {
+
+                // Return standard output. 
                 case OutputType.Standard:
                     String depthString = depth.ToString();
+
                     String valueString = isMate ? (value > 0 ? "+Mate " : "-Mate ") + movesToMate :
                                                   (value / 100.0).ToString("+0.00;-0.00");
+
                     String movesString = Identify.MovesAlgebraically(position, pv);
+
+                    // Apply word wrapping with indentation to long principal variations. 
+                    Int32 prefixLength = DepthWidth + ValueWidth;
+                    if (prefixLength + movesString.Length >= Terminal.Width) {
+                        StringBuilder sb = new StringBuilder();
+                        Int32 lineLength = prefixLength;
+
+                        // Process each word and wrap around if the line will be too long. 
+                        foreach (String word in movesString.Split(' ')) {
+                            if (lineLength + word.Length + 1 >= Terminal.Width) {
+                                sb.Append(Environment.NewLine);
+                                sb.Append(new String(' ', prefixLength));
+                                lineLength = prefixLength;
+                            }
+
+                            sb.Append(word);
+                            sb.Append(' ');
+                            lineLength += word.Length + 1;
+                        }
+                        movesString = sb.ToString(0, sb.Length - 1);
+                    }
 
                     return String.Format(PVFormat, depthString, valueString, movesString);
 
+                // Return UCI output. 
                 case OutputType.Universal:
                     String score = isMate ? "mate " + (value < 0 ? "-" : "") + movesToMate :
                                             "cp " + value;

@@ -13,17 +13,12 @@ namespace AbsoluteZero {
         /// <summary>
         /// The width of the terminal window. 
         /// </summary>
-        private const Int32 TerminalWidth = 82;
+        public const Int32 Width = 82;
 
         /// <summary>
         /// The height of the terminal window. 
         /// </summary>
-        private const Int32 TerminalHeight = 25;
-
-        /// <summary>
-        /// The width of the buffer area. 
-        /// </summary>
-        private const Int32 BufferWidth = 300;
+        public const Int32 Height = 25;
 
         /// <summary>
         /// The text that has been processed. 
@@ -36,8 +31,7 @@ namespace AbsoluteZero {
         public static void Initialize() {
             try {
                 Console.Title = "Engine Terminal";
-                Console.SetWindowSize(TerminalWidth, TerminalHeight);
-                Console.BufferWidth = BufferWidth;
+                Console.SetWindowSize(Width, Height);
             } catch (Exception e) {
                 Terminal.WriteLine(e);
             }
