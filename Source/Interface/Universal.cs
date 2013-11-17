@@ -149,19 +149,18 @@ namespace AbsoluteZero {
                     case "help":
                         Terminal.WriteLine("Command             Function");
                         Terminal.WriteLine("-----------------------------------------------------------------------");
-                        Terminal.WriteLine("perft [number]      Runs perft() on the current position to the given");
-                        Terminal.WriteLine("                    depth");
-                        Terminal.WriteLine("divide [number]     Runs divide() on the current position for the given");
-                        Terminal.WriteLine("                    depth");
-                        Terminal.WriteLine("fen                 Prints the FEN of the current position.");
-                        Terminal.WriteLine("draw                Draws the current position");
-                        Terminal.WriteLine("-----------------------------------------------------------------------");
                         Terminal.WriteLine("position [fen]      Sets the current position to the position denoted");
                         Terminal.WriteLine("                    by the given FEN. \"startpos\" is accepted for the");
                         Terminal.WriteLine("                    starting position");
                         Terminal.WriteLine("go [type] [number]  Searches the current position. Search types include");
                         Terminal.WriteLine("                    \"movetime\", \"depth\", \"nodes\", \"wtime\", \"btime\",");
                         Terminal.WriteLine("                    \"winc\", and \"binc\"");
+                        Terminal.WriteLine("perft [number]      Runs perft() on the current position to the given");
+                        Terminal.WriteLine("                    depth");
+                        Terminal.WriteLine("divide [number]     Runs divide() on the current position for the given");
+                        Terminal.WriteLine("                    depth");
+                        Terminal.WriteLine("fen                 Prints the FEN of the current position.");
+                        Terminal.WriteLine("draw                Draws the current position");
                         Terminal.WriteLine("stop                Stops an ongoing search");
                         Terminal.WriteLine("quit                Exits the application");
                         Terminal.WriteLine("-----------------------------------------------------------------------");
