@@ -38,7 +38,6 @@ namespace AbsoluteZero {
 
                 // Evaluate king. 
                 Int32 square = _kingSquare[colour];
-
                 value += opening * KingOpeningPositionValue[colour][square] + endgame * KingEndgamePositionValue[colour][square];
                 value += opening * PawnNearKingValue * Bit.Count(PawnShieldBitboard[square] & pawnBitboard) * sign;
 
@@ -57,7 +56,6 @@ namespace AbsoluteZero {
 
                 if ((pieceBitboard & (pieceBitboard - 1)) != 0)
                     value += BishopPairValue * sign;
-
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += BishopPositionValue[colour][square];
@@ -69,7 +67,6 @@ namespace AbsoluteZero {
 
                 // Evaluate knights. 
                 pieceBitboard = bitboard[colour | Piece.Knight];
-
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += opening * KnightOpeningPositionValue[colour][square];
@@ -82,7 +79,6 @@ namespace AbsoluteZero {
 
                 // Evaluate queens. 
                 pieceBitboard = bitboard[colour | Piece.Queen];
-
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += opening * QueenOpeningPositionValue[colour][square];
@@ -91,7 +87,6 @@ namespace AbsoluteZero {
 
                 // Evaluate rooks. 
                 pieceBitboard = bitboard[colour | Piece.Rook];
-
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += RookPositionValue[colour][square];
@@ -100,7 +95,6 @@ namespace AbsoluteZero {
                 // Evaluate pawns.
                 Int32 pawns = 0;
                 pieceBitboard = bitboard[colour | Piece.Pawn];
-
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += PawnPositionValue[colour][square];
@@ -115,10 +109,7 @@ namespace AbsoluteZero {
                     if ((ShortAdjacentFilesBitboard[square] & pawnBitboard) == 0)
                         value += IsolatedPawnValue * sign;
                 }
-                if (pawns > 0)
-                    value += pawns * endgame * PawnEndgameGainValue * sign;
-                else
-                    value += PawnDeficiencyValue * sign;
+                value += (pawns == 0 ? PawnDeficiencyValue : pawns * endgame * PawnEndgameGainValue) * sign;
 
                 // Evaluate pawn threat to enemy minor pieces.
                 UInt64 victimBitboard = bitboard[(1 - colour) | Piece.All] ^ enemyBitboard;
