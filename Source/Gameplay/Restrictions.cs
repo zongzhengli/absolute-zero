@@ -8,7 +8,7 @@ namespace AbsoluteZero {
     public enum OutputType { Standard, Universal, None }
 
     /// <summary>
-    /// Defines the restrictions for engines in standard games. 
+    /// Defines restrictions for engines in standard games. 
     /// </summary>
     static class Restrictions {
 

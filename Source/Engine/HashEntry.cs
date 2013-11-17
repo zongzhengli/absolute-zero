@@ -9,7 +9,7 @@ namespace AbsoluteZero {
     partial class Zero {
 
        /// <summary>
-       /// Defines an entry in the transposition hash table. 
+        /// Represents an entry in the transposition hash table. 
        /// </summary>
         private struct HashEntry {
 

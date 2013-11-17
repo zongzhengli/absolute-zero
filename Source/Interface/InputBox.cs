@@ -4,7 +4,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The code component of the Form for an input dialog box. 
+    /// Represents an input dialog box. 
     /// </summary>
     partial class InputBox : Form {
 

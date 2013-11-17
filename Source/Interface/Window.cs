@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Encapsulates the main GUI window. 
+    /// Represents the main GUI window. 
     /// </summary>
     partial class Window : Form {
 

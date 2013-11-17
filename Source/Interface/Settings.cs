@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The code component of the Form for the settings dialog box. 
+    /// Represents a settings dialog box. 
     /// </summary>
     partial class Settings : Form {
 

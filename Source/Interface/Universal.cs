@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The parser for the UCI/command-line mode. 
+    /// Provides methods for UCI/command-line parsing. 
     /// </summary>
     static class Universal {
 

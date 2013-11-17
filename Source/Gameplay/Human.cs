@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Defines a human player in the chess game. 
+    /// Represents a human player in the chess game. 
     /// </summary>
     class Human : IPlayer {
 

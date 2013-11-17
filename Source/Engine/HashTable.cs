@@ -9,7 +9,7 @@ namespace AbsoluteZero {
     partial class Zero {
 
         /// <summary>
-        /// Defines a transposition hash table. 
+        /// Represents a transposition hash table. 
         /// </summary>
         private class HashTable {
 

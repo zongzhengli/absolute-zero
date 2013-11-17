@@ -4,7 +4,7 @@ using System.Windows.Forms;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// The code component of the Form for a selection dialog box. 
+    /// Represents a selection dialog box. 
     /// </summary>
     partial class SelectionBox : Form {
 
