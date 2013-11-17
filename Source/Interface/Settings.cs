@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AbsoluteZero.Properties;
+using System;
 using System.Windows.Forms;
 
 namespace AbsoluteZero {
@@ -13,7 +14,7 @@ namespace AbsoluteZero {
         /// </summary>
         public Settings() {
             InitializeComponent();
-            Icon = Properties.Resources.Icon;
+            Icon = Resources.Icon;
         }
 
         /// <summary>

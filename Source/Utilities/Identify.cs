@@ -118,12 +118,12 @@ namespace AbsoluteZero {
         public static String Moves(List<Int32> moves) {
             if (moves.Count == 0)
                 return "";
-            StringBuilder sequence = new StringBuilder(6 * moves.Count);
+            StringBuilder sb = new StringBuilder(6 * moves.Count);
             foreach (Int32 move in moves) {
-                sequence.Append(Move(move));
-                sequence.Append(' ');
+                sb.Append(Move(move));
+                sb.Append(' ');
             }
-            return sequence.ToString(0, sequence.Length - 1);
+            return sb.ToString(0, sb.Length - 1);
         }
 
         /// <summary>
@@ -203,32 +203,32 @@ namespace AbsoluteZero {
             if (moves.Count == 0)
                 return "";
 
-            StringBuilder sequence = new StringBuilder(5 * moves.Count);
+            StringBuilder sb = new StringBuilder(5 * moves.Count);
             Int32 halfMoves = 0;
 
             if (options == IdentificationOptions.Proper) {
                 halfMoves = position.HalfMoves;
                 if (position.SideToMove == PieceClass.Black) {
-                    sequence.Append(halfMoves / 2 + 1);
-                    sequence.Append("... ");
+                    sb.Append(halfMoves / 2 + 1);
+                    sb.Append("... ");
                 }
             }
 
             foreach (Int32 move in moves) {
                 if ((halfMoves++ % 2) == 0) {
-                    sequence.Append(halfMoves / 2 + 1);
-                    sequence.Append('.');
+                    sb.Append(halfMoves / 2 + 1);
+                    sb.Append('.');
                     if (options == IdentificationOptions.Proper)
-                        sequence.Append(' ');
+                        sb.Append(' ');
                 }
-                sequence.Append(MoveAlgebraically(position, move));
-                sequence.Append(' ');
+                sb.Append(MoveAlgebraically(position, move));
+                sb.Append(' ');
                 position.Make(move);
             }
             for (Int32 i = moves.Count - 1; i >= 0; i--)
                 position.Unmake(moves[i]);
 
-            return sequence.ToString(0, sequence.Length - 1);
+            return sb.ToString(0, sb.Length - 1);
         }
     }
 }

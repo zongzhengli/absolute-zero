@@ -275,12 +275,12 @@ namespace AbsoluteZero {
         /// <param name="bitboard">The bitboard to convert.</param>
         /// <returns>The binary representation of the bitboard.</returns>
         public static String ToString(UInt64 bitboard) {
-            Char[] sequence = new Char[64];
-            for (Int32 i = sequence.Length - 1; i >= 0; i--) {
-                sequence[i] = (Char)((bitboard & 1) + 48);
+            Char[] chars = new Char[64];
+            for (Int32 i = chars.Length - 1; i >= 0; i--) {
+                chars[i] = (Char)((bitboard & 1) + 48);
                 bitboard >>= 1;
             }
-            return new String(sequence);
+            return new String(chars);
         }
 
         /// <summary>
@@ -290,17 +290,17 @@ namespace AbsoluteZero {
         /// <param name="bitboard">The bitboard to convert</param>
         /// <returns>The binary representation of the bitboard in a matrix format.</returns>
         public static String ToMatrix(UInt64 bitboard) {
-            StringBuilder sequence = new StringBuilder(78);
+            StringBuilder sb = new StringBuilder(78);
             Int32 file = 0;
             for (Int32 i = 0; i < 71; i++)
                 if (++file > 8) {
-                    sequence.Append(Environment.NewLine);
+                    sb.Append(Environment.NewLine);
                     file = 0;
                 } else {
-                    sequence.Append(bitboard & 1);
+                    sb.Append(bitboard & 1);
                     bitboard >>= 1;
                 }
-            return sequence.ToString();
+            return sb.ToString();
 
         }
     }

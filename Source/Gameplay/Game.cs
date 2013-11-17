@@ -259,8 +259,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="path">The path of the file.</param>
         public void SavePGN(String path) {
-            using (StreamWriter sw = new StreamWriter(path))
-                sw.WriteLine(GetPGN());
+            File.WriteAllText(path, GetPGN());
         }
 
         /// <summary>
@@ -268,13 +267,13 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>The PGN string of the game.</returns>
         public String GetPGN() {
-            StringBuilder sequence = new StringBuilder();
-            sequence.Append("[Date \"" + _date + "\"]");
-            sequence.Append(Environment.NewLine);
-            sequence.Append("[White \"" + White.Name + "\"]");
-            sequence.Append(Environment.NewLine);
-            sequence.Append("[Black \"" + Black.Name + "\"]");
-            sequence.Append(Environment.NewLine);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[Date \"" + _date + "\"]");
+            sb.Append(Environment.NewLine);
+            sb.Append("[White \"" + White.Name + "\"]");
+            sb.Append(Environment.NewLine);
+            sb.Append("[Black \"" + Black.Name + "\"]");
+            sb.Append(Environment.NewLine);
             String result = "*";
             switch (_state) {
                 case GameState.WhiteWon:
@@ -287,23 +286,23 @@ namespace AbsoluteZero {
                     result = "1/2-1/2";
                     break;
             }
-            sequence.Append("[Result \"" + result + "\"]");
-            sequence.Append(Environment.NewLine);
+            sb.Append("[Result \"" + result + "\"]");
+            sb.Append(Environment.NewLine);
 
             String initialFEN = _initialPosition.GetFEN();
             if (initialFEN != Position.StartingFEN) {
-                sequence.Append("[SepUp \"1\"]");
-                sequence.Append(Environment.NewLine);
-                sequence.Append("[FEN \"" + initialFEN + "\"]");
-                sequence.Append(Environment.NewLine);
+                sb.Append("[SepUp \"1\"]");
+                sb.Append(Environment.NewLine);
+                sb.Append("[FEN \"" + initialFEN + "\"]");
+                sb.Append(Environment.NewLine);
             }
 
-            sequence.Append(Environment.NewLine);
-            sequence.Append(Identify.MovesAlgebraically(_initialPosition, _moves, IdentificationOptions.Proper));
+            sb.Append(Environment.NewLine);
+            sb.Append(Identify.MovesAlgebraically(_initialPosition, _moves, IdentificationOptions.Proper));
             if (result != "*")
-                sequence.Append(" " + result);
+                sb.Append(" " + result);
 
-            return sequence.ToString();
+            return sb.ToString();
         }
     }
 }

@@ -108,8 +108,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="path">The path of the file to write to.</param>
         public static void SaveText(String path) {
-            using (StreamWriter sw = new StreamWriter(path))
-                sw.Write(_text.ToString());
+            File.WriteAllText(path, _text.ToString());
         }
 
         /// <summary>

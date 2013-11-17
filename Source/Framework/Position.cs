@@ -1139,7 +1139,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>The FEN string that describes the position.</returns>
         public String GetFEN() {
-            StringBuilder fen = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             for (Int32 rank = 0; rank < 8; rank++) {
                 Int32 spaces = 0;
                 for (Int32 file = 0; file < 8; file++) {
@@ -1148,43 +1148,43 @@ namespace AbsoluteZero {
                         spaces++;
                     else {
                         if (spaces > 0) {
-                            fen.Append(spaces);
+                            sb.Append(spaces);
                             spaces = 0;
                         }
                         String piece = Identify.PieceInitial(Square[square]);
                         if ((Square[square] & Piece.Colour) == Piece.Black)
                             piece = piece.ToLowerInvariant();
-                        fen.Append(piece);
+                        sb.Append(piece);
                     }
                 }
                 if (spaces > 0)
-                    fen.Append(spaces);
+                    sb.Append(spaces);
                 if (rank < 7)
-                    fen.Append('/');
+                    sb.Append('/');
             }
-            fen.Append(' ');
-            fen.Append(SideToMove == Piece.White ? 'w' : 'b');
-            fen.Append(' ');
+            sb.Append(' ');
+            sb.Append(SideToMove == Piece.White ? 'w' : 'b');
+            sb.Append(' ');
             if (CastleKingside[Piece.White] > 0)
-                fen.Append('K');
+                sb.Append('K');
             if (CastleQueenside[Piece.White] > 0)
-                fen.Append('Q');
+                sb.Append('Q');
             if (CastleKingside[Piece.Black] > 0)
-                fen.Append('k');
+                sb.Append('k');
             if (CastleQueenside[Piece.Black] > 0)
-                fen.Append('q');
-            if (fen[fen.Length - 1] == ' ')
-                fen.Append('-');
-            fen.Append(' ');
+                sb.Append('q');
+            if (sb[sb.Length - 1] == ' ')
+                sb.Append('-');
+            sb.Append(' ');
             if (EnPassantSquare != InvalidSquare)
-                fen.Append(Identify.Square(EnPassantSquare));
+                sb.Append(Identify.Square(EnPassantSquare));
             else
-                fen.Append('-');
-            fen.Append(' ');
-            fen.Append(FiftyMovesClock);
-            fen.Append(' ');
-            fen.Append(HalfMoves / 2 + 1);
-            return fen.ToString();
+                sb.Append('-');
+            sb.Append(' ');
+            sb.Append(FiftyMovesClock);
+            sb.Append(' ');
+            sb.Append(HalfMoves / 2 + 1);
+            return sb.ToString();
         }
 
         /// <summary>
@@ -1201,39 +1201,39 @@ namespace AbsoluteZero {
         /// <param name="comments">The comments to display.</param>
         /// <returns>A text drawing of the position with the given comments displayed</returns>
         public String ToString(params String[] comments) {
-            StringBuilder result = new StringBuilder("   +------------------------+ ", 400);
+            StringBuilder sb = new StringBuilder("   +------------------------+ ", 400);
             Int32 index = 0;
             if (index < comments.Length)
-                result.Append(comments[index++]);
+                sb.Append(comments[index++]);
 
             for (Int32 rank = 0; rank < 8; rank++) {
-                result.Append(Environment.NewLine);
-                result.Append(' ');
-                result.Append(8 - rank);
-                result.Append(" |");
+                sb.Append(Environment.NewLine);
+                sb.Append(' ');
+                sb.Append(8 - rank);
+                sb.Append(" |");
                 for (Int32 file = 0; file < 8; file++) {
                     Int32 piece = Square[file + rank * 8];
                     if (piece != Piece.Empty) {
-                        result.Append((piece & Piece.Colour) == Piece.White ? '<' : '[');
-                        result.Append(Identify.PieceInitial(piece));
-                        result.Append((piece & Piece.Colour) == Piece.White ? '>' : ']');
+                        sb.Append((piece & Piece.Colour) == Piece.White ? '<' : '[');
+                        sb.Append(Identify.PieceInitial(piece));
+                        sb.Append((piece & Piece.Colour) == Piece.White ? '>' : ']');
                     } else
-                        result.Append((file + rank) % 2 == 1 ? ":::" : "   ");
+                        sb.Append((file + rank) % 2 == 1 ? ":::" : "   ");
                 }
-                result.Append("| ");
+                sb.Append("| ");
                 if (index < comments.Length)
-                    result.Append(comments[index++]);
+                    sb.Append(comments[index++]);
             }
-            result.Append(Environment.NewLine);
-            result.Append("   +------------------------+ ");
+            sb.Append(Environment.NewLine);
+            sb.Append("   +------------------------+ ");
             if (index < comments.Length)
-                result.Append(comments[index++]);
+                sb.Append(comments[index++]);
 
-            result.Append(Environment.NewLine);
-            result.Append("     a  b  c  d  e  f  g  h   ");
+            sb.Append(Environment.NewLine);
+            sb.Append("     a  b  c  d  e  f  g  h   ");
             if (index < comments.Length)
-                result.Append(comments[index++]);
-            return result.ToString();
+                sb.Append(comments[index++]);
+            return sb.ToString();
         }
 
         /// <summary>
