@@ -20,13 +20,14 @@ namespace AbsoluteZero {
             IEngine engine = new Zero();
             Position position = new Position(Position.StartingFEN);
 
-            while (true) {
-                String command = Console.ReadLine();
+            String command;
+            while ((command= Console.ReadLine()) != null) {
                 List<String> terms = new List<String>(command.Split(' '));
 
                 switch (terms[0]) {
                     default:
-                        Terminal.WriteLine("Unknown command. Enter 'help' for assistance.");
+                        Terminal.WriteLine("Unknown command: {0}", terms[0]);
+                        Terminal.WriteLine("Enter \"help\" for assistance.");
                         break;
 
                     case "uci":
@@ -41,9 +42,8 @@ namespace AbsoluteZero {
                         break;
 
                     case "setoption":
-                        for (Int32 i = 1; i < terms.Count; i++)
-                            if (terms[i] == "name" && terms[i + 1] == "Hash")
-                                engine.HashAllocation = Int32.Parse(terms[terms.IndexOf("value") + 1]);
+                        if (terms.Contains("Hash"))
+                            engine.HashAllocation = Int32.Parse(terms[terms.IndexOf("value") + 1]);
                         break;
 
                     case "position":

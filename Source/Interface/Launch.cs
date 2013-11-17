@@ -18,7 +18,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The main entry point for the application. 
         /// </summary>
-        /// <param name="args">The command-line arugments.</param>
+        /// <param name="args">The command-line arguments.</param>
         [STAThread]
         public static void Main(String[] args) {
 
@@ -51,7 +51,8 @@ namespace AbsoluteZero {
 
                             // Unrecognized command.
                             default:
-                                Terminal.WriteLine("Unrecognized command-line parameter: {0}. Valid parameters are:", args[i]);
+                                Terminal.WriteLine("Unrecognized parameter: {0}", args[i]);
+                                Terminal.WriteLine("Valid parameters are:", args[i]);
                                 Terminal.WriteLine("-u           UCI/command-line mode");
                                 Terminal.WriteLine("-t           Tournament mode");
                                 Terminal.WriteLine("-s           Test suite mode");

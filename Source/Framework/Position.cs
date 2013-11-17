@@ -1005,11 +1005,11 @@ namespace AbsoluteZero {
                     OccupiedBitboard = occupiedBitboardCopy;
                     break;
                 case Piece.King:
-                    Int32 rookToBitboard = (toBitboard < fromBitboard ? 3 : 5) + Rank(Move.To(move)) * 8;
-                    Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
+                    UInt64 rookToBitboard = 1UL << ((toBitboard < fromBitboard ? 3 : 5) + Rank(Move.To(move)) * 8);
+                    Bitboard[SideToMove | Piece.Rook] ^= rookToBitboard;
                     OccupiedBitboard ^= fromBitboard;
                     value = InCheck(1 - SideToMove);
-                    Bitboard[SideToMove | Piece.Rook] ^= 1UL << rookToBitboard;
+                    Bitboard[SideToMove | Piece.Rook] ^= rookToBitboard;
                     OccupiedBitboard = occupiedBitboardCopy;
                     break;
                 case Piece.Pawn:
