@@ -996,6 +996,8 @@ namespace AbsoluteZero {
 
             Boolean value = false;
             switch (special & Piece.Type) {
+
+                // Consider normal move. 
                 case Piece.Empty:
                     Bitboard[piece] ^= fromBitboard | toBitboard;
                     OccupiedBitboard ^= fromBitboard;
@@ -1004,6 +1006,8 @@ namespace AbsoluteZero {
                     Bitboard[piece] ^= fromBitboard | toBitboard;
                     OccupiedBitboard = occupiedBitboardCopy;
                     break;
+
+                // Consider castling. 
                 case Piece.King:
                     UInt64 rookToBitboard = 1UL << ((toBitboard < fromBitboard ? 3 : 5) + Rank(Move.To(move)) * 8);
                     Bitboard[SideToMove | Piece.Rook] ^= rookToBitboard;
@@ -1012,6 +1016,8 @@ namespace AbsoluteZero {
                     Bitboard[SideToMove | Piece.Rook] ^= rookToBitboard;
                     OccupiedBitboard = occupiedBitboardCopy;
                     break;
+
+                // Consider en passant. 
                 case Piece.Pawn:
                     UInt64 enPassantPawnBitboard = Move.Pawn(EnPassantSquare, 1 - SideToMove);
                     Bitboard[piece] ^= fromBitboard | toBitboard;
@@ -1020,6 +1026,8 @@ namespace AbsoluteZero {
                     Bitboard[piece] ^= fromBitboard | toBitboard;
                     OccupiedBitboard = occupiedBitboardCopy;
                     break;
+
+                // Consider pawn promotion. 
                 default:
                     Bitboard[SideToMove | Piece.Pawn] ^= fromBitboard;
                     Bitboard[special] ^= toBitboard;
@@ -1061,7 +1069,7 @@ namespace AbsoluteZero {
         /// Returns whether the position has repeated the given number of times. 
         /// </summary>
         /// <param name="times">The number of repetitions to test for.</param>
-        /// <returns>Whether the position has repeated the given number of times</returns>
+        /// <returns>Whether the position has repeated the given number of times.</returns>
         public Boolean HasRepeated(Int32 times) {
             Int32 repetitions = 1;
             for (Int32 i = HalfMoves - 4; i >= HalfMoves - FiftyMovesClock; i -= 2)
@@ -1077,22 +1085,21 @@ namespace AbsoluteZero {
         /// <param name="other">The position to compare with.</param>
         /// <returns>Whether the position is equal to another position</returns>
         public Boolean Equals(Position other) {
-            if (ZobristKey != other.ZobristKey
+            if (other == null
+             || ZobristKey != other.ZobristKey
              || OccupiedBitboard != other.OccupiedBitboard
              || HalfMoves != other.HalfMoves
              || FiftyMovesClock != other.FiftyMovesClock
-             || Material[Piece.White] != other.Material[Piece.White] 
-             || Material[Piece.Black] != other.Material[Piece.Black]
+             || EnPassantSquare != other.EnPassantSquare
              || SideToMove != other.SideToMove
-             || EnPassantSquare != other.EnPassantSquare)
+             || Material[Piece.White] != other.Material[Piece.White] 
+             || Material[Piece.Black] != other.Material[Piece.Black])
                 return false;
 
-            for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) {
-                if (CastleKingside[colour] != other.CastleKingside[colour])
+            for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) 
+                if (CastleKingside[colour] != other.CastleKingside[colour]
+                 || CastleQueenside[colour] != other.CastleQueenside[colour])
                     return false;
-                if (CastleQueenside[colour] != other.CastleQueenside[colour])
-                    return false;
-            }
 
             for (Int32 ply = 0; ply < HalfMoves; ply++)
                 if (FiftyMovesHistory[ply] != other.FiftyMovesHistory[ply]
