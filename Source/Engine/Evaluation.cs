@@ -30,7 +30,7 @@ namespace AbsoluteZero {
             _kingSquare[Piece.Black] = Bit.Read(bitboard[Piece.Black | Piece.King]);
 
             for (colour = Piece.White; colour <= Piece.Black; colour++) {
-                UInt64 targetBitboard = ~bitboard[colour | Piece.All] & ~_pawnAttackBitboard[1 - colour];
+                UInt64 targetBitboard = ~bitboard[colour] & ~_pawnAttackBitboard[1 - colour];
                 UInt64 pawnBitboard = bitboard[colour | Piece.Pawn];
                 UInt64 enemyBitboard = bitboard[(1 - colour) | Piece.Pawn];
                 UInt64 allPawnBitboard = pawnBitboard | enemyBitboard;
@@ -112,7 +112,7 @@ namespace AbsoluteZero {
                 value += (pawns == 0 ? PawnDeficiencyValue : pawns * endgame * PawnEndgameGainValue) * sign;
 
                 // Evaluate pawn threat to enemy minor pieces.
-                UInt64 victimBitboard = bitboard[(1 - colour) | Piece.All] ^ enemyBitboard;
+                UInt64 victimBitboard = bitboard[(1 - colour)] ^ enemyBitboard;
                 value += PawnAttackValue * Bit.CountSparse(_pawnAttackBitboard[colour] & victimBitboard) * sign;
 
                 // Evaluate pawn defence to friendly minor pieces. 

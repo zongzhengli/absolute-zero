@@ -223,7 +223,7 @@ namespace AbsoluteZero {
                 if (Square[square] != Piece.Empty) {
                     Int32 colour = Square[square] & Piece.Colour;
                     Bitboard[Square[square]] |= 1UL << square;
-                    Bitboard[colour | Piece.All] |= 1UL << square;
+                    Bitboard[colour] |= 1UL << square;
                     OccupiedBitboard |= 1UL << square;
                     if ((Square[square] & Piece.Type) != Piece.King)
                         Material[colour] += Zero.PieceValue[Square[square]];
@@ -246,8 +246,8 @@ namespace AbsoluteZero {
             Int32 enemy = 1 - SideToMove;
             Int32 kingSquare = Bit.Read(Bitboard[SideToMove | Piece.King]);
 
-            UInt64 friendlyBitboard = Bitboard[SideToMove | Piece.All];
-            UInt64 enemyBitboard = Bitboard[enemy | Piece.All];
+            UInt64 friendlyBitboard = Bitboard[SideToMove];
+            UInt64 enemyBitboard = Bitboard[enemy];
             UInt64 targetBitboard = ~friendlyBitboard;
 
             UInt64 enemyBishopQueenBitboard = Bitboard[enemy | Piece.Bishop] | Bitboard[enemy | Piece.Queen];
@@ -605,7 +605,7 @@ namespace AbsoluteZero {
         /// <param name="moves">The array to populate with the pseudo-legal moves.</param>
         /// <returns>The number of moves generated for the position.</returns>
         public Int32 PseudoQuiescenceMoves(Int32[] moves) {
-            UInt64 targetBitboard = Bitboard[(1 - SideToMove) | Piece.All];
+            UInt64 targetBitboard = Bitboard[(1 - SideToMove)];
             Int32 index = 0;
 
             // Consider king moves. 
@@ -709,7 +709,7 @@ namespace AbsoluteZero {
             Square[to] = piece;
             Square[from] = Piece.Empty;
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
-            Bitboard[SideToMove | Piece.All] ^= (1UL << from) | (1UL << to);
+            Bitboard[SideToMove] ^= (1UL << from) | (1UL << to);
             OccupiedBitboard ^= (1UL << from) | (1UL << to);
             ZobristKey ^= Zobrist.PiecePosition[piece][from] ^ Zobrist.PiecePosition[piece][to];
             ZobristKey ^= Zobrist.Colour;
@@ -733,7 +733,7 @@ namespace AbsoluteZero {
                     goto default;
                 default:
                     Bitboard[capture] ^= 1UL << to;
-                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << to;
+                    Bitboard[(1 - SideToMove)] ^= 1UL << to;
                     OccupiedBitboard |= 1UL << to;
                     ZobristKey ^= Zobrist.PiecePosition[capture][to];
                     Material[1 - SideToMove] -= Zero.PieceValue[capture];
@@ -781,7 +781,7 @@ namespace AbsoluteZero {
                         rookTo = 5 + Rank(to) * 8;
                     }
                     Bitboard[SideToMove | Piece.Rook] ^= (1UL << rookFrom) | (1UL << rookTo);
-                    Bitboard[SideToMove | Piece.All] ^= (1UL << rookFrom) | (1UL << rookTo);
+                    Bitboard[SideToMove] ^= (1UL << rookFrom) | (1UL << rookTo);
                     OccupiedBitboard ^= (1UL << rookFrom) | (1UL << rookTo);
                     ZobristKey ^= Zobrist.PiecePosition[SideToMove | Piece.Rook][rookFrom];
                     ZobristKey ^= Zobrist.PiecePosition[SideToMove | Piece.Rook][rookTo];
@@ -791,7 +791,7 @@ namespace AbsoluteZero {
                 case Piece.Pawn:
                     Square[File(to) + Rank(from) * 8] = Piece.Empty;
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
-                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << (File(to) + Rank(from) * 8);
+                    Bitboard[(1 - SideToMove)] ^= 1UL << (File(to) + Rank(from) * 8);
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     ZobristKey ^= Zobrist.PiecePosition[special][File(to) + Rank(from) * 8];
                     Material[1 - SideToMove] -= Zero.PieceValue[special];
@@ -825,7 +825,7 @@ namespace AbsoluteZero {
             Square[from] = piece;
             Square[to] = capture;
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
-            Bitboard[SideToMove | Piece.All] ^= (1UL << from) | (1UL << to);
+            Bitboard[SideToMove] ^= (1UL << from) | (1UL << to);
             OccupiedBitboard ^= (1UL << from) | (1UL << to);
             ZobristKey = ZobristKeyHistory[HalfMoves - 1];
 
@@ -844,7 +844,7 @@ namespace AbsoluteZero {
                     goto default;
                 default:
                     Bitboard[capture] ^= 1UL << to;
-                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << to;
+                    Bitboard[(1 - SideToMove)] ^= 1UL << to;
                     OccupiedBitboard |= 1UL << to;
                     Material[1 - SideToMove] += Zero.PieceValue[capture];
                     break;
@@ -877,7 +877,7 @@ namespace AbsoluteZero {
                         rookTo = 5 + Rank(to) * 8;
                     }
                     Bitboard[SideToMove | Piece.Rook] ^= (1UL << rookFrom) | (1UL << rookTo);
-                    Bitboard[SideToMove | Piece.All] ^= (1UL << rookFrom) | (1UL << rookTo);
+                    Bitboard[SideToMove] ^= (1UL << rookFrom) | (1UL << rookTo);
                     OccupiedBitboard ^= (1UL << rookFrom) | (1UL << rookTo);
                     Square[rookFrom] = SideToMove | Piece.Rook;
                     Square[rookTo] = Piece.Empty;
@@ -885,7 +885,7 @@ namespace AbsoluteZero {
                 case Piece.Pawn:
                     Square[File(to) + Rank(from) * 8] = special;
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
-                    Bitboard[(1 - SideToMove) | Piece.All] ^= 1UL << (File(to) + Rank(from) * 8);
+                    Bitboard[(1 - SideToMove)] ^= 1UL << (File(to) + Rank(from) * 8);
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     Material[1 - SideToMove] += Zero.PieceValue[special];
                     break;

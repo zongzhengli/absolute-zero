@@ -185,7 +185,7 @@ namespace AbsoluteZero {
             Int32 colour = position.SideToMove;
 
             // Apply null move heuristic. 
-            if (allowNull && !inCheck && position.Bitboard[colour | Piece.All] != (position.Bitboard[colour | Piece.King] | position.Bitboard[colour | Piece.Pawn])) {
+            if (allowNull && !inCheck && position.Bitboard[colour] != (position.Bitboard[colour | Piece.King] | position.Bitboard[colour | Piece.Pawn])) {
                 position.MakeNull();
                 Int32 reduction = NullMoveReduction + (depth >= NullMoveAggressiveDepth ? depth / NullMoveAggressiveDivisor : 0);
                 Int32 value = -Search(position, depth - 1 - reduction, ply + 1, -beta, -beta + 1, false, false);

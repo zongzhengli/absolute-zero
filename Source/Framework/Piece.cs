@@ -71,10 +71,5 @@ namespace AbsoluteZero {
         /// The king piece. 
         /// </summary>
         public const Int32 King = 12;                                                // 1100
-
-        /// <summary>
-        /// The set of all pieces. 
-        /// </summary>
-        public const Int32 All = 14;                                                 // 1110
     }
 }
