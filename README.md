@@ -7,10 +7,10 @@ General features:
 - Runs with own GUI by default
 - Runs in UCI/command-line mode with -u argument
 - Accepts perft and divide commands in command-line mode
-- Bitboard chess engine that automatically runs in 64-bit when possible
+- Bitboard chess engine that runs in 64-bit when possible
 
 Search features:
-- Principle variation search
+- Principal variation search
 - Iterative deepening
 - Transposition table
 - Null move heuristic
