@@ -10,7 +10,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The maximum magnitude for results. 
         /// </summary>
-        private const Int32 MaximumMagnitude = 999;
+        private const Int32 MaxValue = 999;
 
         /// <summary>
         /// The standard deviation for the error bound calculations. 
@@ -38,8 +38,8 @@ namespace AbsoluteZero {
         /// <returns>The difference in Elo from the perspective of the calculating player.</returns>
         public static Double GetDifference(Double score) {
             Double value = -400 * Math.Log10(1 / score - 1);
-            if (Math.Abs(value) > MaximumMagnitude)
-                return Math.Sign(value) * MaximumMagnitude;
+            if (Math.Abs(value) > MaxValue)
+                return Math.Sign(value) * MaxValue;
             return value;
         }
 

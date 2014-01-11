@@ -3,6 +3,10 @@ using System.Drawing;
 using System.Threading;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Represents a chess piece in the visual interface. 
+    /// </summary>
     class VisualPiece {
         private static readonly Point PieceOffset = new Point(-4, 2);
         private static readonly Font PieceFont = new Font("Tahoma", 30);

@@ -4,6 +4,10 @@ using System.Drawing;
 using System.Threading;
 
 namespace AbsoluteZero {
+
+    /// <summary>
+    /// Represents the chess position in the visual interface.  
+    /// </summary>
     static class VisualPosition {
         public static readonly Color LightColor = Color.FromArgb(230, 230, 230);
         public static readonly Color DarkColor = Color.FromArgb(215, 215, 215);
