@@ -34,8 +34,8 @@ namespace AbsoluteZero {
         public Int32 LateMoveReduction = 2;
         public Single HashMoveValue = 60F;
         public Int32 KillerMovesAllocation = 2;
-        public Single KillerMoveValue = .9F;
-        public Single KillerMoveSlotValue = -.01F;
+        public Single KillerMoveValue = 0.9F;
+        public Single KillerMoveSlotValue = -0.01F;
         public Single QueenPromotionMoveValue = 1F;
         public Int32[] FutilityMargin = { 0, 104, 125, 250, 271, 375 };
 
@@ -46,12 +46,12 @@ namespace AbsoluteZero {
         private const Int32 Infinity = 9999999;
 
         private const Double TimeControlsExpectedLatency = 50;
-        private const Double TimeControlsContinuationThreshold = .7;
-        private const Double TimeControlsResearchThreshold = .5;
-        private const Double TimeControlsResearchExtension = .7;
+        private const Double TimeControlsContinuationThreshold = 0.7;
+        private const Double TimeControlsResearchThreshold = 0.5;
+        private const Double TimeControlsResearchExtension = 0.7;
         private const Int32 TimeControlsLossResolution = 10;
-        private const Double TimeControlsLossThreshold = .8;
-        private static readonly Double[] TimeControlsLossExtension = { 0, .1, .2, .4, .8, .9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.4 };
+        private const Double TimeControlsLossThreshold = 0.8;
+        private static readonly Double[] TimeControlsLossExtension = { 0, 0.1, 0.2, 0.4, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.4 };
 
         // Evaluation constants. 
         public Int32 KingOnOpenFileValue = -58;

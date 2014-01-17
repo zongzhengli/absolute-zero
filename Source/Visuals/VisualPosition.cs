@@ -16,7 +16,7 @@ namespace AbsoluteZero {
         private static readonly Rectangle[] DarkSquares = new Rectangle[32];
         private static readonly Object PiecesLock = new Object();
 
-        public const Double AnimationEasing = .3;
+        public const Double AnimationEasing = 0.3;
         public const Int32 AnimationInterval = 33;
         public const Int32 SquareWidth = 50;
         public const Int32 Width = 8 * SquareWidth;
