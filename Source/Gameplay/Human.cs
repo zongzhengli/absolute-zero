@@ -134,7 +134,7 @@ namespace AbsoluteZero {
         /// <param name="g">The drawing surface.</param>
         public void Draw(Graphics g) {
             if (_isMoving && _initialSquare != Position.InvalidSquare)
-                VisualPosition.FillSquare(g, SelectionBrush, _initialSquare);
+                VisualPosition.DrawSquare(g, SelectionBrush, _initialSquare);
         }
 
         /// <summary>

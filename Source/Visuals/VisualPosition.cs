@@ -9,23 +9,75 @@ namespace AbsoluteZero {
     /// Represents the chess position in the visual interface.  
     /// </summary>
     static class VisualPosition {
+
+        /// <summary>
+        /// The colour of light squares on the chessboard. 
+        /// </summary>
         public static readonly Color LightColor = Color.FromArgb(230, 230, 230);
+
+        /// <summary>
+        /// The colour of dark squares on the chessboard. 
+        /// </summary>
         public static readonly Color DarkColor = Color.FromArgb(215, 215, 215);
+
+        /// <summary>
+        /// The brush for drawing light squares on the chessboard. 
+        /// </summary>
         private static readonly SolidBrush LightBrush = new SolidBrush(LightColor);
+
+        /// <summary>
+        /// The brush for drawing dark squares on the chessboard. 
+        /// </summary>
         private static readonly SolidBrush DarkBrush = new SolidBrush(DarkColor);
+
+        /// <summary>
+        /// The collection of rectangles representing the dark squares. 
+        /// </summary>
         private static readonly Rectangle[] DarkSquares = new Rectangle[32];
+
+        /// <summary>
+        /// The lock for modifying the collection of pieces. 
+        /// </summary>
         private static readonly Object PiecesLock = new Object();
 
+        /// <summary>
+        /// The multiplicative factor for averaging piece locations during animation. 
+        /// </summary>
         public const Double AnimationEasing = 0.3;
+
+        /// <summary>
+        /// The target number of milliseconds between drawing frames. 
+        /// </summary>
         public const Int32 AnimationInterval = 33;
+
+        /// <summary>
+        /// The width of squares on the chessboard in pixels. 
+        /// </summary>
         public const Int32 SquareWidth = 50;
+
+        /// <summary>
+        /// The width of the chessboard in pixels.
+        /// </summary>
         public const Int32 Width = 8 * SquareWidth;
 
+        /// <summary>
+        /// Whether piece movements are animated. 
+        /// </summary>
         public static Boolean Animations = true;
+
+        /// <summary>
+        /// Whether the chessboard is rotated when drawn. 
+        /// </summary>
         public static Boolean Rotated = false;
 
+        /// <summary>
+        /// The collection of visual pieces for drawing. 
+        /// </summary>
         private static List<VisualPiece> _pieces = new List<VisualPiece>(32);
 
+        /// <summary>
+        /// Initializes the collection of dark squares. 
+        /// </summary>
         static VisualPosition() {
             for (Int32 file = 0; file < 8; file++)
                 for (Int32 rank = 0; rank < 8; rank++)
@@ -33,6 +85,10 @@ namespace AbsoluteZero {
                         DarkSquares[file / 2 + rank * 4] = new Rectangle(file * SquareWidth, rank * SquareWidth, SquareWidth, SquareWidth);
         }
 
+        /// <summary>
+        /// Sets the visual position to draw to the given position. 
+        /// </summary>
+        /// <param name="position">The position to draw.</param>
         public static void Set(Position position) {
             lock (PiecesLock) {
                 _pieces.Clear();
@@ -42,6 +98,10 @@ namespace AbsoluteZero {
             }
         }
 
+        /// <summary>
+        /// Makes the given move on the visual position. 
+        /// </summary>
+        /// <param name="move">The move to make.</param>
         public static void Make(Int32 move) {
             Int32 from = Move.From(move);
             Int32 to = Move.To(move);
@@ -76,6 +136,12 @@ namespace AbsoluteZero {
             Animate(move, initial, final);
         }
 
+        /// <summary>
+        /// Animates the given move between the given initial and final locations. 
+        /// </summary>
+        /// <param name="move">The move to animate.</param>
+        /// <param name="initial">The initial location of the moving piece.</param>
+        /// <param name="final">The final location of the moving piece.</param>
         private static void Animate(Int32 move, Point initial, Point final) {
             VisualPiece piece = null;
             lock (PiecesLock)
@@ -94,11 +160,21 @@ namespace AbsoluteZero {
             }.Start();
         }
 
-        public static void FillDarkSquares(Graphics g) {
+        /// <summary>
+        /// Draws the dark squares of the chessboard. 
+        /// </summary>
+        /// <param name="g">The graphics surface to draw on.</param>
+        public static void DrawDarkSquares(Graphics g) {
             g.FillRectangles(DarkBrush, DarkSquares);
         }
 
-        public static void FillSquare(Graphics g, SolidBrush brush, Int32 square) {
+        /// <summary>
+        /// Draws the given square using the given brush. 
+        /// </summary>
+        /// <param name="g">The graphics surface to draw on.</param>
+        /// <param name="brush">The brush for drawing the square.</param>
+        /// <param name="square">The square to draw.</param>
+        public static void DrawSquare(Graphics g, SolidBrush brush, Int32 square) {
             Int32 x = Position.File(square);
             Int32 y = Position.Rank(square);
             if (Rotated) {
@@ -110,6 +186,10 @@ namespace AbsoluteZero {
             g.FillRectangle(brush, x, y, SquareWidth, SquareWidth);
         }
 
+        /// <summary>
+        /// Draws the pieces on the chessboard. 
+        /// </summary>
+        /// <param name="g">The graphics surface to draw on.</param>
         public static void DrawPieces(Graphics g) {
             _pieces.ForEach(piece => {
                 if (piece != null)

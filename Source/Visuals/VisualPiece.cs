@@ -8,6 +8,7 @@ namespace AbsoluteZero {
     /// Represents a chess piece in the visual interface. 
     /// </summary>
     class VisualPiece {
+
         /// <summary>
         /// The offset for centering pieces on squares when drawing.
         /// </summary>
@@ -61,7 +62,7 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Draws the visual piece on the given graphics surface. 
+        /// Draws the visual piece. 
         /// </summary>
         /// <param name="g">The graphics surface to draw on.</param>
         public void Draw(Graphics g) {

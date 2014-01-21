@@ -92,7 +92,7 @@ namespace AbsoluteZero {
             if (_game != null)
                 _game.Draw(g);
             else {
-                VisualPosition.FillDarkSquares(g);
+                VisualPosition.DrawDarkSquares(g);
                 VisualPosition.DrawPieces(g);
             }
         }
