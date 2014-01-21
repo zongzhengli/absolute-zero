@@ -43,7 +43,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The multiplicative factor for averaging piece locations during animation. 
         /// </summary>
-        public const Double AnimationEasing = 0.3;
+        public const Single AnimationEasing = 0.3F;
 
         /// <summary>
         /// The target number of milliseconds between drawing frames. 

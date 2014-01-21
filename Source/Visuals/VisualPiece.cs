@@ -30,24 +30,14 @@ namespace AbsoluteZero {
         private Int32 _piece;
 
         /// <summary>
-        /// The absolute x coordinate. 
+        /// The real location of the visual piece. 
         /// </summary>
-        private Int32 _realX;
+        private Point _real;
 
         /// <summary>
-        /// The absolute y coordinate. 
+        /// The dynamic location of the visual piece for animation. 
         /// </summary>
-        private Int32 _realY;
-
-        /// <summary>
-        /// The dynamic x coordinate for animation. 
-        /// </summary>
-        private Double _dynamicX;
-
-        /// <summary>
-        /// The dynamic y coordinate for animation. 
-        /// </summary>
-        private Double _dynamicY;
+        private PointF _dynamic;
 
         /// <summary>
         /// Contructs a visual piece at a given location. 
@@ -57,8 +47,8 @@ namespace AbsoluteZero {
         /// <param name="y">The y coodinate.</param>
         public VisualPiece(Int32 piece, Int32 x, Int32 y) {
             this._piece = piece;
-            _dynamicX = _realX = x;
-            _dynamicY = _realY = y;
+            _real = new Point(x, y);
+            _dynamic = new PointF(x, y);
         }
 
         /// <summary>
@@ -67,34 +57,35 @@ namespace AbsoluteZero {
         /// <param name="g">The graphics surface to draw on.</param>
         public void Draw(Graphics g) {
             Boolean isWhite = (_piece & Piece.Colour) == Piece.White;
-            Int32 x = (Int32)Math.Round(_dynamicX);
-            Int32 y = (Int32)Math.Round(_dynamicY);
+
+            PointF location = new PointF(_dynamic.X, _dynamic.Y);
             if (VisualPosition.Rotated) {
-                x = VisualPosition.SquareWidth * 7 - x;
-                y = VisualPosition.SquareWidth * 7 - y;
+                location.X = VisualPosition.SquareWidth * 7 - location.X;
+                location.Y = VisualPosition.SquareWidth * 7 - location.Y;
             }
-            x += PieceOffset.X;
-            y += PieceOffset.Y;
+            location.X += PieceOffset.X;
+            location.Y += PieceOffset.Y;
+
             switch (_piece & Piece.Type) {
                 case Piece.Empty:
                     break;
                 case Piece.Pawn:
-                    g.DrawString(isWhite ? "\u2659" : "\u265F", PieceFont, PieceBrush, x, y);
+                    g.DrawString(isWhite ? "\u2659" : "\u265F", PieceFont, PieceBrush, location);
                     break;
                 case Piece.Rook:
-                    g.DrawString(isWhite ? "\u2656" : "\u265C", PieceFont, PieceBrush, x, y);
+                    g.DrawString(isWhite ? "\u2656" : "\u265C", PieceFont, PieceBrush, location);
                     break;
                 case Piece.Knight:
-                    g.DrawString(isWhite ? "\u2658" : "\u265E", PieceFont, PieceBrush, x, y);
+                    g.DrawString(isWhite ? "\u2658" : "\u265E", PieceFont, PieceBrush, location);
                     break;
                 case Piece.Bishop:
-                    g.DrawString(isWhite ? "\u2657" : "\u265D", PieceFont, PieceBrush, x, y);
+                    g.DrawString(isWhite ? "\u2657" : "\u265D", PieceFont, PieceBrush, location);
                     break;
                 case Piece.King:
-                    g.DrawString(isWhite ? "\u2654" : "\u265A", PieceFont, PieceBrush, x, y);
+                    g.DrawString(isWhite ? "\u2654" : "\u265A", PieceFont, PieceBrush, location);
                     break;
                 case Piece.Queen:
-                    g.DrawString(isWhite ? "\u2655" : "\u265B", PieceFont, PieceBrush, x, y);
+                    g.DrawString(isWhite ? "\u2655" : "\u265B", PieceFont, PieceBrush, location);
                     break;
             }
         }
@@ -112,19 +103,23 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="point">The location to move the piece to.</param>
         public void MoveTo(Point point) {
-            Double easing = VisualPosition.Animations ? VisualPosition.AnimationEasing : 1;
-            Int32 currentX = _realX = point.X;
-            Int32 currentY = _realY = point.Y;
+            Single easing = VisualPosition.Animations ? VisualPosition.AnimationEasing : 1;
+            Point current = _real = point;
+
             while (true) {
-                _dynamicX += (_realX - _dynamicX) * easing;
-                _dynamicY += (_realY - _dynamicY) * easing;
-                if (Math.Abs(_realX - _dynamicX) < 1 && Math.Abs(_realY - _dynamicY) < 1) {
-                    _dynamicX = _realX;
-                    _dynamicY = _realY;
+                _dynamic.X += (_real.X - _dynamic.X) * easing;
+                _dynamic.Y += (_real.Y - _dynamic.Y) * easing;
+
+                if (Math.Abs(_real.X - _dynamic.X) < 1 && Math.Abs(_real.Y - _dynamic.Y) < 1) {
+                    _dynamic.X = _real.X;
+                    _dynamic.Y = _real.Y;
                     return;
                 }
-                if (currentX != _realX || currentY != _realY)
+
+                // Another move has been made with the same piece. 
+                if (current.X != _real.X || current.Y != _real.Y)
                     return;
+
                 Thread.Sleep(VisualPosition.AnimationInterval);
             }
         }
@@ -145,7 +140,7 @@ namespace AbsoluteZero {
         /// <param name="y">The y coordinate of the location.</param>
         /// <returns>Whether the visual piece is at the given location.</returns>
         public Boolean IsAt(Int32 x, Int32 y) {
-            return _realX == x && _realY == y;
+            return _real.X == x && _real.Y == y;
         }
     }
 }
