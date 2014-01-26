@@ -40,7 +40,7 @@ namespace AbsoluteZero {
                 Int32 square = _kingSquare[colour];
                 value += opening * KingOpeningPositionValue[colour][square] + endgame * KingEndgamePositionValue[colour][square];
                 value += opening * PawnNearKingValue * Bit.Count(PawnShieldBitboard[square] & pawnBitboard) * sign;
-
+                
                 if ((allPawnBitboard & Bit.File[square]) == 0)
                     value += opening * KingOnOpenFileValue * sign;
 
@@ -56,6 +56,7 @@ namespace AbsoluteZero {
 
                 if ((pieceBitboard & (pieceBitboard - 1)) != 0)
                     value += BishopPairValue * sign;
+
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
                     value += BishopPositionValue[colour][square];

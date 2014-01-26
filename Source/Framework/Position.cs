@@ -711,15 +711,16 @@ namespace AbsoluteZero {
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
             Bitboard[SideToMove] ^= (1UL << from) | (1UL << to);
             OccupiedBitboard ^= (1UL << from) | (1UL << to);
+
             ZobristKey ^= Zobrist.PiecePosition[piece][from] ^ Zobrist.PiecePosition[piece][to];
             ZobristKey ^= Zobrist.Colour;
-
             if (EnPassantSquare != InvalidSquare) {
                 ZobristKey ^= Zobrist.EnPassant[EnPassantSquare];
                 EnPassantSquare = InvalidSquare;
             }
             FiftyMovesClock++;
             HalfMoves++;
+
             switch (capture & Piece.Type) {
                 case Piece.Empty:
                     break;
@@ -740,6 +741,7 @@ namespace AbsoluteZero {
                     FiftyMovesClock = 0;
                     break;
             }
+
             switch (special & Piece.Type) {
                 case Piece.Empty:
                     switch (piece & Piece.Type) {
@@ -805,6 +807,7 @@ namespace AbsoluteZero {
                     Square[to] = special;
                     break;
             }
+
             SideToMove = 1 - SideToMove;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
             ZobristKeyHistory[HalfMoves] = ZobristKey;
@@ -827,12 +830,13 @@ namespace AbsoluteZero {
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
             Bitboard[SideToMove] ^= (1UL << from) | (1UL << to);
             OccupiedBitboard ^= (1UL << from) | (1UL << to);
-            ZobristKey = ZobristKeyHistory[HalfMoves - 1];
 
+            ZobristKey = ZobristKeyHistory[HalfMoves - 1];
             EnPassantHistory[HalfMoves] = InvalidSquare;
             EnPassantSquare = EnPassantHistory[HalfMoves - 1];
             FiftyMovesClock = FiftyMovesHistory[HalfMoves - 1];
             HalfMoves--;
+
             switch (capture & Piece.Type) {
                 case Piece.Empty:
                     break;
@@ -849,6 +853,7 @@ namespace AbsoluteZero {
                     Material[1 - SideToMove] += Zero.PieceValue[capture];
                     break;
             }
+
             switch (special & Piece.Type) {
                 case Piece.Empty:
                     switch (piece & Piece.Type) {
@@ -930,13 +935,17 @@ namespace AbsoluteZero {
         /// <returns>The hash key for the position.</returns>
         public UInt64 GenerateZobristKey() {
             UInt64 key = 0;
+
             for (Int32 square = 0; square < Square.Length; square++)
                 if (Square[square] != Piece.Empty)
                     key ^= Zobrist.PiecePosition[Square[square]][square];
+
             if (EnPassantSquare != InvalidSquare)
                 key ^= Zobrist.EnPassant[EnPassantSquare];
+
             if (SideToMove != Piece.White)
                 key ^= Zobrist.Colour;
+
             for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) {
                 if (CastleQueenside[colour] > 0)
                     key ^= Zobrist.CastleQueenside[colour];
@@ -1056,9 +1065,11 @@ namespace AbsoluteZero {
                 for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
                     if ((Bitboard[colour | Piece.Knight] | Bitboard[colour | Piece.Bishop]) != 0)
                         return true;
+
             for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
                 if (Bit.CountSparse(Bitboard[colour | Piece.Knight]) >= 2)
                     return true;
+
             if (Bitboard[Piece.White | Piece.Bishop] != 0 && Bitboard[Piece.Black | Piece.Bishop] != 0)
                 return ((Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) != 0)
                        == ((Bitboard[Piece.Black | Piece.Bishop] & Bit.LightSquares) != 0);
@@ -1147,6 +1158,7 @@ namespace AbsoluteZero {
         /// <returns>The FEN string that describes the position.</returns>
         public String GetFEN() {
             StringBuilder sb = new StringBuilder();
+
             for (Int32 rank = 0; rank < 8; rank++) {
                 Int32 spaces = 0;
                 for (Int32 file = 0; file < 8; file++) {
@@ -1169,9 +1181,11 @@ namespace AbsoluteZero {
                 if (rank < 7)
                     sb.Append('/');
             }
+
             sb.Append(' ');
             sb.Append(SideToMove == Piece.White ? 'w' : 'b');
             sb.Append(' ');
+
             if (CastleKingside[Piece.White] > 0)
                 sb.Append('K');
             if (CastleQueenside[Piece.White] > 0)
@@ -1183,14 +1197,17 @@ namespace AbsoluteZero {
             if (sb[sb.Length - 1] == ' ')
                 sb.Append('-');
             sb.Append(' ');
+
             if (EnPassantSquare != InvalidSquare)
                 sb.Append(Identify.Square(EnPassantSquare));
             else
                 sb.Append('-');
             sb.Append(' ');
+
             sb.Append(FiftyMovesClock);
             sb.Append(' ');
             sb.Append(HalfMoves / 2 + 1);
+
             return sb.ToString();
         }
 
@@ -1231,6 +1248,7 @@ namespace AbsoluteZero {
                 if (index < comments.Length)
                     sb.Append(comments[index++]);
             }
+
             sb.Append(Environment.NewLine);
             sb.Append("   +------------------------+ ");
             if (index < comments.Length)
@@ -1240,6 +1258,7 @@ namespace AbsoluteZero {
             sb.Append("     a  b  c  d  e  f  g  h   ");
             if (index < comments.Length)
                 sb.Append(comments[index++]);
+
             return sb.ToString();
         }
 
