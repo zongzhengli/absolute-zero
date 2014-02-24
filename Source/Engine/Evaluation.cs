@@ -173,7 +173,7 @@ namespace AbsoluteZero {
             if (Move.IsPromotion(move)) {
                 Int32 promotion = Move.Special(move);
                 position.Square[to] = promotion;
-                value += PieceValue[promotion] - PieceValue[Piece.Pawn];
+                value += PieceValue[promotion] - PieceValue[position.SideToMove | Piece.Pawn];
             }
             value += EvaluateStaticExchange(position, 1 - position.SideToMove, to) - PieceValue[capture];
 
