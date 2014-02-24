@@ -1,23 +1,23 @@
 ﻿using System;
 
 namespace AbsoluteZero {
-    
+
     /// <summary>
     /// Encapsulates the transposition table entry component of the Absolute Zero 
     /// chess engine. 
     /// </summary>
     partial class Zero {
 
-       /// <summary>
+        /// <summary>
         /// Represents an entry in the transposition hash table. 
-       /// </summary>
+        /// </summary>
         private struct HashEntry {
 
             /// <summary>
             /// Specifies the hash entry is invalid. 
             /// </summary>
             public const Int32 Invalid = 0;
-            
+
             /// <summary>
             /// Specifies the value associated with the hash entry gives an exact value.
             /// </summary>
@@ -76,7 +76,7 @@ namespace AbsoluteZero {
             /// The mask for extracting the unshifted type from the miscellaneous field.
             /// </summary>
             private const Int32 TypeMask = (1 << TypeBits) - 1;
-            
+
             /// <summary>
             /// The mask for extracting the unshifted depth from the miscellaneous field.
             /// </summary>
@@ -100,6 +100,24 @@ namespace AbsoluteZero {
             public readonly Int32 Misc;
 
             /// <summary>
+            /// The type of the value associated with the hash entry.
+            /// </summary>
+            public Int32 Type {
+                get {
+                    return Misc & TypeMask;
+                }
+            }
+
+            /// <summary>
+            /// The search depth associated with the hash entry. 
+            /// </summary>
+            public Int32 Depth {
+                get {
+                    return ((Misc >> DepthShift) - DepthNormal) & DepthMask;
+                }
+            }
+
+            /// <summary>
             /// Constructs a hash entry.
             /// </summary>
             /// <param name="position">The position to associate with the hash entry.</param>
@@ -116,22 +134,6 @@ namespace AbsoluteZero {
                 Misc = type | ((depth + DepthNormal) << DepthShift) | (value + ValueNormal) << ValueShift;
             }
 
-            /// <summary>
-            /// Returns the type of the value associated with the hash entry.
-            /// </summary>
-            /// <returns>The type of the value associated with the hash entry.</returns>
-            public new Int32 GetType() {
-                return Misc & TypeMask;
-            }
-
-            /// <summary>
-            /// Returns the search depth associated with the hash entry. 
-            /// </summary>
-            /// <returns>The search depth associated with the hash entry.</returns>
-            public Int32 GetDepth() {
-                return ((Misc >> DepthShift) - DepthNormal) & DepthMask;
-            }
-            
             /// <summary>
             /// Returns the value associated with the hash entry. The search ply is 
             /// required to determine correct checkmate values. 

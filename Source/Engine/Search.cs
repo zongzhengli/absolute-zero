@@ -172,8 +172,8 @@ namespace AbsoluteZero {
 
             if (_table.TryProbe(position.ZobristKey, out hashEntry)) {
                 hashMove = hashEntry.Move;
-                if (hashEntry.GetDepth() >= depth) {
-                    Int32 hashType = hashEntry.GetType();
+                if (hashEntry.Depth >= depth) {
+                    Int32 hashType = hashEntry.Type;
                     Int32 hashValue = hashEntry.GetValue(ply);
                     if ((hashType == HashEntry.Beta && hashValue >= beta) || (hashType == HashEntry.Alpha && hashValue <= alpha)) {
                         _hashCutoffs++;
