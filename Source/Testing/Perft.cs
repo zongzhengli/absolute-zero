@@ -83,7 +83,7 @@ namespace AbsoluteZero {
                 position.Unmake(move);
                 totalNodes += nodes;
 
-                Terminal.WriteLine(format, Identify.Move(move), nodes);
+                Terminal.WriteLine(format, Stringify.Move(move), nodes);
             }
             Terminal.WriteLine("-----------------------------------------------------------------------");
             Terminal.WriteLine("Moves: " + moves.Count);

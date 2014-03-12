@@ -8,15 +8,16 @@ using MoveClass = AbsoluteZero.Move;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Specifies whether to use proper identification. 
+    /// Specifies whether to use abbreviated or proper notation for move 
+    /// sequences. 
     /// </summary>
-    public enum IdentificationOptions { None, Proper };
+    public enum StringifyOptions { None, Proper };
 
     /// <summary>
-    /// Provides methods that identify, or give text representations of, various 
-    /// chess data types. 
+    /// Provides methods that gives text representations of various chess data 
+    /// types. 
     /// </summary>
-    static class Identify {
+    static class Stringify {
 
         /// <summary>
         /// Returns the text representation of the file for the given square. 
@@ -75,7 +76,7 @@ namespace AbsoluteZero {
                 case PieceClass.Pawn:
                     return "Pawn";
             }
-            return "-";
+            throw new ArgumentOutOfRangeException(String.Format("{0:x} is not a recognized chess piece value.", piece));
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace AbsoluteZero {
         /// <param name="move">The move to identify.</param>
         /// <returns>The text representation of the given move in coordinate notation.</returns>
         public static String Move(Int32 move) {
-            String coordinates = Identify.Square(MoveClass.From(move)) + Identify.Square(MoveClass.To(move));
+            String coordinates = Stringify.Square(MoveClass.From(move)) + Stringify.Square(MoveClass.To(move));
             Int32 special = MoveClass.Special(move);
 
             switch (special & PieceClass.Type) {
@@ -199,14 +200,14 @@ namespace AbsoluteZero {
         /// <param name="moves">The sequence of moves to identify.</param>
         /// <param name="options">The identification option specifying whether to be absolutely proper.</param>
         /// <returns>The text representation of the given sequence of moves in algebraic notation</returns>
-        public static String MovesAlgebraically(Position position, List<Int32> moves, IdentificationOptions options = IdentificationOptions.None) {
+        public static String MovesAlgebraically(Position position, List<Int32> moves, StringifyOptions options = StringifyOptions.None) {
             if (moves.Count == 0)
                 return "";
 
             StringBuilder sb = new StringBuilder(5 * moves.Count);
             Int32 halfMoves = 0;
 
-            if (options == IdentificationOptions.Proper) {
+            if (options == StringifyOptions.Proper) {
                 halfMoves = position.HalfMoves;
                 if (position.SideToMove == PieceClass.Black) {
                     sb.Append(halfMoves / 2 + 1);
@@ -218,7 +219,7 @@ namespace AbsoluteZero {
                 if ((halfMoves++ % 2) == 0) {
                     sb.Append(halfMoves / 2 + 1);
                     sb.Append('.');
-                    if (options == IdentificationOptions.Proper)
+                    if (options == StringifyOptions.Proper)
                         sb.Append(' ');
                 }
                 sb.Append(MoveAlgebraically(position, move));

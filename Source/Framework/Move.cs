@@ -120,7 +120,7 @@ namespace AbsoluteZero {
         /// <returns>A move that has the given representation in coordinate notation.</returns>
         public static Int32 Create(Position position, String name) {
             foreach (Int32 move in position.LegalMoves())
-                if (name == Identify.Move(move))
+                if (name == Stringify.Move(move))
                     return move;
             return Invalid;
         }

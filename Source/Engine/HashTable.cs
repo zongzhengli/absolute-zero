@@ -51,7 +51,7 @@ namespace AbsoluteZero {
             /// <summary>
             /// Constructs a hash table of the given size in bytes. 
             /// </summary>
-            /// <param name="megabytes">The size of the new hash table in bytes.</param>
+            /// <param name="bytes">The size of the new hash table in bytes.</param>
             public HashTable(Int32 bytes) {
                 Capacity = bytes / HashEntry.Size;
                 _indexer = (UInt64)Capacity;

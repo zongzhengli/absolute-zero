@@ -388,7 +388,7 @@ namespace AbsoluteZero {
                     String depthString = depth.ToString();
                     String valueString = isMate ? (value > 0 ? "+Mate " : "-Mate ") + movesToMate :
                                                   (value / 100.0).ToString("+0.00;-0.00");
-                    String movesString = Identify.MovesAlgebraically(position, pv);
+                    String movesString = Stringify.MovesAlgebraically(position, pv);
 
                     return String.Format(PVFormat, depthString, valueString, movesString);
 
@@ -399,7 +399,7 @@ namespace AbsoluteZero {
                     Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
                     Int64 nps = (Int64)(1000 * _totalNodes / elapsed);
 
-                    return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + _totalNodes + " nps " + nps + " pv " + Identify.Moves(pv);
+                    return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + _totalNodes + " nps " + nps + " pv " + Stringify.Moves(pv);
             }
             return "";
         }

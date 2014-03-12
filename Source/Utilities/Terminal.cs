@@ -65,7 +65,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="value">The value to write.</param>
-        public static void Write(string format, params Object[] values) {
+        public static void Write(String format, params Object[] values) {
             Write(String.Format(format, values));
         }
 
@@ -95,7 +95,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteLine(string format, params Object[] values) {
+        public static void WriteLine(String format, params Object[] values) {
             WriteLine(String.Format(format, values));
         }
 

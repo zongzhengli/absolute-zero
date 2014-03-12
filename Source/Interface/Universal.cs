@@ -105,7 +105,7 @@ namespace AbsoluteZero {
                             }
                         new Thread(new ThreadStart(() => {
                             Int32 bestMove = engine.GetMove(position);
-                            Terminal.WriteLine("bestmove " + Identify.Move(bestMove));
+                            Terminal.WriteLine("bestmove " + Stringify.Move(bestMove));
                         })) {
                             IsBackground = true
                         }.Start();

@@ -105,7 +105,7 @@ namespace AbsoluteZero {
                     // Adjudicate checkmate and stalemate. 
                     if (legalMoves.Count == 0) {
                         if (position.InCheck(position.SideToMove)) {
-                            _message = "Checkmate. " + Identify.Colour(1 - position.SideToMove) + " wins!";
+                            _message = "Checkmate. " + Stringify.Colour(1 - position.SideToMove) + " wins!";
                             _state = player.Equals(White) ? GameState.BlackWon : GameState.WhiteWon;
                         } else {
                             _message = "Stalemate. It's a draw!";
@@ -298,7 +298,7 @@ namespace AbsoluteZero {
             }
 
             sb.Append(Environment.NewLine);
-            sb.Append(Identify.MovesAlgebraically(_initialPosition, _moves, IdentificationOptions.Proper));
+            sb.Append(Stringify.MovesAlgebraically(_initialPosition, _moves, StringifyOptions.Proper));
             if (result != "*")
                 sb.Append(" " + result);
 

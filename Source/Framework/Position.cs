@@ -1170,7 +1170,7 @@ namespace AbsoluteZero {
                             sb.Append(spaces);
                             spaces = 0;
                         }
-                        String piece = Identify.PieceInitial(Square[square]);
+                        String piece = Stringify.PieceInitial(Square[square]);
                         if ((Square[square] & Piece.Colour) == Piece.Black)
                             piece = piece.ToLowerInvariant();
                         sb.Append(piece);
@@ -1199,7 +1199,7 @@ namespace AbsoluteZero {
             sb.Append(' ');
 
             if (EnPassantSquare != InvalidSquare)
-                sb.Append(Identify.Square(EnPassantSquare));
+                sb.Append(Stringify.Square(EnPassantSquare));
             else
                 sb.Append('-');
             sb.Append(' ');
@@ -1239,7 +1239,7 @@ namespace AbsoluteZero {
                     Int32 piece = Square[file + rank * 8];
                     if (piece != Piece.Empty) {
                         sb.Append((piece & Piece.Colour) == Piece.White ? '<' : '[');
-                        sb.Append(Identify.PieceInitial(piece));
+                        sb.Append(Stringify.PieceInitial(piece));
                         sb.Append((piece & Piece.Colour) == Piece.White ? '>' : ']');
                     } else
                         sb.Append((file + rank) % 2 == 1 ? ":::" : "   ");

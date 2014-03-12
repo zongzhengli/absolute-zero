@@ -82,7 +82,7 @@ namespace AbsoluteZero {
 
                     // Determine whether the engine found a solution. 
                     String result = "fail";
-                    if (solutions.Contains(Identify.MoveAlgebraically(position, move))) {
+                    if (solutions.Contains(Stringify.MoveAlgebraically(position, move))) {
                         result = "pass";
                         totalSolved++;
                     }
