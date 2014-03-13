@@ -204,7 +204,7 @@ namespace AbsoluteZero {
             if (moves.Count == 0)
                 return "";
 
-            StringBuilder sb = new StringBuilder(5 * moves.Count);
+            StringBuilder sb = new StringBuilder();
             Int32 halfMoves = 0;
 
             if (options == StringifyOptions.Proper) {

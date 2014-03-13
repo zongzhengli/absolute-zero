@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace AbsoluteZero {
-
+    
     /// <summary>
     /// Encapsulates the transposition table entry component of the Absolute Zero 
     /// chess engine. 

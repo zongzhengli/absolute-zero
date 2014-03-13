@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 
 namespace AbsoluteZero {
-
+    
     /// <summary>
-    /// Encapsulates the transposition table component of the Absolute Zero chess engine. 
+    /// Encapsulates the transposition table component of the Absolute Zero chess 
+    /// engine. 
     /// </summary>
     partial class Zero {
 
@@ -19,11 +20,6 @@ namespace AbsoluteZero {
             private HashEntry[] _entries;
 
             /// <summary>
-            /// The value used to index into the array storing the hash entries.
-            /// </summary>
-            private UInt64 _indexer;
-
-            /// <summary>
             /// The number of entries stored in the hash table. 
             /// </summary>
             public Int32 Count {
@@ -35,9 +31,11 @@ namespace AbsoluteZero {
             /// The number of entries that can be stored in the hash table. 
             /// </summary>
             public Int32 Capacity {
-                get;
-                private set;
+                get {
+                    return (Int32)_capacity;
+                }
             }
+            private UInt64 _capacity;
 
             /// <summary>
             /// The size of the hash table in bytes. 
@@ -53,8 +51,7 @@ namespace AbsoluteZero {
             /// </summary>
             /// <param name="bytes">The size of the new hash table in bytes.</param>
             public HashTable(Int32 bytes) {
-                Capacity = bytes / HashEntry.Size;
-                _indexer = (UInt64)Capacity;
+                _capacity = (UInt64)(bytes / HashEntry.Size);
                 _entries = new HashEntry[Capacity];
             }
 
@@ -66,7 +63,7 @@ namespace AbsoluteZero {
             /// <param name="entry">Contains the entry found when the method returns.</param>
             /// <returns>Whether the entry was found in the hash table.</returns>
             public bool TryProbe(UInt64 key, out HashEntry entry) {
-                entry = _entries[key % _indexer];
+                entry = _entries[key % _capacity];
                 return entry.Key == key;
             }
 
@@ -75,8 +72,8 @@ namespace AbsoluteZero {
             /// </summary>
             /// <param name="entry">The entry to store.</param>
             public void Store(HashEntry entry) {
-                UInt64 index = entry.Key % _indexer;
-                if (_entries[index].Misc == 0)
+                UInt64 index = entry.Key % _capacity;
+                if (_entries[index].Type == HashEntry.Invalid)
                     Count++;
                 _entries[index] = entry;
             }
@@ -85,7 +82,7 @@ namespace AbsoluteZero {
             /// Clears the hash table of all entries. 
             /// </summary>
             public void Clear() {
-                _entries = new HashEntry[Capacity];
+                Array.Clear(_entries, 0, Capacity);
                 Count = 0;
             }
         }
