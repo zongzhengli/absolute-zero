@@ -112,7 +112,7 @@ namespace AbsoluteZero {
         /// Constructs a position with the given FEN string. If the FEN string is 
         /// invalid the start position is used. 
         /// </summary>
-        /// <param name="fen">The FEN of the position. </param>
+        /// <param name="fen">The FEN of the position.</param>
         public Position(String fen) {
             try {
                 ParseFen(fen);

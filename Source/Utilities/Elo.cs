@@ -51,7 +51,7 @@ namespace AbsoluteZero {
         /// <param name="wins">The number of wins for the calculating player.</param>
         /// <param name="losses">The number of losses for the calculating player.</param>
         /// <param name="draws">The number of draws.</param>
-        /// <returns>The error bound for the Elo difference calculation. </returns>
+        /// <returns>The error bound for the Elo difference calculation.</returns>
         public static Double GetError(Int32 wins, Int32 losses, Int32 draws) {
             Double totalGames = wins + losses + draws;
             Double score = (wins + .5 * draws) / totalGames;

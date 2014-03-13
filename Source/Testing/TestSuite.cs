@@ -30,7 +30,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Begins the test with the given positions. 
         /// </summary>
-        /// <param name="epd">A list of positions in EPD format. </param>
+        /// <param name="epd">A list of positions in EPD format.</param>
         public static void Run(List<String> epd) {
 
             // Perform testing on a background thread. 

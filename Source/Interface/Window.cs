@@ -24,12 +24,12 @@ namespace AbsoluteZero {
         private const Int32 DrawInterval = 33;
 
         /// <summary>
-        /// The Game associated with the window. 
+        /// The game associated with the window. 
         /// </summary>
         private Game _game;
 
         /// <summary>
-        /// Constructs a Window. 
+        /// Constructs a window. 
         /// </summary>
         public Window() 
             : this(null) { }
@@ -37,7 +37,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Constructs a Window for the specified Game.
         /// </summary>
-        /// <param name="game">The Game to associate with the Window. </param>
+        /// <param name="game">The game to associate with the window.</param>
         public Window(Game game) {
             InitializeComponent();
 
@@ -103,17 +103,17 @@ namespace AbsoluteZero {
         private void UpdateMenu() {
             Boolean gameIsNotNull = _game != null;
 
-            // File menu.
+            // Update File menu.
             savePGNMenuItem.Enabled = gameIsNotNull;
             enterFENMenuItem.Enabled = gameIsNotNull;
             copyFENMenuItem.Enabled = gameIsNotNull;
 
-            // Game menu.
+            // Update Game menu.
             offerDrawMenuItem.Enabled = gameIsNotNull;
             restartMenuItem.Enabled = gameIsNotNull;
             undoMoveMenuItem.Enabled = gameIsNotNull;
 
-            // Display menu.
+            // Update Display menu.
             rotateBoardMenuItem.Checked = VisualPosition.Rotated;
             animationsMenuItem.Checked = VisualPosition.Animations;
 
@@ -121,14 +121,14 @@ namespace AbsoluteZero {
                 Boolean hasHuman = _game.White is Human || _game.Black is Human;
                 Boolean hasEngine = _game.White is IEngine || _game.Black is IEngine;
 
-                // File menu.
+                // Update File menu.
                 saveOuputMenuItem.Enabled = hasEngine;
 
-                // Game menu.
+                // Update Game menu.
                 offerDrawMenuItem.Enabled = hasHuman && hasEngine;
                 undoMoveMenuItem.Enabled = hasHuman;
 
-                // Engine menu.
+                // Update Engine menu.
                 searchMenuItem.Enabled = hasEngine;
                 hashSizeMenuItem.Enabled = hasEngine;
             }

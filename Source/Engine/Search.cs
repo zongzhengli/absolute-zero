@@ -14,8 +14,8 @@ namespace AbsoluteZero {
         /// iterative deepening search framework. This is the main entry point for 
         /// the search algorithm. 
         /// </summary>
-        /// <param name="position">The position to search on. </param>
-        /// <returns>The predicted best move. </returns>
+        /// <param name="position">The position to search on.</param>
+        /// <returns>The predicted best move.</returns>
         private Int32 Search(Position position) {
 
             // Generate legal moves. Return immediately if there is only one legal move 
@@ -118,14 +118,14 @@ namespace AbsoluteZero {
         /// Returns the dynamic value of the position as determined by a recursive 
         /// search to the given depth. This implements the main search algorithm. 
         /// </summary>
-        /// <param name="position">The position to search on. </param>
-        /// <param name="depth">The depth to search to. </param>
-        /// <param name="ply">The number of plies from the root position. </param>
-        /// <param name="alpha">The lower bound on the value of the best move. </param>
-        /// <param name="beta">The upper bound on the value of the best move. </param>
-        /// <param name="inCheck">Whether the side to play is in check. </param>
-        /// <param name="allowNull">Whether a null move is permitted. </param>
-        /// <returns>The value of the termination position given optimal play. </returns>
+        /// <param name="position">The position to search on.</param>
+        /// <param name="depth">The depth to search to.</param>
+        /// <param name="ply">The number of plies from the root position.</param>
+        /// <param name="alpha">The lower bound on the value of the best move.</param>
+        /// <param name="beta">The upper bound on the value of the best move.</param>
+        /// <param name="inCheck">Whether the side to play is in check.</param>
+        /// <param name="allowNull">Whether a null move is permitted.</param>
+        /// <returns>The value of the termination position given optimal play.</returns>
         private Int32 Search(Position position, Int32 depth, Int32 ply, Int32 alpha, Int32 beta, Boolean inCheck, Boolean allowNull = true) {
 
             // Check whether to enter quiescence search and initialize pv length. 
@@ -203,7 +203,7 @@ namespace AbsoluteZero {
                 _moveValues[i] = MoveOrderingValue(moves[i]);
 
             // Apply single reply and check extensions. 
-            if (movesCount == 1 || inCheck)
+            if (movesCount == 1 || inCheck) 
                 depth++;
 
             // Perform killer move ordering. 
@@ -268,7 +268,7 @@ namespace AbsoluteZero {
                     value = -Search(position, depth - 1, ply + 1, -alpha - 1, -alpha, causesCheck);
 
                 // Perform a full search.
-                if (value > alpha)
+                if (value > alpha) 
                     value = -Search(position, depth - 1, ply + 1, -beta, -alpha, causesCheck);
 
                 // Unmake the move and check for search termination. 
@@ -311,11 +311,11 @@ namespace AbsoluteZero {
         /// Returns the dynamic value of the position as determined by a recursive 
         /// search that terminates upon reaching a quiescent position. 
         /// </summary>
-        /// <param name="position">The position to search on. </param>
-        /// <param name="ply">The number of plies from the root position. </param>
-        /// <param name="alpha">The lower bound on the value of the best move. </param>
-        /// <param name="beta">The upper bound on the value of the best move. </param>
-        /// <returns>The value of the termination position given optimal play. </returns>
+        /// <param name="position">The position to search on.</param>
+        /// <param name="ply">The number of plies from the root position.</param>
+        /// <param name="alpha">The lower bound on the value of the best move.</param>
+        /// <param name="beta">The upper bound on the value of the best move.</param>
+        /// <returns>The value of the termination position given optimal play.</returns>
         private Int32 Quiescence(Position position, Int32 ply, Int32 alpha, Int32 beta) {
             _totalNodes++;
             _quiescenceNodes++;
@@ -373,7 +373,7 @@ namespace AbsoluteZero {
         /// Returns a string that describes the given principal variation. 
         /// </summary>
         /// <param name="position">The position the principal variation is to be played on.</param>
-        /// <param name="depth">The depth of the search that yielded the principal variation. </param>
+        /// <param name="depth">The depth of the search that yielded the principal variation.</param>
         /// <param name="value">The value of the search that yielded the principal variation.</param>
         /// <param name="pv">The principle variation to describe.</param>
         /// <returns>A string that describes the given principal variation.</returns>
@@ -399,9 +399,9 @@ namespace AbsoluteZero {
                     Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
                     Int64 nps = (Int64)(1000 * _totalNodes / elapsed);
 
-                    return "info depth " + depth + " score " + score + " time " + (Int32)elapsed + " nodes " + _totalNodes + " nps " + nps + " pv " + Stringify.Moves(pv);
+                    return String.Format("info depth {0} score {1} time {2} nodes {3} nps {4} pv {5}", depth, score, (Int32)elapsed, _totalNodes, nps, Stringify.Moves(pv));
             }
-            return "";
+            return null;
         }
 
         /// <summary>
@@ -426,8 +426,8 @@ namespace AbsoluteZero {
         /// extension and if the proportion of time elapsed to the total time 
         /// allotted is greater than the given threshold. 
         /// </summary>
-        /// <param name="threshold">The ratio between time elapsed and time allotted needed to trigger the time extension. </param>
-        /// <param name="coefficient">The proportion of time allotted to extend by. </param>
+        /// <param name="threshold">The ratio between time elapsed and time allotted needed to trigger the time extension.</param>
+        /// <param name="coefficient">The proportion of time allotted to extend by.</param>
         private void TryTimeExtension(Double threshold, Double coefficient) {
             Double newExtension = Math.Min(coefficient * _timeLimit, _timeExtensionLimit);
             if (Restrictions.UseTimeControls && newExtension > _timeExtension && _stopwatch.ElapsedMilliseconds / _timeLimit > threshold)
@@ -439,9 +439,9 @@ namespace AbsoluteZero {
         /// pawn advance is a pawn move that results in the pawn being in a position 
         /// in which no enemy pawns can threaten or block it. 
         /// </summary>
-        /// <param name="move">The move to consider. </param>
-        /// <param name="passedPawnPreventionBitboard">A bitboard giving the long term attack possibilities of the enemy pawns. </param>
-        /// <returns>Whether the given move is a dangerous pawn advance. </returns>
+        /// <param name="move">The move to consider.</param>
+        /// <param name="passedPawnPreventionBitboard">A bitboard giving the long term attack possibilities of the enemy pawns.</param>
+        /// <returns>Whether the given move is a dangerous pawn advance.</returns>
         private Boolean IsDangerousPawnAdvance(Int32 move, UInt64 passedPawnPreventionBitboard) {
             return Move.IsPawnAdvance(move) && ((1UL << Move.To(move)) & passedPawnPreventionBitboard) == 0;
         }
@@ -452,8 +452,8 @@ namespace AbsoluteZero {
         /// value that is the ratio of the captured piece to the moving piece. Pawns 
         /// promoting to queen are given an additional increase in value. 
         /// </summary>
-        /// <param name="move">The move to consider. </param>
-        /// <returns>A value for the given move that is useful for move ordering. </returns>
+        /// <param name="move">The move to consider.</param>
+        /// <returns>A value for the given move that is useful for move ordering.</returns>
         private Single MoveOrderingValue(Int32 move) {
             Single value = PieceValue[Move.Capture(move) & Piece.Type] / (Single)PieceValue[Move.Piece(move) & Piece.Type];
             if (Move.IsQueenPromotion(move))
@@ -464,8 +464,8 @@ namespace AbsoluteZero {
         /// <summary>
         /// Returns a bitboard giving the long term attack possibilities of the enemy pawns. 
         /// </summary>
-        /// <param name="position">The position to consider. </param>
-        /// <returns>A bitboard giving the longer term attack possibilites of the enemy pawns. </returns>
+        /// <param name="position">The position to consider.</param>
+        /// <returns>A bitboard giving the longer term attack possibilites of the enemy pawns.</returns>
         private static UInt64 PassedPawnPreventionBitboard(Position position) {
             UInt64 pawnblockBitboard = position.Bitboard[(1 - position.SideToMove) | Piece.Pawn];
             if (position.SideToMove == Piece.White) {
@@ -487,9 +487,9 @@ namespace AbsoluteZero {
         /// <summary>
         /// Sorts the given array of moves based on the given array of values. 
         /// </summary>
-        /// <param name="moves">The array of moves to sort. </param>
-        /// <param name="values">The array of values to sort. </param>
-        /// <param name="count">The number of elements to sort. </param>
+        /// <param name="moves">The array of moves to sort.</param>
+        /// <param name="values">The array of values to sort.</param>
+        /// <param name="count">The number of elements to sort.</param>
         private static void Sort(Int32[] moves, Single[] values, Int32 count) {
             for (Int32 i = 1; i < count; i++)
                 for (Int32 j = i; j > 0 && values[j] > values[j - 1]; j--) {
