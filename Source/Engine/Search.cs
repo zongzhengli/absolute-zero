@@ -227,7 +227,7 @@ namespace AbsoluteZero {
             // Check for futility pruning activation. 
             Boolean futileNode = false;
             Int32 futilityValue = 0;
-            if (depth < FutilityMargin.Length) {
+            if (depth < FutilityMargin.Length && !inCheck) {
                 futilityValue = Evaluate(position) + FutilityMargin[depth];
                 futileNode = futilityValue <= alpha;
             }
