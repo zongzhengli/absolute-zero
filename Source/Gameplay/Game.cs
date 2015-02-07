@@ -291,7 +291,7 @@ namespace AbsoluteZero {
 
             String initialFEN = _initialPosition.GetFEN();
             if (initialFEN != Position.StartingFEN) {
-                sb.Append("[SepUp \"1\"]");
+                sb.Append("[SetUp \"1\"]");
                 sb.Append(Environment.NewLine);
                 sb.Append("[FEN \"" + initialFEN + "\"]");
                 sb.Append(Environment.NewLine);
