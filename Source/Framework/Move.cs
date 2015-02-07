@@ -47,7 +47,7 @@ namespace AbsoluteZero {
         /// The mask for extracting the shifted type of the captured piece from a 
         /// move. 
         /// </summary>
-        private const Int32 TypeCaptureShifted = PieceClass.Type << CaptureShift;
+        private const Int32 TypeCaptureShifted = PieceClass.Mask << CaptureShift;
 
         /// <summary>
         /// The value of the captured empty piece exactly as it is represented in 
@@ -58,7 +58,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The mask for extracting the shifted type of the special piece from a move. 
         /// </summary>
-        private const Int32 TypeSpecialShifted = PieceClass.Type << SpecialShift;
+        private const Int32 TypeSpecialShifted = PieceClass.Mask << SpecialShift;
 
         /// <summary>
         /// The value of the king special (castling) exactly as it is represented in 
@@ -81,7 +81,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The mask for extracting the shifted type of the moving piece from a move. 
         /// </summary>
-        private const Int32 TypePieceShifted = PieceClass.Type << PieceShift;
+        private const Int32 TypePieceShifted = PieceClass.Mask << PieceShift;
 
         /// <summary>
         /// The value of the moving pawn exactly as it is represented in the move. 

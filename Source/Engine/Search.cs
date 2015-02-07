@@ -252,7 +252,7 @@ namespace AbsoluteZero {
                 Boolean reducible = i + 1 > irreducibleMoves;
 
                 // Perform futility pruning. 
-                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move) & Piece.Type] <= alpha)
+                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move) & Piece.Mask] <= alpha)
                     continue;
 
                 // Make the move and initialize its value. 
@@ -343,7 +343,7 @@ namespace AbsoluteZero {
 
                 // Consider the move only if it doesn't immediately lose material. This 
                 // improves efficiency. 
-                if ((Move.Piece(move) & Piece.Type) <= (Move.Capture(move) & Piece.Type) || EvaluateStaticExchange(position, move) >= 0) {
+                if ((Move.Piece(move) & Piece.Mask) <= (Move.Capture(move) & Piece.Mask) || EvaluateStaticExchange(position, move) >= 0) {
 
                     // Make the move. 
                     position.Make(move);
@@ -455,7 +455,7 @@ namespace AbsoluteZero {
         /// <param name="move">The move to consider.</param>
         /// <returns>A value for the given move that is useful for move ordering.</returns>
         private Single MoveOrderingValue(Int32 move) {
-            Single value = PieceValue[Move.Capture(move) & Piece.Type] / (Single)PieceValue[Move.Piece(move) & Piece.Type];
+            Single value = PieceValue[Move.Capture(move) & Piece.Mask] / (Single)PieceValue[Move.Piece(move) & Piece.Mask];
             if (Move.IsQueenPromotion(move))
                 value += QueenPromotionMoveValue;
             return value;
@@ -468,7 +468,7 @@ namespace AbsoluteZero {
         /// <returns>A bitboard giving the longer term attack possibilites of the enemy pawns.</returns>
         private static UInt64 PassedPawnPreventionBitboard(Position position) {
             UInt64 pawnblockBitboard = position.Bitboard[(1 - position.SideToMove) | Piece.Pawn];
-            if (position.SideToMove == Piece.White) {
+            if (position.SideToMove == Colour.White) {
                 pawnblockBitboard |= pawnblockBitboard << 8;
                 pawnblockBitboard |= pawnblockBitboard << 16;
                 pawnblockBitboard |= pawnblockBitboard << 32;

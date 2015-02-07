@@ -146,7 +146,7 @@ namespace AbsoluteZero {
             // Determine piece locations and populate squares. 
             foreach (Char c in terms[0]) {
                 Char uc = Char.ToUpperInvariant(c);
-                Int32 colour = (c == uc) ? Piece.White : Piece.Black;
+                Int32 colour = (c == uc) ? Colour.White : Colour.Black;
 
                 switch (uc) {
 
@@ -184,18 +184,18 @@ namespace AbsoluteZero {
             }
 
             // Determine side to move. 
-            SideToMove = (terms[1] == "w") ? Piece.White : Piece.Black;
+            SideToMove = (terms[1] == "w") ? Colour.White : Colour.Black;
 
             // Determine castling rights. 
             if (terms.Length > 2) {
                 if (terms[2].Contains("Q"))
-                    CastleQueenside[Piece.White] = 1;
+                    CastleQueenside[Colour.White] = 1;
                 if (terms[2].Contains("K"))
-                    CastleKingside[Piece.White] = 1;
+                    CastleKingside[Colour.White] = 1;
                 if (terms[2].Contains("q"))
-                    CastleQueenside[Piece.Black] = 1;
+                    CastleQueenside[Colour.Black] = 1;
                 if (terms[2].Contains("k"))
-                    CastleKingside[Piece.Black] = 1;
+                    CastleKingside[Colour.Black] = 1;
             }
 
             // Determine en passant square. 
@@ -221,11 +221,11 @@ namespace AbsoluteZero {
             // Initialize bitboards and material information. 
             for (Int32 square = 0; square < Square.Length; square++)
                 if (Square[square] != Piece.Empty) {
-                    Int32 colour = Square[square] & Piece.Colour;
+                    Int32 colour = Square[square] & Colour.Mask;
                     Bitboard[Square[square]] |= 1UL << square;
                     Bitboard[colour] |= 1UL << square;
                     OccupiedBitboard |= 1UL << square;
-                    if ((Square[square] & Piece.Type) != Piece.King)
+                    if ((Square[square] & Piece.Mask) != Piece.King)
                         Material[colour] += Zero.PieceValue[Square[square]];
                 }
 
@@ -721,14 +721,14 @@ namespace AbsoluteZero {
             FiftyMovesClock++;
             HalfMoves++;
 
-            switch (capture & Piece.Type) {
+            switch (capture & Piece.Mask) {
                 case Piece.Empty:
                     break;
                 case Piece.Rook:
-                    if ((SideToMove == Piece.White && to == 0) || (SideToMove == Piece.Black && to == 56)) {
+                    if ((SideToMove == Colour.White && to == 0) || (SideToMove == Colour.Black && to == 56)) {
                         if (CastleQueenside[1 - SideToMove]-- > 0)
                             ZobristKey ^= Zobrist.CastleQueenside[1 - SideToMove];
-                    } else if ((SideToMove == Piece.White && to == 7) || (SideToMove == Piece.Black && to == 63))
+                    } else if ((SideToMove == Colour.White && to == 7) || (SideToMove == Colour.Black && to == 63))
                         if (CastleKingside[1 - SideToMove]-- > 0)
                             ZobristKey ^= Zobrist.CastleKingside[1 - SideToMove];
                     goto default;
@@ -742,9 +742,9 @@ namespace AbsoluteZero {
                     break;
             }
 
-            switch (special & Piece.Type) {
+            switch (special & Piece.Mask) {
                 case Piece.Empty:
-                    switch (piece & Piece.Type) {
+                    switch (piece & Piece.Mask) {
                         case Piece.Pawn:
                             FiftyMovesClock = 0;
                             if ((from - to) * (from - to) == 256) {
@@ -753,10 +753,10 @@ namespace AbsoluteZero {
                             }
                             break;
                         case Piece.Rook:
-                            if ((SideToMove == Piece.White && from == 56) || (SideToMove == Piece.Black && from == 0)) {
+                            if ((SideToMove == Colour.White && from == 56) || (SideToMove == Colour.Black && from == 0)) {
                                 if (CastleQueenside[SideToMove]-- > 0)
                                     ZobristKey ^= Zobrist.CastleQueenside[SideToMove];
-                            } else if ((SideToMove == Piece.White && from == 63) || (SideToMove == Piece.Black && from == 7))
+                            } else if ((SideToMove == Colour.White && from == 63) || (SideToMove == Colour.Black && from == 7))
                                 if (CastleKingside[SideToMove]-- > 0)
                                     ZobristKey ^= Zobrist.CastleKingside[SideToMove];
                             break;
@@ -837,13 +837,13 @@ namespace AbsoluteZero {
             FiftyMovesClock = FiftyMovesHistory[HalfMoves - 1];
             HalfMoves--;
 
-            switch (capture & Piece.Type) {
+            switch (capture & Piece.Mask) {
                 case Piece.Empty:
                     break;
                 case Piece.Rook:
-                    if ((SideToMove == Piece.White && to == 0) || (SideToMove == Piece.Black && to == 56)) {
+                    if ((SideToMove == Colour.White && to == 0) || (SideToMove == Colour.Black && to == 56)) {
                         CastleQueenside[1 - SideToMove]++;
-                    } else if ((SideToMove == Piece.White && to == 7) || (SideToMove == Piece.Black && to == 63))
+                    } else if ((SideToMove == Colour.White && to == 7) || (SideToMove == Colour.Black && to == 63))
                         CastleKingside[1 - SideToMove]++;
                     goto default;
                 default:
@@ -854,13 +854,13 @@ namespace AbsoluteZero {
                     break;
             }
 
-            switch (special & Piece.Type) {
+            switch (special & Piece.Mask) {
                 case Piece.Empty:
-                    switch (piece & Piece.Type) {
+                    switch (piece & Piece.Mask) {
                         case Piece.Rook:
-                            if ((SideToMove == Piece.White && from == 56) || (SideToMove == Piece.Black && from == 0)) {
+                            if ((SideToMove == Colour.White && from == 56) || (SideToMove == Colour.Black && from == 0)) {
                                 CastleQueenside[SideToMove]++;
-                            } else if ((SideToMove == Piece.White && from == 63) || (SideToMove == Piece.Black && from == 7))
+                            } else if ((SideToMove == Colour.White && from == 63) || (SideToMove == Colour.Black && from == 7))
                                 CastleKingside[SideToMove]++;
                             break;
                         case Piece.King:
@@ -943,10 +943,10 @@ namespace AbsoluteZero {
             if (EnPassantSquare != InvalidSquare)
                 key ^= Zobrist.EnPassant[EnPassantSquare];
 
-            if (SideToMove != Piece.White)
+            if (SideToMove != Colour.White)
                 key ^= Zobrist.Colour;
 
-            for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) {
+            for (Int32 colour = Colour.White; colour <= Colour.Black; colour++) {
                 if (CastleQueenside[colour] > 0)
                     key ^= Zobrist.CastleQueenside[colour];
                 if (CastleKingside[colour] > 0)
@@ -1004,7 +1004,7 @@ namespace AbsoluteZero {
             UInt64 occupiedBitboardCopy = OccupiedBitboard;
 
             Boolean value = false;
-            switch (special & Piece.Type) {
+            switch (special & Piece.Mask) {
 
                 // Consider normal move. 
                 case Piece.Empty:
@@ -1062,17 +1062,17 @@ namespace AbsoluteZero {
             if (pieces <= 2)
                 return true;
             if (pieces <= 3)
-                for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
+                for (Int32 colour = Colour.White; colour <= Colour.Black; colour++)
                     if ((Bitboard[colour | Piece.Knight] | Bitboard[colour | Piece.Bishop]) != 0)
                         return true;
 
-            for (Int32 colour = Piece.White; colour <= Piece.Black; colour++)
+            for (Int32 colour = Colour.White; colour <= Colour.Black; colour++)
                 if (Bit.CountSparse(Bitboard[colour | Piece.Knight]) >= 2)
                     return true;
 
-            if (Bitboard[Piece.White | Piece.Bishop] != 0 && Bitboard[Piece.Black | Piece.Bishop] != 0)
-                return ((Bitboard[Piece.White | Piece.Bishop] & Bit.LightSquares) != 0)
-                       == ((Bitboard[Piece.Black | Piece.Bishop] & Bit.LightSquares) != 0);
+            if (Bitboard[Colour.White | Piece.Bishop] != 0 && Bitboard[Colour.Black | Piece.Bishop] != 0)
+                return ((Bitboard[Colour.White | Piece.Bishop] & Bit.LightSquares) != 0)
+                       == ((Bitboard[Colour.Black | Piece.Bishop] & Bit.LightSquares) != 0);
             return false;
         }
 
@@ -1103,11 +1103,11 @@ namespace AbsoluteZero {
              || FiftyMovesClock != other.FiftyMovesClock
              || EnPassantSquare != other.EnPassantSquare
              || SideToMove != other.SideToMove
-             || Material[Piece.White] != other.Material[Piece.White] 
-             || Material[Piece.Black] != other.Material[Piece.Black])
+             || Material[Colour.White] != other.Material[Colour.White] 
+             || Material[Colour.Black] != other.Material[Colour.Black])
                 return false;
 
-            for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) 
+            for (Int32 colour = Colour.White; colour <= Colour.Black; colour++) 
                 if (CastleKingside[colour] != other.CastleKingside[colour]
                  || CastleQueenside[colour] != other.CastleQueenside[colour])
                     return false;
@@ -1171,7 +1171,7 @@ namespace AbsoluteZero {
                             spaces = 0;
                         }
                         String piece = Stringify.PieceInitial(Square[square]);
-                        if ((Square[square] & Piece.Colour) == Piece.Black)
+                        if ((Square[square] & Colour.Mask) == Colour.Black)
                             piece = piece.ToLowerInvariant();
                         sb.Append(piece);
                     }
@@ -1183,16 +1183,16 @@ namespace AbsoluteZero {
             }
 
             sb.Append(' ');
-            sb.Append(SideToMove == Piece.White ? 'w' : 'b');
+            sb.Append(SideToMove == Colour.White ? 'w' : 'b');
             sb.Append(' ');
 
-            if (CastleKingside[Piece.White] > 0)
+            if (CastleKingside[Colour.White] > 0)
                 sb.Append('K');
-            if (CastleQueenside[Piece.White] > 0)
+            if (CastleQueenside[Colour.White] > 0)
                 sb.Append('Q');
-            if (CastleKingside[Piece.Black] > 0)
+            if (CastleKingside[Colour.Black] > 0)
                 sb.Append('k');
-            if (CastleQueenside[Piece.Black] > 0)
+            if (CastleQueenside[Colour.Black] > 0)
                 sb.Append('q');
             if (sb[sb.Length - 1] == ' ')
                 sb.Append('-');
@@ -1238,9 +1238,9 @@ namespace AbsoluteZero {
                 for (Int32 file = 0; file < 8; file++) {
                     Int32 piece = Square[file + rank * 8];
                     if (piece != Piece.Empty) {
-                        sb.Append((piece & Piece.Colour) == Piece.White ? '<' : '[');
+                        sb.Append((piece & Colour.Mask) == Colour.White ? '<' : '[');
                         sb.Append(Stringify.PieceInitial(piece));
-                        sb.Append((piece & Piece.Colour) == Piece.White ? '>' : ']');
+                        sb.Append((piece & Colour.Mask) == Colour.White ? '>' : ']');
                     } else
                         sb.Append((file + rank) % 2 == 1 ? ":::" : "   ");
                 }

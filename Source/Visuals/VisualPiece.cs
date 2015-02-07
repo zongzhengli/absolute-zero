@@ -56,7 +56,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="g">The graphics surface to draw on.</param>
         public void Draw(Graphics g) {
-            Boolean isWhite = (_piece & Piece.Colour) == Piece.White;
+            Boolean isWhite = (_piece & Colour.Mask) == Colour.White;
 
             PointF location = new PointF(_dynamic.X, _dynamic.Y);
             if (VisualPosition.Rotated) {
@@ -66,7 +66,7 @@ namespace AbsoluteZero {
             location.X += PieceOffset.X;
             location.Y += PieceOffset.Y;
 
-            switch (_piece & Piece.Type) {
+            switch (_piece & Piece.Mask) {
                 case Piece.Empty:
                     break;
                 case Piece.Pawn:

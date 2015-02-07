@@ -91,10 +91,10 @@ namespace AbsoluteZero {
                             KnightAttack[square] ^= TryGetBitboard(file + a, rank + b);
 
                 // Initialize pawn attack bitboards. 
-                PawnAttack[Piece.White][square] ^= TryGetBitboard(file - 1, rank - 1);
-                PawnAttack[Piece.White][square] ^= TryGetBitboard(file + 1, rank - 1);
-                PawnAttack[Piece.Black][square] ^= TryGetBitboard(file - 1, rank + 1);
-                PawnAttack[Piece.Black][square] ^= TryGetBitboard(file + 1, rank + 1);
+                PawnAttack[Colour.White][square] ^= TryGetBitboard(file - 1, rank - 1);
+                PawnAttack[Colour.White][square] ^= TryGetBitboard(file + 1, rank - 1);
+                PawnAttack[Colour.Black][square] ^= TryGetBitboard(file - 1, rank + 1);
+                PawnAttack[Colour.Black][square] ^= TryGetBitboard(file + 1, rank + 1);
             }
         }
 

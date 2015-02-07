@@ -77,6 +77,7 @@
   <ItemGroup>
     <Compile Include="Source\Engine\Main.cs" />
     <Compile Include="Source\Engine\Search.cs" />
+    <Compile Include="Source\Framework\Colour.cs" />
     <Compile Include="Source\Gameplay\IEngine.cs" />
     <Compile Include="Source\Engine\HashTable.cs" />
     <Compile Include="Source\Utilities\Elo.cs" />

@@ -18,18 +18,18 @@ namespace AbsoluteZero {
             Int32 colour;
             Int32 sign;
 
-            Single value = position.Material[Piece.White] + position.Material[Piece.Black];
-            Single opening = PhaseCoefficient * Math.Min(position.Material[Piece.White], -position.Material[Piece.Black]);
+            Single value = position.Material[Colour.White] + position.Material[Colour.Black];
+            Single opening = PhaseCoefficient * Math.Min(position.Material[Colour.White], -position.Material[Colour.Black]);
             Single endgame = 1 - opening;
 
-            _pawnAttackBitboard[Piece.White] = (bitboard[Piece.White | Piece.Pawn] & NotAFileBitboard) >> 9;
-            _pawnAttackBitboard[Piece.White] |= (bitboard[Piece.White | Piece.Pawn] & NotHFileBitboard) >> 7;
-            _pawnAttackBitboard[Piece.Black] = (bitboard[Piece.Black | Piece.Pawn] & NotAFileBitboard) << 7;
-            _pawnAttackBitboard[Piece.Black] |= (bitboard[Piece.Black | Piece.Pawn] & NotHFileBitboard) << 9;
-            _kingSquare[Piece.White] = Bit.Read(bitboard[Piece.White | Piece.King]);
-            _kingSquare[Piece.Black] = Bit.Read(bitboard[Piece.Black | Piece.King]);
+            _pawnAttackBitboard[Colour.White] = (bitboard[Colour.White | Piece.Pawn] & NotAFileBitboard) >> 9;
+            _pawnAttackBitboard[Colour.White] |= (bitboard[Colour.White | Piece.Pawn] & NotHFileBitboard) >> 7;
+            _pawnAttackBitboard[Colour.Black] = (bitboard[Colour.Black | Piece.Pawn] & NotAFileBitboard) << 7;
+            _pawnAttackBitboard[Colour.Black] |= (bitboard[Colour.Black | Piece.Pawn] & NotHFileBitboard) << 9;
+            _kingSquare[Colour.White] = Bit.Read(bitboard[Colour.White | Piece.King]);
+            _kingSquare[Colour.Black] = Bit.Read(bitboard[Colour.Black | Piece.King]);
 
-            for (colour = Piece.White; colour <= Piece.Black; colour++) {
+            for (colour = Colour.White; colour <= Colour.Black; colour++) {
                 UInt64 targetBitboard = ~bitboard[colour] & ~_pawnAttackBitboard[1 - colour];
                 UInt64 pawnBitboard = bitboard[colour | Piece.Pawn];
                 UInt64 enemyBitboard = bitboard[(1 - colour) | Piece.Pawn];
@@ -205,7 +205,7 @@ namespace AbsoluteZero {
                 position.Square[square] = piece;
 
                 value = EvaluateStaticExchange(position, 1 - colour, square) - PieceValue[capture];
-                value = colour == Piece.White ? Math.Max(0, value) : Math.Min(0, value);
+                value = colour == Colour.White ? Math.Max(0, value) : Math.Min(0, value);
 
                 position.Bitboard[piece] ^= 1UL << from;
                 position.OccupiedBitboard ^= 1UL << from;

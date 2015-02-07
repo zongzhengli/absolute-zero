@@ -119,8 +119,9 @@ namespace AbsoluteZero {
         private static readonly Int32[] _kingSquare = new Int32[2];
 
         static Zero() {
-
-            // Initialize piece values. 
+            
+            // Initialize piece values. The king's value is only used for static 
+            // exchange evaluation. 
             PieceValue[Piece.King] = 3000;
             PieceValue[Piece.Queen] = 1025;
             PieceValue[Piece.Rook] = 575;
@@ -128,7 +129,7 @@ namespace AbsoluteZero {
             PieceValue[Piece.Knight] = 350;
             PieceValue[Piece.Pawn] = 100;
             for (Int32 piece = Piece.Min; piece <= Piece.Max; piece += 2)
-                PieceValue[Piece.Black | piece] = -PieceValue[piece];
+                PieceValue[Colour.Black | piece] = -PieceValue[piece];
             PieceValue[Piece.Empty] = 0;
 
             PhaseCoefficient += PieceValue[Piece.Queen];
@@ -142,14 +143,14 @@ namespace AbsoluteZero {
 
                 // Initialize piece square tables. 
                 Int32 reflected = Position.File(square) + (7 - Position.Rank(square)) * 8;
-                KingOpeningPositionValue[Piece.Black][square] = -KingOpeningPositionValue[Piece.White][reflected];
-                KingEndgamePositionValue[Piece.Black][square] = -KingEndgamePositionValue[Piece.White][reflected];
-                QueenOpeningPositionValue[Piece.Black][square] = -QueenOpeningPositionValue[Piece.White][reflected];
-                RookPositionValue[Piece.Black][square] = -RookPositionValue[Piece.White][reflected];
-                BishopPositionValue[Piece.Black][square] = -BishopPositionValue[Piece.White][reflected];
-                KnightOpeningPositionValue[Piece.Black][square] = -KnightOpeningPositionValue[Piece.White][reflected];
-                PawnPositionValue[Piece.Black][square] = -PawnPositionValue[Piece.White][reflected];
-                PassedPawnEndgamePositionValue[Piece.Black][square] = -PassedPawnEndgamePositionValue[Piece.White][reflected];
+                KingOpeningPositionValue[Colour.Black][square] = -KingOpeningPositionValue[Colour.White][reflected];
+                KingEndgamePositionValue[Colour.Black][square] = -KingEndgamePositionValue[Colour.White][reflected];
+                QueenOpeningPositionValue[Colour.Black][square] = -QueenOpeningPositionValue[Colour.White][reflected];
+                RookPositionValue[Colour.Black][square] = -RookPositionValue[Colour.White][reflected];
+                BishopPositionValue[Colour.Black][square] = -BishopPositionValue[Colour.White][reflected];
+                KnightOpeningPositionValue[Colour.Black][square] = -KnightOpeningPositionValue[Colour.White][reflected];
+                PawnPositionValue[Colour.Black][square] = -PawnPositionValue[Colour.White][reflected];
+                PassedPawnEndgamePositionValue[Colour.Black][square] = -PassedPawnEndgamePositionValue[Colour.White][reflected];
 
                 // Initialize pawn shield bitboard table. 
                 PawnShieldBitboard[square] = Bit.File[square];
@@ -166,20 +167,20 @@ namespace AbsoluteZero {
                     ShortAdjacentFilesBitboard[square] |= Bit.File[square + 1] & Bit.FloodFill(square + 1, 3);
 
                 // Initialize pawn blockade bitboard table. 
-                PawnBlockadeBitboard[Piece.White][square] = Bit.RayN[square];
+                PawnBlockadeBitboard[Colour.White][square] = Bit.RayN[square];
                 if (Position.File(square) > 0)
-                    PawnBlockadeBitboard[Piece.White][square] |= Bit.RayN[square - 1];
+                    PawnBlockadeBitboard[Colour.White][square] |= Bit.RayN[square - 1];
                 if (Position.File(square) < 7)
-                    PawnBlockadeBitboard[Piece.White][square] |= Bit.RayN[square + 1];
-                PawnBlockadeBitboard[Piece.Black][square] = Bit.RayS[square];
+                    PawnBlockadeBitboard[Colour.White][square] |= Bit.RayN[square + 1];
+                PawnBlockadeBitboard[Colour.Black][square] = Bit.RayS[square];
                 if (Position.File(square) > 0)
-                    PawnBlockadeBitboard[Piece.Black][square] |= Bit.RayS[square - 1];
+                    PawnBlockadeBitboard[Colour.Black][square] |= Bit.RayS[square - 1];
                 if (Position.File(square) < 7)
-                    PawnBlockadeBitboard[Piece.Black][square] |= Bit.RayS[square + 1];
+                    PawnBlockadeBitboard[Colour.Black][square] |= Bit.RayS[square + 1];
 
                 // Initialize short forward file bitboard table.
-                ShortForwardFileBitboard[Piece.White][square] = Bit.RayN[square] & Bit.FloodFill(square, 3);
-                ShortForwardFileBitboard[Piece.Black][square] = Bit.RayS[square] & Bit.FloodFill(square, 3);
+                ShortForwardFileBitboard[Colour.White][square] = Bit.RayN[square] & Bit.FloodFill(square, 3);
+                ShortForwardFileBitboard[Colour.Black][square] = Bit.RayS[square] & Bit.FloodFill(square, 3);
 
                 // Initialize rectilinear distance table.
                 RectilinearDistance[square] = new Int32[64];

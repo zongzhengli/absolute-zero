@@ -58,7 +58,7 @@ namespace AbsoluteZero {
 
             // Play the match. 
             while (true) {
-                IPlayer player = position.SideToMove == Piece.White ? white : black;
+                IPlayer player = position.SideToMove == Colour.White ? white : black;
                 position.Make(player.GetMove(position));
 
                 if (position.LegalMoves().Count == 0)
@@ -71,7 +71,7 @@ namespace AbsoluteZero {
                     return MatchResult.Draw;
 
                 if (position.HalfMoves >= halfMovesLimit) {
-                    int materialDifference = position.Material[Piece.White] + position.Material[Piece.Black];
+                    int materialDifference = position.Material[Colour.White] + position.Material[Colour.Black];
                     if (Math.Abs(materialDifference) >= MaterialLimit)
                         return materialDifference > 0 ? MatchResult.Win : MatchResult.Loss;
                     return MatchResult.Unresolved;

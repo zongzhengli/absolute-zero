@@ -99,7 +99,7 @@ namespace AbsoluteZero {
 
             new Thread(new ThreadStart(() => {
                 while (true) {
-                    IPlayer player = (position.SideToMove == Piece.White) ? White : Black;
+                    IPlayer player = (position.SideToMove == Colour.White) ? White : Black;
                     List<Int32> legalMoves = position.LegalMoves();
 
                     // Adjudicate checkmate and stalemate. 

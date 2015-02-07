@@ -119,7 +119,7 @@ namespace AbsoluteZero {
                 Int32 square = Position.SquareAt(e.Location);
                 Int32 piece = _currentPosition.Square[square];
 
-                if (piece != Piece.Empty && (piece & Piece.Colour) == _currentPosition.SideToMove)
+                if (piece != Piece.Empty && (piece & Colour.Mask) == _currentPosition.SideToMove)
                     _initialSquare = (_initialSquare == square) ? Position.InvalidSquare : square;
                 else {
                     _finalSquare = square;

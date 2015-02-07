@@ -117,7 +117,7 @@ namespace AbsoluteZero {
                     }
 
             // Perform special moves.
-            switch (Move.Special(move) & Piece.Type) {
+            switch (Move.Special(move) & Piece.Mask) {
                 case Piece.King:
                     Point rookInitial = new Point(7 * (Position.File(to) - 2) / 4 * SquareWidth, Position.Rank(to) * SquareWidth);
                     Point rookFinal = new Point((Position.File(to) / 2 + 2) * SquareWidth, Position.Rank(to) * SquareWidth);

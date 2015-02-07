@@ -74,19 +74,19 @@ namespace AbsoluteZero {
                                     Restrictions.UseTimeControls = false;
                                     break;
                                 case "wtime":
-                                    Restrictions.TimeControl[Piece.White] = Int32.Parse(terms[i + 1]);
+                                    Restrictions.TimeControl[Colour.White] = Int32.Parse(terms[i + 1]);
                                     Restrictions.UseTimeControls = true;
                                     break;
                                 case "btime":
-                                    Restrictions.TimeControl[Piece.Black] = Int32.Parse(terms[i + 1]);
+                                    Restrictions.TimeControl[Colour.Black] = Int32.Parse(terms[i + 1]);
                                     Restrictions.UseTimeControls = true;
                                     break;
                                 case "winc":
-                                    Restrictions.TimeIncrement[Piece.White] = Int32.Parse(terms[i + 1]);
+                                    Restrictions.TimeIncrement[Colour.White] = Int32.Parse(terms[i + 1]);
                                     Restrictions.UseTimeControls = true;
                                     break;
                                 case "binc":
-                                    Restrictions.TimeIncrement[Piece.Black] = Int32.Parse(terms[i + 1]);
+                                    Restrictions.TimeIncrement[Colour.Black] = Int32.Parse(terms[i + 1]);
                                     Restrictions.UseTimeControls = true;
                                     break;
                                 case "nodes":

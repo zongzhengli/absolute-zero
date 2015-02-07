@@ -1,4 +1,5 @@
 ﻿using System;
+using ColourClass = AbsoluteZero.Colour;
 
 namespace AbsoluteZero {
 
@@ -50,15 +51,18 @@ namespace AbsoluteZero {
                 for (Int32 square = 0; square < 64; square++)
                     PiecePosition[piece][square] = NextUInt64();
             }
-            for (Int32 colour = Piece.White; colour <= Piece.Black; colour++) {
+
+            for (Int32 colour = ColourClass.White; colour <= ColourClass.Black; colour++) {
                 CastleKingside[colour] = NextUInt64();
                 CastleQueenside[colour] = NextUInt64();
             }
+
             for (Int32 file = 0; file < 8; file++) {
                 UInt64 hashValue = NextUInt64();
                 for (Int32 rank = 0; rank < 8; rank++)
                     EnPassant[file + rank * 8] = hashValue;
             }
+
             Colour = NextUInt64();
         }
 

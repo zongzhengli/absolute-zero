@@ -10,32 +10,17 @@ namespace AbsoluteZero {
         /// <summary>
         /// The mask for extracting the type of a piece. 
         /// </summary>
-        public const Int32 Type = 14;                                                // 1110
-
-        /// <summary>
-        /// The mask for extracting the colour of a piece. 
-        /// </summary>
-        public const Int32 Colour = Black;                                           // 0001
-
-        /// <summary>
-        /// The colour white. 
-        /// </summary>
-        public const Int32 White = 0;                                                // 0000
-
-        /// <summary>
-        /// The colour black. 
-        /// </summary>
-        public const Int32 Black = 1;                                                // 0001
+        public const Int32 Mask = 14;                                                // 1110
 
         /// <summary>
         /// The smallest value used to represent a piece. 
         /// </summary>
-        public const Int32 Min = White | Pawn;
+        public const Int32 Min = Colour.White | Pawn;
 
         /// <summary>
         /// The largest value used to represent a piece. 
         /// </summary>
-        public const Int32 Max = Black | King;
+        public const Int32 Max = Colour.Black | King;
 
         /// <summary>
         /// The empty, or non-existent, piece. 

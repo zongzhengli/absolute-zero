@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using PieceClass = AbsoluteZero.Piece;
+using ColourClass = AbsoluteZero.Colour;
 using MoveClass = AbsoluteZero.Move;
 
 namespace AbsoluteZero {
@@ -53,7 +54,7 @@ namespace AbsoluteZero {
         /// <param name="colour">The colour to identify.</param>
         /// <returns>The text representation of the given colour</returns>
         public static String Colour(Int32 colour) {
-            return (colour & PieceClass.Colour) == PieceClass.White ? "White" : "Black";
+            return (colour & ColourClass.Mask) == ColourClass.White ? "White" : "Black";
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace AbsoluteZero {
         /// <param name="piece">The piece to identify.</param>
         /// <returns>The text representation of the given piece.</returns>
         public static String Piece(Int32 piece) {
-            switch (piece & PieceClass.Type) {
+            switch (piece & PieceClass.Mask) {
                 case PieceClass.King:
                     return "King";
                 case PieceClass.Queen:
@@ -85,7 +86,7 @@ namespace AbsoluteZero {
         /// <param name="piece">The piece to identify.</param>
         /// <returns>The text representation of the given piece as an initial.</returns>
         public static String PieceInitial(Int32 piece) {
-            if ((piece & PieceClass.Type) == PieceClass.Knight)
+            if ((piece & PieceClass.Mask) == PieceClass.Knight)
                 return "N";
             return Piece(piece)[0].ToString();
         }
@@ -99,7 +100,7 @@ namespace AbsoluteZero {
             String coordinates = Stringify.Square(MoveClass.From(move)) + Stringify.Square(MoveClass.To(move));
             Int32 special = MoveClass.Special(move);
 
-            switch (special & PieceClass.Type) {
+            switch (special & PieceClass.Mask) {
                 default:
                     return coordinates;
                 case PieceClass.Queen:
@@ -139,7 +140,7 @@ namespace AbsoluteZero {
 
             // Determine the piece associated with the move. Pawns are not explicitly 
             // identified. 
-            String piece = (MoveClass.Piece(move) & PieceClass.Type) == PieceClass.Pawn ? "" : PieceInitial(MoveClass.Piece(move));
+            String piece = (MoveClass.Piece(move) & PieceClass.Mask) == PieceClass.Pawn ? "" : PieceInitial(MoveClass.Piece(move));
 
             // Determine the necessary disambiguation property for the move. If two or 
             // more pieces of the same type are moving to the same square, disambiguate 
@@ -172,7 +173,7 @@ namespace AbsoluteZero {
             // piece is a pawn, it is identified by the file it is moving from. 
             Boolean isCapture = MoveClass.IsCapture(move) || MoveClass.IsEnPassant(move);
             String capture = isCapture ? "x" : "";
-            if ((MoveClass.Piece(move) & PieceClass.Type) == PieceClass.Pawn && isCapture)
+            if ((MoveClass.Piece(move) & PieceClass.Mask) == PieceClass.Pawn && isCapture)
                 if (disambiguation == "")
                     disambiguation = File(MoveClass.From(move));
 
@@ -209,7 +210,7 @@ namespace AbsoluteZero {
 
             if (options == StringifyOptions.Proper) {
                 halfMoves = position.HalfMoves;
-                if (position.SideToMove == PieceClass.Black) {
+                if (position.SideToMove == ColourClass.Black) {
                     sb.Append(halfMoves / 2 + 1);
                     sb.Append("... ");
                 }
