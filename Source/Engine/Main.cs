@@ -118,7 +118,7 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Stops the  search if applicable. 
+        /// Stops the search if applicable. 
         /// </summary>
         public void Stop() {
             _abortSearch = true;
@@ -133,6 +133,7 @@ namespace AbsoluteZero {
                 Array.Clear(_killerMoves[i], 0, _killerMoves[i].Length);
             _finalAlpha = 0;
             _rootAlpha = 0;
+            _totalNodes = 0;
         }
     }
 }
