@@ -84,6 +84,8 @@ namespace AbsoluteZero {
             _referenceNodes = 0;
             _hashProbes = 0;
             _hashCutoffs = 0;
+            _futileMoves = 0;
+            _movesSearched = 0;
             _stopwatch.Reset();
             _stopwatch.Start();
 
@@ -101,12 +103,12 @@ namespace AbsoluteZero {
                 Terminal.WriteLine(position.ToString(
                     String.Format("Absolute Zero {0}", Version),
                     String.Format("{0} MB / x{1}", HashAllocation, IntPtr.Size == 4 ? "86" : "64"),
-                    "",
-                    String.Format("Nodes visited      {0}", _totalNodes),
                     String.Format("Search time        {0:0} ms", elapsed),
                     String.Format("Search speed       {0:0} kN/s", _totalNodes / elapsed),
-                    "",
+                    String.Format("Nodes visited      {0}", _totalNodes),
+                    String.Format("Moves considered   {0}", _movesSearched),
                     String.Format("Quiescence nodes   {0:0.00%}", (Double)_quiescenceNodes / _totalNodes),
+                    String.Format("Futility moves     {0:0.00%}", (Double)_futileMoves / _movesSearched),
                     String.Format("Hash usage         {0:0.00%}", (Double)_table.Count / _table.Capacity),
                     String.Format("Hash cutoffs       {0:0.00%}", (Double)_hashCutoffs / _hashProbes),
                     String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position) / 100.0)));

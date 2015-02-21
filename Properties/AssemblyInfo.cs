@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values toExclusive modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Absolute Zero")]
-[assembly: AssemblyDescription("A chess engine written in C#.")]
+[assembly: AssemblyDescription("A .NET chess engine.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Zong Zheng Li")]
 [assembly: AssemblyProduct("Absolute Zero")]
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("2.4.3.2")]
+[assembly: AssemblyFileVersion("2.4.4.0")]

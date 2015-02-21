@@ -44,8 +44,8 @@ namespace AbsoluteZero {
 
                 // Go through the move list. 
                 for (Int32 i = 0; i < moves.Count; i++) {
+                    _movesSearched++;
 
-                    // Initialize variables and make the move. 
                     Int32 value = alpha + 1;
                     Int32 move = moves[i];
                     Boolean causesCheck = position.CausesCheck(move);
@@ -135,7 +135,7 @@ namespace AbsoluteZero {
 
             // Check for time extension and search termination. This is done once for 
             // every given number of nodes for efficency. 
-            if (_totalNodes++ > _referenceNodes) {
+            if (++_totalNodes > _referenceNodes) {
                 _referenceNodes += NodeResolution;
 
                 // Apply loss time extension. The value of the best move for the current 
@@ -243,17 +243,18 @@ namespace AbsoluteZero {
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
+                _movesSearched++;
 
-                // Initialize variables and determine properties of the current move and 
-                // position. 
                 Int32 move = moves[i];
                 Boolean causesCheck = position.CausesCheck(move);
                 Boolean dangerous = inCheck || causesCheck || alpha < -NearCheckmateValue || IsDangerousPawnAdvance(move, preventionBitboard);
                 Boolean reducible = i + 1 > irreducibleMoves;
 
                 // Perform futility pruning. 
-                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move) & Piece.Mask] <= alpha)
+                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move) & Piece.Mask] <= alpha) {
+                    _futileMoves++;
                     continue;
+                }
 
                 // Make the move and initialize its value. 
                 position.Make(move);
@@ -339,6 +340,7 @@ namespace AbsoluteZero {
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
+                _movesSearched++;
                 Int32 move = moves[i];
 
                 // Consider the move only if it doesn't immediately lose material. This 

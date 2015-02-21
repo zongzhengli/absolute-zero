@@ -112,6 +112,8 @@ namespace AbsoluteZero {
         private Int32 _referenceNodes;
         private Int64 _hashProbes;
         private Int64 _hashCutoffs;
+        private Int64 _movesSearched;
+        private Int64 _futileMoves;
 
         // Evaluation variables. 
         private static readonly UInt64[] _minorAttackBitboard = new UInt64[2];
