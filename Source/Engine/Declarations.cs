@@ -112,6 +112,10 @@ namespace AbsoluteZero {
         private Int32 _referenceNodes;
         private Int64 _hashProbes;
         private Int64 _hashCutoffs;
+        private Int64 _hashMoveChecks;
+        private Int64 _hashMoveMatches;
+        private Int64 _killerMoveChecks;
+        private Int64 _killerMoveMatches;
         private Int64 _movesSearched;
         private Int64 _futileMoves;
 

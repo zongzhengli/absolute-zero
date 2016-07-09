@@ -84,6 +84,10 @@ namespace AbsoluteZero {
             _referenceNodes = 0;
             _hashProbes = 0;
             _hashCutoffs = 0;
+            _hashMoveChecks = 0;
+            _hashMoveMatches = 0;
+            _killerMoveChecks = 0;
+            _killerMoveMatches = 0;
             _futileMoves = 0;
             _movesSearched = 0;
             _stopwatch.Reset();
@@ -101,16 +105,16 @@ namespace AbsoluteZero {
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();
                 Terminal.WriteLine(position.ToString(
-                    String.Format("Absolute Zero {0}", Version),
-                    String.Format("{0} MB / x{1}", HashAllocation, IntPtr.Size == 4 ? "86" : "64"),
+                    String.Format("Absolute Zero {0} ({1}-bit)", Version, IntPtr.Size * 8),
                     String.Format("Search time        {0:0} ms", elapsed),
                     String.Format("Search speed       {0:0} kN/s", _totalNodes / elapsed),
                     String.Format("Nodes visited      {0}", _totalNodes),
-                    String.Format("Moves considered   {0}", _movesSearched),
-                    String.Format("Quiescence nodes   {0:0.00%}", (Double)_quiescenceNodes / _totalNodes),
-                    String.Format("Futility moves     {0:0.00%}", (Double)_futileMoves / _movesSearched),
-                    String.Format("Hash usage         {0:0.00%}", (Double)_table.Count / _table.Capacity),
-                    String.Format("Hash cutoffs       {0:0.00%}", (Double)_hashCutoffs / _hashProbes),
+                    String.Format("Moves processed    {0}", _movesSearched),
+                    String.Format("Quiescence nodes   {0:0.00 %}", (Double)_quiescenceNodes / _totalNodes),
+                    String.Format("Futility moves     {0:0.00 %}", (Double)_futileMoves / _movesSearched),
+                    String.Format("Hash cutoffs       {0:0.00 %}", (Double)_hashCutoffs / _hashProbes),
+                    String.Format("Hash move rate     {0:0.00 %}", (Double)_hashMoveMatches / _hashMoveChecks),
+                    String.Format("Killer moves rate  {0:0.00 %}", (Double)_killerMoveMatches / _killerMoveChecks),
                     String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position) / 100.0)));
                 Terminal.WriteLine();
             }

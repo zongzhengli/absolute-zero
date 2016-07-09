@@ -1062,17 +1062,17 @@ namespace AbsoluteZero {
             if (pieces <= 2)
                 return true;
             if (pieces <= 3)
-                return Bitboard[Colour.White | Piece.Knight] != 0 ||
-                       Bitboard[Colour.White | Piece.Bishop] != 0 ||
-                       Bitboard[Colour.Black | Piece.Knight] != 0 ||
-                       Bitboard[Colour.Black | Piece.Bishop] != 0;
-            if (Bit.CountSparse(Bitboard[Colour.White | Piece.Knight]) == 2 ||
-                Bit.CountSparse(Bitboard[Colour.Black | Piece.Knight]) == 2)
+                return Bitboard[Colour.White | Piece.Knight] != 0
+                    || Bitboard[Colour.White | Piece.Bishop] != 0
+                    || Bitboard[Colour.Black | Piece.Knight] != 0
+                    || Bitboard[Colour.Black | Piece.Bishop] != 0;
+            if (Bit.CountSparse(Bitboard[Colour.White | Piece.Knight]) == 2
+             || Bit.CountSparse(Bitboard[Colour.Black | Piece.Knight]) == 2)
                 return true;
-            if (Bitboard[Colour.White | Piece.Bishop] != 0 &&
-                Bitboard[Colour.Black | Piece.Bishop] != 0 &&
-                ((Bitboard[Colour.White | Piece.Bishop] & Bit.LightSquares) != 0) ==
-                ((Bitboard[Colour.Black | Piece.Bishop] & Bit.LightSquares) != 0))
+            if (Bitboard[Colour.White | Piece.Bishop] != 0
+             && Bitboard[Colour.Black | Piece.Bishop] != 0 
+             && ((Bitboard[Colour.White | Piece.Bishop] & Bit.LightSquares) != 0)
+             == ((Bitboard[Colour.Black | Piece.Bishop] & Bit.LightSquares) != 0))
                 return true;
             return false;
         }
@@ -1217,7 +1217,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <returns>A text drawing of the position</returns>
         public override String ToString() {
-            return ToString();
+            return ToString(String.Empty);
         }
 
         /// <summary>

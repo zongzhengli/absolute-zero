@@ -207,22 +207,29 @@ namespace AbsoluteZero {
                 depth++;
 
             // Perform killer move ordering. 
-            for (Int32 slot = 0; slot < _killerMoves[ply].Length; slot++) {
+            for (Int32 slot = 0; slot < KillerMovesAllocation; slot++) {
+                _killerMoveChecks++;
                 Int32 killerMove = _killerMoves[ply][slot];
-                for (Int32 i = 0; i < movesCount; i++)
+                for (Int32 i = 0; i < movesCount; i++) {
                     if (moves[i] == killerMove) {
                         _moveValues[i] = KillerMoveValue + slot * KillerMoveSlotValue;
+                        _killerMoveMatches++;
                         break;
                     }
+                }
             }
 
             // Perform hash move ordering. 
-            if (hashMove != Move.Invalid)
-                for (Int32 i = 0; i < movesCount; i++)
+            _hashMoveChecks++;
+            if (hashMove != Move.Invalid) {
+                for (Int32 i = 0; i < movesCount; i++) {
                     if (moves[i] == hashMove) {
                         _moveValues[i] = HashMoveValue;
+                        _hashMoveMatches++;
                         break;
                     }
+                }
+            }
 
             // Check for futility pruning activation. 
             Boolean futileNode = false;
