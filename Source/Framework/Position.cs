@@ -706,12 +706,14 @@ namespace AbsoluteZero {
             Int32 capture = Move.Capture(move);
             Int32 special = Move.Special(move);
 
+            // Update core board state.
             Square[to] = piece;
             Square[from] = Piece.Empty;
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
             Bitboard[SideToMove] ^= (1UL << from) | (1UL << to);
             OccupiedBitboard ^= (1UL << from) | (1UL << to);
 
+            // Update metainformation.
             ZobristKey ^= Zobrist.PiecePosition[piece][from] ^ Zobrist.PiecePosition[piece][to];
             ZobristKey ^= Zobrist.Colour;
             if (EnPassantSquare != InvalidSquare) {
@@ -721,6 +723,7 @@ namespace AbsoluteZero {
             FiftyMovesClock++;
             HalfMoves++;
 
+            // Handle capture if applicable.
             switch (capture & Piece.Mask) {
                 case Piece.Empty:
                     break;
@@ -743,8 +746,10 @@ namespace AbsoluteZero {
             }
 
             switch (special & Piece.Mask) {
+                // Handle regular move (not en passant, castling, or pawn promotion).
                 case Piece.Empty:
                     switch (piece & Piece.Mask) {
+                        // For pawn move, update fifty moves clock and en passant state.
                         case Piece.Pawn:
                             FiftyMovesClock = 0;
                             if ((from - to) * (from - to) == 256) {
@@ -752,6 +757,7 @@ namespace AbsoluteZero {
                                 EnPassantHistory[HalfMoves] = EnPassantSquare = (from + to) / 2;
                             }
                             break;
+                        // For rook move, disable castling on one side.
                         case Piece.Rook:
                             if ((SideToMove == Colour.White && from == 56) || (SideToMove == Colour.Black && from == 0)) {
                                 if (CastleQueenside[SideToMove]-- > 0)
@@ -760,6 +766,7 @@ namespace AbsoluteZero {
                                 if (CastleKingside[SideToMove]-- > 0)
                                     ZobristKey ^= Zobrist.CastleKingside[SideToMove];
                             break;
+                        // For king move, disable castling on both sides.
                         case Piece.King:
                             if (CastleQueenside[SideToMove]-- > 0)
                                 ZobristKey ^= Zobrist.CastleQueenside[SideToMove];
@@ -768,6 +775,7 @@ namespace AbsoluteZero {
                             break;
                     }
                     break;
+                // Handle castling.
                 case Piece.King:
                     if (CastleQueenside[SideToMove]-- > 0)
                         ZobristKey ^= Zobrist.CastleQueenside[SideToMove];
@@ -790,6 +798,7 @@ namespace AbsoluteZero {
                     Square[rookFrom] = Piece.Empty;
                     Square[rookTo] = SideToMove | Piece.Rook;
                     break;
+                // Handle en passant.
                 case Piece.Pawn:
                     Square[File(to) + Rank(from) * 8] = Piece.Empty;
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
@@ -798,6 +807,7 @@ namespace AbsoluteZero {
                     ZobristKey ^= Zobrist.PiecePosition[special][File(to) + Rank(from) * 8];
                     Material[1 - SideToMove] -= Zero.PieceValue[special];
                     break;
+                // Handle pawn promotion.
                 default:
                     Bitboard[piece] ^= 1UL << to;
                     Bitboard[special] ^= 1UL << to;
@@ -824,6 +834,7 @@ namespace AbsoluteZero {
             Int32 capture = Move.Capture(move);
             Int32 special = Move.Special(move);
 
+            // Rewind core board state.
             SideToMove = 1 - SideToMove;
             Square[from] = piece;
             Square[to] = capture;
@@ -831,12 +842,14 @@ namespace AbsoluteZero {
             Bitboard[SideToMove] ^= (1UL << from) | (1UL << to);
             OccupiedBitboard ^= (1UL << from) | (1UL << to);
 
+            // Rewind metainformation.
             ZobristKey = ZobristKeyHistory[HalfMoves - 1];
             EnPassantHistory[HalfMoves] = InvalidSquare;
             EnPassantSquare = EnPassantHistory[HalfMoves - 1];
             FiftyMovesClock = FiftyMovesHistory[HalfMoves - 1];
             HalfMoves--;
 
+            // Rewind capture if applicable.
             switch (capture & Piece.Mask) {
                 case Piece.Empty:
                     break;
@@ -855,20 +868,24 @@ namespace AbsoluteZero {
             }
 
             switch (special & Piece.Mask) {
+                // Rewind regular move.
                 case Piece.Empty:
                     switch (piece & Piece.Mask) {
+                        // For rook move, restore castling on one side if applicable.
                         case Piece.Rook:
                             if ((SideToMove == Colour.White && from == 56) || (SideToMove == Colour.Black && from == 0)) {
                                 CastleQueenside[SideToMove]++;
                             } else if ((SideToMove == Colour.White && from == 63) || (SideToMove == Colour.Black && from == 7))
                                 CastleKingside[SideToMove]++;
                             break;
+                        // For king move, restore castling on both sides if applicable.
                         case Piece.King:
                             CastleQueenside[SideToMove]++;
                             CastleKingside[SideToMove]++;
                             break;
                     }
                     break;
+                // Rewind castling.
                 case Piece.King:
                     CastleQueenside[SideToMove]++;
                     CastleKingside[SideToMove]++;
@@ -887,6 +904,7 @@ namespace AbsoluteZero {
                     Square[rookFrom] = SideToMove | Piece.Rook;
                     Square[rookTo] = Piece.Empty;
                     break;
+                // Rewind en passant.
                 case Piece.Pawn:
                     Square[File(to) + Rank(from) * 8] = special;
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
@@ -894,6 +912,7 @@ namespace AbsoluteZero {
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     Material[1 - SideToMove] += Zero.PieceValue[special];
                     break;
+                // Rewind pawn promotion.
                 default:
                     Bitboard[piece] ^= 1UL << to;
                     Bitboard[special] ^= 1UL << to;
@@ -930,7 +949,9 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Generates the hash key for the position from scratch. 
+        /// Generates the hash key for the position from scratch. This is expensive 
+        /// and should only be used for initialization and testing. Normally, use the
+        /// incrementally updated ZobristKey field.
         /// </summary>
         /// <returns>The hash key for the position.</returns>
         public UInt64 GenerateZobristKey() {
