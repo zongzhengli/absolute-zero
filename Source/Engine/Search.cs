@@ -66,9 +66,9 @@ namespace AbsoluteZero {
                         }
                     }
 
-                        // Subsequent moves are searched with a zero window search. If the result is 
-                        // better than the best value so far, a re-search is initiated with a wider 
-                        // window.
+                    // Subsequent moves are searched with a zero window search. If the result is 
+                    // better than the best value so far, a re-search is initiated with a wider 
+                    // window.
                     else {
                         value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
                         if (value > alpha)

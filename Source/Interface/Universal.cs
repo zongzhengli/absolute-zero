@@ -21,7 +21,7 @@ namespace AbsoluteZero {
             Position position = new Position(Position.StartingFEN);
 
             String command;
-            while ((command= Console.ReadLine()) != null) {
+            while ((command = Console.ReadLine()) != null) {
                 List<String> terms = new List<String>(command.Split(' '));
 
                 switch (terms[0]) {
