@@ -148,14 +148,14 @@ namespace AbsoluteZero {
 
                 // Initialize piece square tables. 
                 Int32 reflected = Position.File(square) + (7 - Position.Rank(square)) * 8;
-                KingOpeningPositionValue[Colour.Black][square] = -KingOpeningPositionValue[Colour.White][reflected];
-                KingEndgamePositionValue[Colour.Black][square] = -KingEndgamePositionValue[Colour.White][reflected];
-                QueenOpeningPositionValue[Colour.Black][square] = -QueenOpeningPositionValue[Colour.White][reflected];
-                RookPositionValue[Colour.Black][square] = -RookPositionValue[Colour.White][reflected];
-                BishopPositionValue[Colour.Black][square] = -BishopPositionValue[Colour.White][reflected];
-                KnightOpeningPositionValue[Colour.Black][square] = -KnightOpeningPositionValue[Colour.White][reflected];
-                PawnPositionValue[Colour.Black][square] = -PawnPositionValue[Colour.White][reflected];
-                PassedPawnEndgamePositionValue[Colour.Black][square] = -PassedPawnEndgamePositionValue[Colour.White][reflected];
+                KingOpeningPositionValue[Colour.Black][square] = KingOpeningPositionValue[Colour.White][reflected];
+                KingEndgamePositionValue[Colour.Black][square] = KingEndgamePositionValue[Colour.White][reflected];
+                QueenOpeningPositionValue[Colour.Black][square] = QueenOpeningPositionValue[Colour.White][reflected];
+                RookPositionValue[Colour.Black][square] = RookPositionValue[Colour.White][reflected];
+                BishopPositionValue[Colour.Black][square] = BishopPositionValue[Colour.White][reflected];
+                KnightOpeningPositionValue[Colour.Black][square] = KnightOpeningPositionValue[Colour.White][reflected];
+                PawnPositionValue[Colour.Black][square] = PawnPositionValue[Colour.White][reflected];
+                PassedPawnEndgamePositionValue[Colour.Black][square] = PassedPawnEndgamePositionValue[Colour.White][reflected];
 
                 // Initialize pawn shield bitboard table. 
                 PawnShieldBitboard[square] = Bit.File[square];
@@ -203,11 +203,10 @@ namespace AbsoluteZero {
                     KnightMoveDistance[square][i] = 6;
                 for (Int32 moves = 1; moves <= 5; moves++) {
                     UInt64 moveBitboard = Attack.KnightFill(square, moves);
-                    for (Int32 to = 0; to < 64; to++)
-                        if ((moveBitboard & (1UL << to)) > 0)
-                            if (moves < KnightMoveDistance[square][to])
-                                KnightMoveDistance[square][to] = moves;
-
+                    for (Int32 to = 0; to < 64; to++) {
+                        if ((moveBitboard & (1UL << to)) != 0 && moves < KnightMoveDistance[square][to])
+                            KnightMoveDistance[square][to] = moves;
+                    }
                 }
             }
         }
@@ -230,15 +229,15 @@ namespace AbsoluteZero {
                 // Initialize knight to enemy king spatial value table. 
                 KnightToEnemyKingSpatialValue[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
-                    KnightToEnemyKingSpatialValue[square][to] = KnightDistanceToEnemyKingValue[RectilinearDistance[square][to]] + KnightMovesToEnemyKingValue[KnightMoveDistance[square][to]];
+                    KnightToEnemyKingSpatialValue[square][to] = 
+                        KnightDistanceToEnemyKingValue[RectilinearDistance[square][to]] + 
+                        KnightMovesToEnemyKingValue[KnightMoveDistance[square][to]];
             }
         }
 
         // Piece square tables. 
-        private static readonly Int32[][] KingOpeningPositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] KingOpeningPositionValue = {
+            new Int32[] {
                 -25,-33,-33,-33,-33,-33,-33,-25,
                 -25,-33,-33,-33,-33,-33,-33,-25,
                 -25,-33,-33,-33,-33,-33,-33,-25,
@@ -248,13 +247,11 @@ namespace AbsoluteZero {
                  17, 17,  0,  0,  0,  0, 17, 17,
                  21, 25, 12,  0,  0, 12, 25, 21
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] KingEndgamePositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] KingEndgamePositionValue = {
+            new Int32[] {
                 -42,-33,-25,-17,-17,-25,-33,-42,
                 -33,-17, -8, -8, -8, -8,-17,-33,
                 -25, -8, 17, 21, 21, 17, -8,-25,
@@ -264,13 +261,11 @@ namespace AbsoluteZero {
                 -33,-17, -8, -8, -8, -8,-17,-33,
                 -42,-33,-25,-17,-17,-25,-33,-42
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] QueenOpeningPositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] QueenOpeningPositionValue = {
+            new Int32[] {
                 -17,-12, -8,  8,  0, -8,-12,-17,
                  -8,  0,  0,  0,  0,  0,  0, -8,
                  -8,  0,  4,  4,  4,  4,  0, -8,
@@ -280,13 +275,11 @@ namespace AbsoluteZero {
                  -8,  0,  0,  0,  0,  0,  0, -8,
                 -17,-12, -8,  8,  0, -8,-12,-17
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] RookPositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] RookPositionValue = {
+            new Int32[] {
                   0,  0,  0,  0,  0,  0,  0,  0,
                   4,  8,  8,  8,  8,  8,  8,  4,
                  -4,  0,  0,  0,  0,  0,  0, -4,
@@ -296,13 +289,11 @@ namespace AbsoluteZero {
                  -4,  0,  0,  0,  0,  0,  0, -4,
                   0,  0,  4,  4,  4,  4,  0,  0
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] BishopPositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] BishopPositionValue = {
+            new Int32[] {
                 -17, -8, -8, -8, -8, -8, -8,-17,
                  -8,  0,  0,  0,  0,  0,  0, -8,
                  -8,  0,  4,  8,  8,  4,  0, -8,
@@ -312,13 +303,11 @@ namespace AbsoluteZero {
                  -8, 12,  0,  0,  0,  0, 12, -8,
                 -17, -8, -8, -8, -8, -8, -8,-17
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] KnightOpeningPositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] KnightOpeningPositionValue = {
+            new Int32[] {
                 -25,-17,-17,-17,-17,-17,-17,-25,
                 -17,-12,  0,  8,  8,  0,-12,-17,
                 -17,  0,  8, 12, 12,  8,  0,-17,
@@ -328,13 +317,11 @@ namespace AbsoluteZero {
                 -17,-12,  0,  8,  8,  0,-12,-17,
                 -25,-17,-17,-17,-17,-17,-17,-25
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] PawnPositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] PawnPositionValue = {
+            new Int32[] {
                   0,  0,  0,  0,  0,  0,  0,  0,
                  75, 75, 75, 75, 75, 75, 75, 75,
                  25, 25, 29, 29, 29, 29, 25, 25,
@@ -344,13 +331,11 @@ namespace AbsoluteZero {
                   4,  8,  8,-17,-17,  8,  8,  4,
                   0,  0,  0,  0,  0,  0,  0,  0
             }, 
-            new Int32[64]
+            new Int32[64],
         };
 
-        private static readonly Int32[][] PassedPawnEndgamePositionValue =
-        {
-            new Int32[]
-            {
+        private static readonly Int32[][] PassedPawnEndgamePositionValue = {
+            new Int32[] {
                   0,  0,  0,  0,  0,  0,  0,  0,
                 100,100,100,100,100,100,100,100,
                  52, 52, 52, 52, 52, 52, 52, 52,
@@ -360,7 +345,7 @@ namespace AbsoluteZero {
                   8,  8,  8,  8,  8,  8,  8,  8,
                   0,  0,  0,  0,  0,  0,  0,  0
             }, 
-            new Int32[64]
+            new Int32[64],
         };
     }
 }
