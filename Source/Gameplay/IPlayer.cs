@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace AbsoluteZero {
 
@@ -33,5 +34,11 @@ namespace AbsoluteZero {
         /// Resets the player. 
         /// </summary>
         void Reset();
+
+        /// <summary>
+        /// Draws the player's graphical elements. 
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
+        void Draw(Graphics g);
     }
 }

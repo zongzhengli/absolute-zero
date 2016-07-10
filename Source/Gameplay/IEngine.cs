@@ -9,9 +9,10 @@ namespace AbsoluteZero {
     interface IEngine : IPlayer {
 
         /// <summary>
-        /// The principal variation of the most recent search. 
+        /// Returns the principal variation of the most recent search.
         /// </summary>
-        List<Int32> PrincipalVariation { get; }
+        /// <returns>The principal variation of the most recent search.</returns>
+        List<Int32> GetPrincipalVariation();
 
         /// <summary>
         /// The number of nodes visited during the most recent search. 

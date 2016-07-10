@@ -6,7 +6,9 @@ using System.Threading;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Represents the chess position in the visual interface.  
+    /// Represents the chess position in the visual interface. Currently, all the
+    /// visual components are static, which isn't great, but acceptable due to
+    /// the rotate state being tied to a global user option.
     /// </summary>
     static class VisualPosition {
 
@@ -175,15 +177,27 @@ namespace AbsoluteZero {
         /// <param name="brush">The brush for drawing the square.</param>
         /// <param name="square">The square to draw.</param>
         public static void DrawSquare(Graphics g, SolidBrush brush, Int32 square) {
-            Int32 x = Position.File(square);
-            Int32 y = Position.Rank(square);
-            if (Rotated) {
-                x = 7 - x;
-                y = 7 - y;
-            }
-            x *= SquareWidth;
-            y *= SquareWidth;
+            Int32 x = RotateIfNeeded(Position.File(square)) * SquareWidth;
+            Int32 y = RotateIfNeeded(Position.Rank(square)) * SquareWidth;
             g.FillRectangle(brush, x, y, SquareWidth, SquareWidth);
+        }
+
+        /// <summary>
+        /// Draws a line for the given move with the given pen. 
+        /// </summary>
+        /// <param name="g">The graphics surface to draw on.</param>
+        /// <param name="pen">The pen for drawing the line.</param>
+        /// <param name="move">The move to draw a line for.</param>
+        public static void DrawLine(Graphics g, Pen pen, Int32 move) {
+            Int32 from = Move.From(move);
+            Int32 to = Move.To(move);
+            Point initial = new Point(
+                RotateIfNeeded(Position.File(from)) * SquareWidth + SquareWidth / 2, 
+                RotateIfNeeded(Position.Rank(from)) * SquareWidth + SquareWidth / 2);
+            Point final = new Point(
+                RotateIfNeeded(Position.File(to)) * SquareWidth + SquareWidth / 2, 
+                RotateIfNeeded(Position.Rank(to)) * SquareWidth + SquareWidth / 2);
+            g.DrawLine(pen, initial, final);
         }
 
         /// <summary>
@@ -195,6 +209,14 @@ namespace AbsoluteZero {
                 if (piece != null)
                     piece.Draw(g);
             });
+        }
+
+        /// <summary>
+        /// Returns the given rank or file, rotating if Rotated is set.
+        /// </summary>
+        /// <param name="rankOrFile">The rank or file to rotate.</param>
+        private static Int32 RotateIfNeeded(Int32 rankOrFile) {
+            return Rotated ? 7 - rankOrFile : rankOrFile;
         }
     }
 }

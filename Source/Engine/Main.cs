@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace AbsoluteZero {
 
@@ -7,15 +8,6 @@ namespace AbsoluteZero {
     /// Encapsulates the main interface of the Absolute Zero chess engine. 
     /// </summary>
     partial class Zero : IEngine {
-
-        /// <summary>
-        /// The principal variation of the most recent search. 
-        /// </summary>
-        public List<Int32> PrincipalVariation {
-            get {
-                return _pv;
-            }
-        }
 
         /// <summary>
         /// The number of nodes visited during the most recent search. 
@@ -42,10 +34,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Whether to use experimental features. 
         /// </summary>
-        public Boolean IsExperimental {
-            get;
-            set;
-        }
+        public Boolean IsExperimental { get; set; }
 
         /// <summary>
         /// The name of the engine. 
@@ -79,6 +68,7 @@ namespace AbsoluteZero {
 
             // Initialize variables to prepare for search. 
             _abortSearch = false;
+            _pvLength[0] = 0;
             _totalNodes = 0;
             _quiescenceNodes = 0;
             _referenceNodes = 0;
@@ -95,6 +85,7 @@ namespace AbsoluteZero {
 
             // Perform the search. 
             Int32 move = Search(position);
+            _abortSearch = true;
 
             // Output search statistics. 
             _stopwatch.Stop();
@@ -138,6 +129,31 @@ namespace AbsoluteZero {
             _finalAlpha = 0;
             _rootAlpha = 0;
             _totalNodes = 0;
+        }
+
+        /// <summary>
+        /// Returns the principal variation of the most recent search.
+        /// </summary>
+        /// <returns>The principal variation of the most recent search.</returns>
+        public List<Int32> GetPrincipalVariation() {
+            List<Int32> variation = new List<Int32>();
+            for (Int32 i = 0; i < _pvLength[0]; i++)
+                variation.Add(_pvMoves[0][i]);
+            return variation;
+        }
+
+        /// <summary>
+        /// Draws the player's graphical elements. 
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
+        public void Draw(Graphics g) {
+            if (!_abortSearch) {
+                List<Int32> pv = GetPrincipalVariation();
+                for (Int32 i = 0; i < pv.Count; i++) {
+                    Pen pen = (i % 2 == 0) ? MovePen : EnemyMovePen;
+                    VisualPosition.DrawLine(g, pen, pv[i]);
+                }
+            }
         }
     }
 }

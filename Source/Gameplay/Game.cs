@@ -210,10 +210,8 @@ namespace AbsoluteZero {
         /// <param name="g">The drawing surface.</param>
         public void Draw(Graphics g) {
             VisualPosition.DrawDarkSquares(g);
-            if (White is Human)
-                (White as Human).Draw(g);
-            if (Black is Human)
-                (Black as Human).Draw(g);
+            White.Draw(g);
+            Black.Draw(g);
             VisualPosition.DrawPieces(g);
 
             if (_state != GameState.Ingame && _state != GameState.Stopped) {

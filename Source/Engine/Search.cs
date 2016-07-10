@@ -89,19 +89,19 @@ namespace AbsoluteZero {
                         alpha = _rootAlpha = value;
                         moves.RemoveAt(i);
                         moves.Insert(0, move);
-                        _pv = CollectPV(position, depth, move);
+                        PrependPV(move, 0);
 
                         // Output principal variation for high depths. This happens on every depth 
                         // increase and every time an improvement is found. 
                         if (Restrictions.Output != OutputType.None && depth > SingleVariationDepth)
-                            Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
+                            Terminal.WriteLine(GetPVString(position, depth, alpha, GetPrincipalVariation()));
                     }
                 }
 
                 // Output principal variation for low depths. This happens once for every 
                 // depth since improvements are very frequent. 
                 if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
-                    Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
+                    Terminal.WriteLine(GetPVString(position, depth, alpha, GetPrincipalVariation()));
 
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 
@@ -417,19 +417,15 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Collects and returns the principal variation for the last completed 
-        /// search at the given depth. 
+        /// Prepends the given move to the principal variation at the given ply.
         /// </summary>
-        /// <param name="position">The position the principal variation is to be played on.</param>
-        /// <param name="depth">The depth of the search to collect the principal variation for.</param>
-        /// <param name="firstMove">The first move of the principal variation.</param>
-        /// <returns>The principal variation for the last completed search.</returns>
-        private List<Int32> CollectPV(Position position, Int32 depth, Int32 firstMove) {
-            List<Int32> variation = new List<Int32>(depth);
-            variation.Add(firstMove);
-            for (Int32 i = 0; i < _pvLength[1]; i++)
-                variation.Add(_pvMoves[1][i]);
-            return variation;
+        /// <param name="move">The move to prepend to the principal variation.</param>
+        /// <param name="ply">The ply the move was made at.</param>
+        private void PrependPV(Int32 move, Int32 ply) {
+            _pvMoves[ply][0] = move;
+            for (Int32 j = 0; j < _pvLength[ply + 1]; j++)
+                _pvMoves[ply][j + 1] = _pvMoves[ply + 1][j];
+            _pvLength[ply] = _pvLength[ply + 1] + 1;
         }
 
         /// <summary>

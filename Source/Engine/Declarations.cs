@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Reflection;
 
 namespace AbsoluteZero {
@@ -14,7 +15,15 @@ namespace AbsoluteZero {
         // Miscellaneous constants. 
         public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
-        // Formatting constants. 
+        // Drawing and formatting constants. 
+        private static readonly Pen MovePen = new Pen(Color.FromArgb(70, 10, 200, 80), 4) {
+            StartCap = LineCap.NoAnchor,
+            EndCap = LineCap.ArrowAnchor,
+        };
+        private static readonly Pen EnemyMovePen = new Pen(Color.FromArgb(70, 255, 10, 10), 4) {
+            StartCap = LineCap.NoAnchor,
+            EndCap = LineCap.ArrowAnchor,
+        };
         private static readonly String PVFormat = "{0,-" + DepthWidth + "}{1,-" + ValueWidth + "}{2}";
         private const Int32 SingleVariationDepth = 5;
         private const Int32 DepthWidth = 8;
@@ -99,9 +108,8 @@ namespace AbsoluteZero {
         private Int32[] _pvLength = new Int32[PlyLimit];
         private Int32[][] _killerMoves = new Int32[PlyLimit][];
         private Single[] _moveValues = new Single[MovesLimit];
-        private List<Int32> _pv = new List<Int32>();
         private Stopwatch _stopwatch = new Stopwatch();
-        private Boolean _abortSearch;
+        private Boolean _abortSearch = true;
         private Double _timeLimit;
         private Double _timeExtension;
         private Double _timeExtensionLimit;
