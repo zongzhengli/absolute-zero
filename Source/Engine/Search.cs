@@ -207,13 +207,16 @@ namespace AbsoluteZero {
                 depth++;
 
             // Perform killer move ordering. 
+            _killerMoveChecks++;
+            bool killerMoveFound = false;
             for (Int32 slot = 0; slot < KillerMovesAllocation; slot++) {
-                _killerMoveChecks++;
                 Int32 killerMove = _killerMoves[ply][slot];
                 for (Int32 i = 0; i < movesCount; i++) {
                     if (moves[i] == killerMove) {
                         _moveValues[i] = KillerMoveValue + slot * KillerMoveSlotValue;
-                        _killerMoveMatches++;
+                        if (!killerMoveFound)
+                            _killerMoveMatches++;
+                        killerMoveFound = true;
                         break;
                     }
                 }

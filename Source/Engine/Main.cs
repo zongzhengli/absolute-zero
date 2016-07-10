@@ -111,10 +111,10 @@ namespace AbsoluteZero {
                     String.Format("Nodes visited      {0}", _totalNodes),
                     String.Format("Moves processed    {0}", _movesSearched),
                     String.Format("Quiescence nodes   {0:0.00 %}", (Double)_quiescenceNodes / _totalNodes),
-                    String.Format("Futility moves     {0:0.00 %}", (Double)_futileMoves / _movesSearched),
+                    String.Format("Futility skips     {0:0.00 %}", (Double)_futileMoves / _movesSearched),
                     String.Format("Hash cutoffs       {0:0.00 %}", (Double)_hashCutoffs / _hashProbes),
-                    String.Format("Hash move rate     {0:0.00 %}", (Double)_hashMoveMatches / _hashMoveChecks),
-                    String.Format("Killer moves rate  {0:0.00 %}", (Double)_killerMoveMatches / _killerMoveChecks),
+                    String.Format("Hash move found    {0:0.00 %}", (Double)_hashMoveMatches / _hashMoveChecks),
+                    String.Format("Killer move found  {0:0.00 %}", (Double)_killerMoveMatches / _killerMoveChecks),
                     String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position) / 100.0)));
                 Terminal.WriteLine();
             }
