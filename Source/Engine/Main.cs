@@ -98,14 +98,14 @@ namespace AbsoluteZero {
                 Terminal.WriteLine(position.ToString(
                     String.Format("Absolute Zero {0} ({1}-bit)", Version, IntPtr.Size * 8),
                     String.Format("Search time        {0:0} ms", elapsed),
-                    String.Format("Search speed       {0:0} kN/s", _totalNodes / elapsed),
+                    String.Format("Search speed       {0:0} kN/s", _totalNodes / Math.Max(elapsed, 1.0)),
                     String.Format("Nodes visited      {0}", _totalNodes),
                     String.Format("Moves processed    {0}", _movesSearched),
-                    String.Format("Quiescence nodes   {0:0.00 %}", (Double)_quiescenceNodes / _totalNodes),
-                    String.Format("Futility skips     {0:0.00 %}", (Double)_futileMoves / _movesSearched),
-                    String.Format("Hash cutoffs       {0:0.00 %}", (Double)_hashCutoffs / _hashProbes),
-                    String.Format("Hash move found    {0:0.00 %}", (Double)_hashMoveMatches / _hashMoveChecks),
-                    String.Format("Killer move found  {0:0.00 %}", (Double)_killerMoveMatches / _killerMoveChecks),
+                    String.Format("Quiescence nodes   {0:0.00 %}", (Double)_quiescenceNodes / Math.Max(_totalNodes, 1)),
+                    String.Format("Futility skips     {0:0.00 %}", (Double)_futileMoves / Math.Max(_movesSearched, 1)),
+                    String.Format("Hash cutoffs       {0:0.00 %}", (Double)_hashCutoffs / Math.Max(_hashProbes, 1)),
+                    String.Format("Hash move found    {0:0.00 %}", (Double)_hashMoveMatches / Math.Max(_hashMoveChecks, 1)),
+                    String.Format("Killer move found  {0:0.00 %}", (Double)_killerMoveMatches / Math.Max(_killerMoveMatches, 1)),
                     String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position) / 100.0)));
                 Terminal.WriteLine();
             }

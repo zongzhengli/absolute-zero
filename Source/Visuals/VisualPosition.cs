@@ -200,7 +200,7 @@ namespace AbsoluteZero {
         /// <param name="g">The graphics surface to draw on.</param>
         /// <param name="brush">The brush for drawing the square.</param>
         /// <param name="square">The square to draw.</param>
-        public static void DrawSquare(Graphics g, SolidBrush brush, Int32 square) {
+        public static void DrawSquare(Graphics g, Brush brush, Int32 square) {
             Int32 x = RotateIfNeeded(Position.File(square)) * SquareWidth;
             Int32 y = RotateIfNeeded(Position.Rank(square)) * SquareWidth;
             g.FillRectangle(brush, x, y, SquareWidth, SquareWidth);
