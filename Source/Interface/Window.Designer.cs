@@ -44,6 +44,7 @@
             this.displayMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.rotateBoardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.arrowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -59,7 +60,8 @@
             this.aboutMenu});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(384, 24);
+            this.menuStrip.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
+            this.menuStrip.Size = new System.Drawing.Size(512, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -79,33 +81,33 @@
             // savePGNMenuItem
             // 
             this.savePGNMenuItem.Name = "savePGNMenuItem";
-            this.savePGNMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.savePGNMenuItem.Size = new System.Drawing.Size(139, 22);
             this.savePGNMenuItem.Text = "Save PGN";
             this.savePGNMenuItem.Click += new System.EventHandler(this.SavePGNClick);
             // 
             // saveOuputMenuItem
             // 
             this.saveOuputMenuItem.Name = "saveOuputMenuItem";
-            this.saveOuputMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveOuputMenuItem.Size = new System.Drawing.Size(139, 22);
             this.saveOuputMenuItem.Text = "Save Output";
             this.saveOuputMenuItem.Click += new System.EventHandler(this.SaveOutputClick);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(136, 6);
             // 
             // enterFENMenuItem
             // 
             this.enterFENMenuItem.Name = "enterFENMenuItem";
-            this.enterFENMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.enterFENMenuItem.Size = new System.Drawing.Size(139, 22);
             this.enterFENMenuItem.Text = "Enter FEN";
             this.enterFENMenuItem.Click += new System.EventHandler(this.EnterFENClick);
             // 
             // copyFENMenuItem
             // 
             this.copyFENMenuItem.Name = "copyFENMenuItem";
-            this.copyFENMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyFENMenuItem.Size = new System.Drawing.Size(139, 22);
             this.copyFENMenuItem.Text = "Copy FEN";
             this.copyFENMenuItem.Click += new System.EventHandler(this.CopyFENClick);
             // 
@@ -124,26 +126,26 @@
             // offerDrawMenuItem
             // 
             this.offerDrawMenuItem.Name = "offerDrawMenuItem";
-            this.offerDrawMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.offerDrawMenuItem.Size = new System.Drawing.Size(136, 22);
             this.offerDrawMenuItem.Text = "Offer Draw";
             this.offerDrawMenuItem.Click += new System.EventHandler(this.OfferDrawClick);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(133, 6);
             // 
             // restartMenuItem
             // 
             this.restartMenuItem.Name = "restartMenuItem";
-            this.restartMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.restartMenuItem.Size = new System.Drawing.Size(136, 22);
             this.restartMenuItem.Text = "Restart";
             this.restartMenuItem.Click += new System.EventHandler(this.RestartClick);
             // 
             // undoMoveMenuItem
             // 
             this.undoMoveMenuItem.Name = "undoMoveMenuItem";
-            this.undoMoveMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.undoMoveMenuItem.Size = new System.Drawing.Size(136, 22);
             this.undoMoveMenuItem.Text = "Undo Move";
             this.undoMoveMenuItem.Click += new System.EventHandler(this.UndoMoveClick);
             // 
@@ -164,34 +166,34 @@
             this.depthMenuItem,
             this.nodesMenuItem});
             this.searchMenuItem.Name = "searchMenuItem";
-            this.searchMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.searchMenuItem.Size = new System.Drawing.Size(124, 22);
             this.searchMenuItem.Text = "Search";
             // 
             // timeMenuItem
             // 
             this.timeMenuItem.Name = "timeMenuItem";
-            this.timeMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.timeMenuItem.Size = new System.Drawing.Size(108, 22);
             this.timeMenuItem.Text = "Time";
             this.timeMenuItem.Click += new System.EventHandler(this.SearchTimeClick);
             // 
             // depthMenuItem
             // 
             this.depthMenuItem.Name = "depthMenuItem";
-            this.depthMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.depthMenuItem.Size = new System.Drawing.Size(108, 22);
             this.depthMenuItem.Text = "Depth";
             this.depthMenuItem.Click += new System.EventHandler(this.SearchDepthClick);
             // 
             // nodesMenuItem
             // 
             this.nodesMenuItem.Name = "nodesMenuItem";
-            this.nodesMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.nodesMenuItem.Size = new System.Drawing.Size(108, 22);
             this.nodesMenuItem.Text = "Nodes";
             this.nodesMenuItem.Click += new System.EventHandler(this.SearchNodesClick);
             // 
             // hashSizeMenuItem
             // 
             this.hashSizeMenuItem.Name = "hashSizeMenuItem";
-            this.hashSizeMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.hashSizeMenuItem.Size = new System.Drawing.Size(124, 22);
             this.hashSizeMenuItem.Text = "Hash Size";
             this.hashSizeMenuItem.Click += new System.EventHandler(this.HashSizeClick);
             // 
@@ -199,7 +201,8 @@
             // 
             this.displayMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rotateBoardMenuItem,
-            this.animationsMenuItem});
+            this.animationsMenuItem,
+            this.arrowsMenuItem});
             this.displayMenu.ForeColor = System.Drawing.SystemColors.ControlDark;
             this.displayMenu.Name = "displayMenu";
             this.displayMenu.Size = new System.Drawing.Size(57, 20);
@@ -219,6 +222,13 @@
             this.animationsMenuItem.Text = "Animations";
             this.animationsMenuItem.Click += new System.EventHandler(this.AnimationsClick);
             // 
+            // arrowsMenuItem
+            // 
+            this.arrowsMenuItem.Name = "arrowsMenuItem";
+            this.arrowsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.arrowsMenuItem.Text = "Arrows";
+            this.arrowsMenuItem.Click += new System.EventHandler(this.ArrowsClick);
+            // 
             // aboutMenu
             // 
             this.aboutMenu.ForeColor = System.Drawing.SystemColors.ControlDark;
@@ -229,13 +239,14 @@
             // 
             // Window
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 386);
+            this.ClientSize = new System.Drawing.Size(512, 475);
             this.Controls.Add(this.menuStrip);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "Window";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -271,5 +282,6 @@
         private System.Windows.Forms.ToolStripMenuItem depthMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nodesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hashSizeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem arrowsMenuItem;
     }
 }

@@ -16,14 +16,8 @@ namespace AbsoluteZero {
         public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
         // Drawing and formatting constants. 
-        private static readonly Pen MovePen = new Pen(Color.FromArgb(70, 10, 200, 80), 4) {
-            StartCap = LineCap.NoAnchor,
-            EndCap = LineCap.ArrowAnchor,
-        };
-        private static readonly Pen EnemyMovePen = new Pen(Color.FromArgb(70, 255, 10, 10), 4) {
-            StartCap = LineCap.NoAnchor,
-            EndCap = LineCap.ArrowAnchor,
-        };
+        private static readonly Pen MovePen = new Pen(Color.FromArgb(70, 10, 200, 80), 4);
+        private static readonly Pen EnemyMovePen = new Pen(Color.FromArgb(70, 255, 10, 10), 4);
         private static readonly String PVFormat = "{0,-" + DepthWidth + "}{1,-" + ValueWidth + "}{2}";
         private const Int32 SingleVariationDepth = 5;
         private const Int32 DepthWidth = 8;

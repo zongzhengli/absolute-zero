@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Threading;
 
 namespace AbsoluteZero {
@@ -71,6 +72,11 @@ namespace AbsoluteZero {
         /// Whether the chessboard is rotated when drawn. 
         /// </summary>
         public static Boolean Rotated = false;
+
+        /// <summary>
+        /// Whether to draw lines.
+        /// </summary>
+        public static Boolean DrawLines = true;
 
         /// <summary>
         /// The collection of visual pieces for drawing. 
@@ -183,12 +189,14 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Draws a line for the given move with the given pen. 
+        /// Draws an arrow for the given move with the given pen. 
         /// </summary>
         /// <param name="g">The graphics surface to draw on.</param>
         /// <param name="pen">The pen for drawing the line.</param>
         /// <param name="move">The move to draw a line for.</param>
-        public static void DrawLine(Graphics g, Pen pen, Int32 move) {
+        public static void DrawArrow(Graphics g, Pen pen, Int32 move) {
+            if (!DrawLines)
+                return;
             Int32 from = Move.From(move);
             Int32 to = Move.To(move);
             Point initial = new Point(
@@ -197,6 +205,8 @@ namespace AbsoluteZero {
             Point final = new Point(
                 RotateIfNeeded(Position.File(to)) * SquareWidth + SquareWidth / 2, 
                 RotateIfNeeded(Position.Rank(to)) * SquareWidth + SquareWidth / 2);
+            pen.StartCap = LineCap.NoAnchor;
+            pen.EndCap = LineCap.ArrowAnchor;
             g.DrawLine(pen, initial, final);
         }
 

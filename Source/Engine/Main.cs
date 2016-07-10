@@ -151,7 +151,7 @@ namespace AbsoluteZero {
                 List<Int32> pv = GetPrincipalVariation();
                 for (Int32 i = 0; i < pv.Count; i++) {
                     Pen pen = (i % 2 == 0) ? MovePen : EnemyMovePen;
-                    VisualPosition.DrawLine(g, pen, pv[i]);
+                    VisualPosition.DrawArrow(g, pen, pv[i]);
                 }
             }
         }
