@@ -26,7 +26,7 @@ namespace AbsoluteZero {
         /// The material difference at which an unresolved match is given to the side 
         /// with more material. 
         /// </summary>
-        public static Int32 MaterialLimit = Zero.PieceValue[Piece.Bishop] + 1;
+        public static Int32 MaterialLimit = Zero.PieceValue[Piece.Bishop] + Zero.PieceValue[Piece.Pawn];
 
         /// <summary>
         /// Facilitates play between the two engines for the given position with the 
@@ -58,20 +58,21 @@ namespace AbsoluteZero {
 
             // Play the match. 
             while (true) {
-                IPlayer player = position.SideToMove == Colour.White ? white : black;
+                IPlayer player = (position.SideToMove == Colour.White) ? white : black;
                 position.Make(player.GetMove(position));
 
-                if (position.LegalMoves().Count == 0)
+                if (position.LegalMoves().Count == 0) {
                     if (position.InCheck(position.SideToMove))
                         return player.Equals(white) ? MatchResult.Win : MatchResult.Loss;
                     else
                         return MatchResult.Draw;
+                }
 
                 if (position.FiftyMovesClock >= 100 || position.InsufficientMaterial() || position.HasRepeated(3))
                     return MatchResult.Draw;
 
                 if (position.HalfMoves >= halfMovesLimit) {
-                    int materialDifference = position.Material[Colour.White] + position.Material[Colour.Black];
+                    int materialDifference = position.Material[Colour.White] - position.Material[Colour.Black];
                     if (Math.Abs(materialDifference) >= MaterialLimit)
                         return materialDifference > 0 ? MatchResult.Win : MatchResult.Loss;
                     return MatchResult.Unresolved;
