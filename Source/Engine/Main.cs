@@ -148,10 +148,11 @@ namespace AbsoluteZero {
         /// <param name="g">The drawing surface.</param>
         public void Draw(Graphics g) {
             if (!_abortSearch) {
-                List<Int32> pv = GetPrincipalVariation();
+                List<Int32> pv = _pv;
                 for (Int32 i = 0; i < pv.Count; i++) {
-                    Pen pen = (i % 2 == 0) ? MovePen : EnemyMovePen;
-                    VisualPosition.DrawArrow(g, pen, pv[i]);
+                    Pen pen = (i % 2 == 0) ? ArrowPen : EnemyArrowPen;
+                    Brush brush = (i % 2 == 0) ? LabelBrush : EnemyLabelBrush;
+                    VisualPosition.DrawArrow(g, pen, pv[i], brush, (i + 1).ToString());
                 }
             }
         }

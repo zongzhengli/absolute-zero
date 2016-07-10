@@ -90,18 +90,19 @@ namespace AbsoluteZero {
                         moves.RemoveAt(i);
                         moves.Insert(0, move);
                         PrependPV(move, 0);
+                        _pv = GetPrincipalVariation();
 
                         // Output principal variation for high depths. This happens on every depth 
                         // increase and every time an improvement is found. 
                         if (Restrictions.Output != OutputType.None && depth > SingleVariationDepth)
-                            Terminal.WriteLine(GetPVString(position, depth, alpha, GetPrincipalVariation()));
+                            Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                     }
                 }
 
                 // Output principal variation for low depths. This happens once for every 
                 // depth since improvements are very frequent. 
                 if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
-                    Terminal.WriteLine(GetPVString(position, depth, alpha, GetPrincipalVariation()));
+                    Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
 
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 

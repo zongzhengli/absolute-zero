@@ -34,6 +34,19 @@ namespace AbsoluteZero {
         private static readonly SolidBrush DarkBrush = new SolidBrush(DarkColor);
 
         /// <summary>
+        /// The font for drawing arrow labels.
+        /// </summary>
+        private static readonly Font LabelFont = new Font("Verdana", 8, FontStyle.Bold);
+
+        /// <summary>
+        /// The format to use for drawing arrow labels.
+        /// </summary>
+        private static readonly StringFormat LabelFormat = new StringFormat() {
+            LineAlignment = StringAlignment.Center,
+            Alignment = StringAlignment.Center
+        };
+
+        /// <summary>
         /// The collection of rectangles representing the dark squares. 
         /// </summary>
         private static readonly Rectangle[] DarkSquares = new Rectangle[32];
@@ -64,6 +77,11 @@ namespace AbsoluteZero {
         public const Int32 Width = 8 * SquareWidth;
 
         /// <summary>
+        /// The amount to pull labels orthogonally to the arrow.
+        /// </summary>
+        private const Int32 LabelPullMagnitude = 10;
+
+        /// <summary>
         /// Whether piece movements are animated. 
         /// </summary>
         public static Boolean Animations = true;
@@ -76,7 +94,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Whether to draw lines.
         /// </summary>
-        public static Boolean DrawLines = true;
+        public static Boolean DrawArrows = true;
 
         /// <summary>
         /// The collection of visual pieces for drawing. 
@@ -187,16 +205,20 @@ namespace AbsoluteZero {
             Int32 y = RotateIfNeeded(Position.Rank(square)) * SquareWidth;
             g.FillRectangle(brush, x, y, SquareWidth, SquareWidth);
         }
-
+        
         /// <summary>
-        /// Draws an arrow for the given move with the given pen. 
+        /// Draws an arrow for the given move with the given pen. Optionally draws 
+        /// a label if given. 
         /// </summary>
         /// <param name="g">The graphics surface to draw on.</param>
-        /// <param name="pen">The pen for drawing the line.</param>
-        /// <param name="move">The move to draw a line for.</param>
-        public static void DrawArrow(Graphics g, Pen pen, Int32 move) {
-            if (!DrawLines)
+        /// <param name="pen">The pen for drawing the arrow.</param>
+        /// <param name="move">The move to draw an arrow for.</param>
+        /// <param name="labelBrush">The brush for drawing the label.</param>
+        /// <param name="label">The label to draw at the move's from square.</param>
+        public static void DrawArrow(Graphics g, Pen pen, Int32 move, Brush labelBrush = null, String label = "") {
+            if (!DrawArrows)
                 return;
+
             Int32 from = Move.From(move);
             Int32 to = Move.To(move);
             Point initial = new Point(
@@ -205,9 +227,20 @@ namespace AbsoluteZero {
             Point final = new Point(
                 RotateIfNeeded(Position.File(to)) * SquareWidth + SquareWidth / 2, 
                 RotateIfNeeded(Position.Rank(to)) * SquareWidth + SquareWidth / 2);
+
             pen.StartCap = LineCap.NoAnchor;
             pen.EndCap = LineCap.ArrowAnchor;
             g.DrawLine(pen, initial, final);
+
+            if (labelBrush != null && !String.IsNullOrEmpty(label)) {
+                Point delta = new Point(final.X - initial.X, final.Y - initial.Y);
+                Single mag = (Single)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+                Single factor = delta.Y > 0 ? LabelPullMagnitude : -LabelPullMagnitude;
+                PointF pull = new PointF(factor * delta.Y / mag, factor * -delta.X / mag);
+                PointF mid = new PointF((initial.X + final.X) / 2 + pull.X, (initial.Y + final.Y) / 2 + pull.Y);
+                g.DrawString(label, LabelFont, labelBrush, mid, LabelFormat);
+
+            }
         }
 
         /// <summary>

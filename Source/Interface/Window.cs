@@ -116,7 +116,6 @@ namespace AbsoluteZero {
             // Update Display menu.
             rotateBoardMenuItem.Checked = VisualPosition.Rotated;
             animationsMenuItem.Checked = VisualPosition.Animations;
-            arrowsMenuItem.Checked = VisualPosition.DrawLines;
 
             if (gameIsNotNull) {
                 Boolean hasHuman = _game.White is Human || _game.Black is Human;
@@ -135,7 +134,9 @@ namespace AbsoluteZero {
 
                 // Update Display menu.
                 arrowsMenuItem.Enabled = hasEngine;
-            }
+                arrowsMenuItem.Checked = VisualPosition.DrawArrows && hasEngine;
+            } else
+                arrowsMenuItem.Checked = VisualPosition.DrawArrows;
         }
 
         /// <summary>
@@ -322,7 +323,7 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The raised event.</param>
         private void ArrowsClick(Object sender, EventArgs e) {
-            VisualPosition.DrawLines ^= true;
+            VisualPosition.DrawArrows ^= true;
             UpdateMenu();
         }
 
