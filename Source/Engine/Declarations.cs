@@ -122,7 +122,6 @@ namespace AbsoluteZero {
         // Evaluation variables. 
         private static readonly UInt64[] _minorAttackBitboard = new UInt64[2];
         private static readonly UInt64[] _pawnAttackBitboard = new UInt64[2];
-        private static readonly Int32[] _kingSquare = new Int32[2];
 
         static Zero() {
             
@@ -135,7 +134,7 @@ namespace AbsoluteZero {
             PieceValue[Piece.Knight] = 350;
             PieceValue[Piece.Pawn] = 100;
             for (Int32 piece = Piece.Min; piece <= Piece.Max; piece += 2)
-                PieceValue[Colour.Black | piece] = -PieceValue[piece];
+                PieceValue[Colour.Black | piece] = PieceValue[piece];
             PieceValue[Piece.Empty] = 0;
 
             PhaseCoefficient += PieceValue[Piece.Queen];

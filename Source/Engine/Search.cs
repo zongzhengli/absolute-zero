@@ -258,7 +258,7 @@ namespace AbsoluteZero {
                 Boolean reducible = i + 1 > irreducibleMoves;
 
                 // Perform futility pruning. 
-                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move) & Piece.Mask] <= alpha) {
+                if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move)] <= alpha) {
                     _futileMoves++;
                     continue;
                 }
@@ -464,7 +464,7 @@ namespace AbsoluteZero {
         /// <param name="move">The move to consider.</param>
         /// <returns>A value for the given move that is useful for move ordering.</returns>
         private Single MoveOrderingValue(Int32 move) {
-            Single value = PieceValue[Move.Capture(move) & Piece.Mask] / (Single)PieceValue[Move.Piece(move) & Piece.Mask];
+            Single value = PieceValue[Move.Capture(move)] / (Single)PieceValue[Move.Piece(move)];
             if (Move.IsQueenPromotion(move))
                 value += QueenPromotionMoveValue;
             return value;
@@ -500,7 +500,7 @@ namespace AbsoluteZero {
         /// <param name="values">The array of values to sort.</param>
         /// <param name="count">The number of elements to sort.</param>
         private static void Sort(Int32[] moves, Single[] values, Int32 count) {
-            for (Int32 i = 1; i < count; i++)
+            for (Int32 i = 1; i < count; i++) {
                 for (Int32 j = i; j > 0 && values[j] > values[j - 1]; j--) {
                     Single tempValue = values[j - 1];
                     values[j - 1] = values[j];
@@ -509,6 +509,7 @@ namespace AbsoluteZero {
                     moves[j - 1] = moves[j];
                     moves[j] = tempMove;
                 }
+            }
         }
     }
 }
