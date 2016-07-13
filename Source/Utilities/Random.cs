@@ -62,7 +62,7 @@ namespace AbsoluteZero {
         /// <param name="b">A bound for the random integer.</param>
         /// <returns>A random integer in the range [a, b] or [0, a] if b is not specified.</returns>
         public static Int32 Int32(Int32 a, Int32 b = 0) {
-            Double correction = .5 * Math.Sign((Double)a - b);
+            Double correction = 0.5 * Math.Sign((Double)a - b);
             return (Int32)Math.Round(Double(a + correction, b - correction));
         }
 

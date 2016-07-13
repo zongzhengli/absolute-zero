@@ -10,19 +10,14 @@ namespace AbsoluteZero {
     static class Tournament {
 
         /// <summary>
-        /// The string that determines output formatting. 
+        /// Specifies header and result formatting. 
         /// </summary>
-        private static readonly String ResultFormat = String.Format("     {{0,-{0}}}{{1,-{0}}}{{2,-{0}}}{{3,-{0}}}{{4,-{0}}}{{5}}", ColumnWidth);
+        private static readonly String ResultFormat = "     {0,-8}{1,-8}{2,-8}{3,-8}{4, -8}{5}";
 
         /// <summary>
         /// The number of matches between file updates. 
         /// </summary>
         private const Int32 UpdateInterval = 10;
-
-        /// <summary>
-        /// The number of characters in a column for output. 
-        /// </summary>
-        private const Int32 ColumnWidth = 8;
 
         /// <summary>
         /// The unique ID code for the tournament.  
@@ -45,8 +40,8 @@ namespace AbsoluteZero {
             Int32 draws = 0;
 
             using (StreamWriter sw = new StreamWriter(ID + ".txt")) {
-                sw.WriteLine(new String(' ', UpdateInterval) + String.Format(ResultFormat, "Games", "Wins", "Losses", "Draws", "Elo", "Error"));
-                sw.WriteLine("-----------------------------------------------------------------");
+                sw.WriteLine(new String(' ', UpdateInterval) + String.Format(ResultFormat, "Games", "Wins", "Losses", "Draws", "Elo", "95%"));
+                sw.WriteLine("--------------------------------------------------------------------");
 
                 // Play the tournament. 
                 for (Int32 games = 1; ; games++) {
@@ -78,10 +73,16 @@ namespace AbsoluteZero {
 
                     // Write the cummulative results. 
                     if (games % UpdateInterval == 0) {
-                        String elo = Elo.GetDifference(wins, losses, draws).ToString("+0;-0");
-                        String error = String.Format("±{0:0}", Elo.GetError(wins, losses, draws));
+                        Double delta = Elo.GetDelta(wins, losses, draws);
+                        String elo = String.Format("{0:+0;-0}", delta);
 
-                        sw.WriteLine(String.Format(ResultFormat, games, wins, losses, draws, elo, error));
+                        Double[] bound = Elo.GetBound(Elo.Z95, wins, losses, draws);
+                        Double lower = Math.Max(bound[0], -999);
+                        Double upper = Math.Min(bound[1], 999);
+                        String asterisk = Elo.IsErrorValid(wins, losses, draws) ? String.Empty : "*";
+                        String interval = String.Format("[{0:+0;-0}, {1:+0;-0}]{2}", lower, upper, asterisk);
+
+                        sw.WriteLine(String.Format(ResultFormat, games, wins, losses, draws, elo, interval));
                     }
                 }
             }
