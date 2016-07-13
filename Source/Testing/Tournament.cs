@@ -40,7 +40,7 @@ namespace AbsoluteZero {
             Int32 draws = 0;
 
             using (StreamWriter sw = new StreamWriter(ID + ".txt")) {
-                sw.WriteLine(new String(' ', UpdateInterval) + String.Format(ResultFormat, "Games", "Wins", "Losses", "Draws", "Elo", "95%"));
+                sw.WriteLine(new String(' ', UpdateInterval) + String.Format(ResultFormat, "Games", "Wins", "Losses", "Draws", "Elo", "Error"));
                 sw.WriteLine("--------------------------------------------------------------------");
 
                 // Play the tournament. 
@@ -76,13 +76,13 @@ namespace AbsoluteZero {
                         Double delta = Elo.GetDelta(wins, losses, draws);
                         String elo = String.Format("{0:+0;-0}", delta);
 
-                        Double[] bound = Elo.GetBound(Elo.Z95, wins, losses, draws);
+                        Double[] bound = Elo.GetError(Elo.Z95, wins, losses, draws);
                         Double lower = Math.Max(bound[0], -999);
                         Double upper = Math.Min(bound[1], 999);
                         String asterisk = Elo.IsErrorValid(wins, losses, draws) ? String.Empty : "*";
-                        String interval = String.Format("[{0:+0;-0}, {1:+0;-0}]{2}", lower, upper, asterisk);
+                        String error = String.Format("{0:+0;-0} {1:+0;-0}{2}", lower, upper, asterisk);
 
-                        sw.WriteLine(String.Format(ResultFormat, games, wins, losses, draws, elo, interval));
+                        sw.WriteLine(String.Format(ResultFormat, games, wins, losses, draws, elo, error));
                     }
                 }
             }

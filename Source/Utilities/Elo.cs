@@ -51,28 +51,29 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Returns the Elo difference confidence interval for the given results at 
-        /// the given level of significance. This uses the Wald interval from the 
-        /// normal approximation of the trinomial distribution and behaves poorly for 
-        /// small or extreme samples.
+        /// Returns the Elo difference error margin for the given results at the 
+        /// given level of significance. This uses the Wald interval from the normal 
+        /// approximation of the trinomial distribution and behaves poorly for small 
+        /// or extreme samples.
         /// </summary>
         /// <param name="sigma">The standard score.</param>
         /// <param name="wins">The number of wins for the player.</param>
         /// <param name="losses">The number of losses for the player.</param>
         /// <param name="draws">The number of draws.</param>
         /// <returns>An array where the first element is the lower bound and second element is the upper bound.</returns>
-        public static Double[] GetBound(Double sigma, Int32 wins, Int32 losses, Int32 draws) {
+        public static Double[] GetError(Double sigma, Int32 wins, Int32 losses, Int32 draws) {
             Double n = wins + losses + draws;
             Double p = (wins + 0.5 * draws) / n;
             Double sd = Math.Sqrt((wins * Math.Pow(1 - p, 2) + losses * Math.Pow(0 - p, 2) + draws * Math.Pow(0.5 - p, 2)) / (n - 1));
             Double se = sd / Math.Sqrt(n);
-            Double lower = Math.Max(0, p - sigma * se);
-            Double upper = Math.Min(1, p + sigma * se);
-            return new Double[] { GetDelta(lower), GetDelta(upper) };
+            Double elo = GetDelta(p);
+            Double lower = GetDelta(Math.Max(0, p - sigma * se));
+            Double upper = GetDelta(Math.Min(1, p + sigma * se));
+            return new Double[] { lower - elo, upper - elo };
         }
 
         /// <summary>
-        /// Returns whether the result from GetBound() is likely trustworthy as
+        /// Returns whether the result from GetError() is likely trustworthy as
         /// determined by a rule of thumb.
         /// </summary>
         /// <param name="sigma">The standard score.</param>
