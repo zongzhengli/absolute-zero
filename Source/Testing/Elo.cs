@@ -56,19 +56,15 @@ namespace AbsoluteZero {
         /// approximation of the trinomial distribution and behaves poorly for small 
         /// or extreme samples.
         /// </summary>
-        /// <param name="sigma">The standard score.</param>
         /// <param name="wins">The number of wins for the player.</param>
         /// <param name="losses">The number of losses for the player.</param>
         /// <param name="draws">The number of draws.</param>
-        /// <returns>An array where the first element is the lower bound and second element is the upper bound.</returns>
-        public static Double[] GetError(Double sigma, Int32 wins, Int32 losses, Int32 draws) {
+        /// <returns>An array where the first element is the lower margin and second element is the upper margin.</returns>
             Double n = wins + losses + draws;
             Double p = (wins + 0.5 * draws) / n;
             Double sd = Math.Sqrt((wins * Math.Pow(1 - p, 2) + losses * Math.Pow(0 - p, 2) + draws * Math.Pow(0.5 - p, 2)) / (n - 1));
             Double se = sd / Math.Sqrt(n);
             Double elo = GetDelta(p);
-            Double lower = GetDelta(Math.Max(0, p - sigma * se));
-            Double upper = GetDelta(Math.Min(1, p + sigma * se));
             return new Double[] { lower - elo, upper - elo };
         }
 
