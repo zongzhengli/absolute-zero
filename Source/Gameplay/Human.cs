@@ -116,7 +116,7 @@ namespace AbsoluteZero {
         /// <param name="e">The mouse event.</param>
         public void MouseUpHandler(MouseEventArgs e) {
             if (_isMoving) {
-                Int32 square = Position.SquareAt(e.Location);
+                Int32 square = VisualPosition.SquareAt(e.Location);
                 Int32 piece = _currentPosition.Square[square];
 
                 if (piece != Piece.Empty && (piece & Colour.Mask) == _currentPosition.SideToMove)

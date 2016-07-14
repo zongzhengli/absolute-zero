@@ -11,7 +11,7 @@ namespace AbsoluteZero {
     /// Encapsulates the declarations component of the Absolute Zero chess 
     /// engine. 
     /// </summary>
-    partial class Zero {
+    partial class Zero : IEngine {
 
         // Miscellaneous constants. 
         public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
@@ -32,6 +32,9 @@ namespace AbsoluteZero {
         public const Int32 MovesLimit = 256;
         public const Int32 DefaultHashAllocation = 64;
         public const Int32 NodeResolution = 1000;
+        public const Int32 CheckmateValue = 10000;
+        public const Int32 NearCheckmateValue = CheckmateValue - PlyLimit;
+        public const Int32 Infinity = 30000;
 
         public Int32 AspirationWindow = 17;
         public Int32 NullMoveReduction = 3;
@@ -44,12 +47,7 @@ namespace AbsoluteZero {
         public Single KillerMoveSlotValue = -0.01F;
         public Single QueenPromotionMoveValue = 1F;
         public Int32[] FutilityMargin = { 0, 104, 125, 250, 271, 375 };
-
-        private const Int32 Contempt = 30;
-        private const Int32 DrawValue = -Contempt;
-        private const Int32 CheckmateValue = 10000;
-        private const Int32 NearCheckmateValue = CheckmateValue - PlyLimit;
-        private const Int32 Infinity = 9999999;
+        public Int32 DrawValue = -30;
 
         private const Double TimeControlsExpectedLatency = 50;
         private const Double TimeControlsContinuationThreshold = 0.7;

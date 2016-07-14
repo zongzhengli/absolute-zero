@@ -255,6 +255,19 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Returns the square at the given point. 
+        /// </summary>
+        /// <param name="point">The point to determine the square of.</param>
+        /// <returns>The square at the given point</returns>
+        public static Int32 SquareAt(Point point) {
+            Int32 file = point.X / SquareWidth;
+            Int32 rank = (point.Y - Window.MenuHeight) / SquareWidth;
+            if (Rotated)
+                return 7 - file + (7 - rank) * 8;
+            return file + rank * 8;
+        }
+
+        /// <summary>
         /// Returns the given rank or file, rotating if Rotated is set.
         /// </summary>
         /// <param name="rankOrFile">The rank or file to rotate.</param>

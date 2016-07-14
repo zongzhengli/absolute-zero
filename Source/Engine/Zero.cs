@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 
 namespace AbsoluteZero {
-
+    
     /// <summary>
-    /// Encapsulates the main interface of the Absolute Zero chess engine. 
+    /// Encapsulates the main IEngine interface of the Absolute Zero chess
+    /// engine. 
     /// </summary>
     partial class Zero : IEngine {
 
