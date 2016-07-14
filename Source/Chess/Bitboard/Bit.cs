@@ -193,6 +193,30 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Returns the given bitboard with only the least significant bit set.
+        /// </summary>
+        /// <param name="bitboard">The bitboard to isolate the least significant bit.</param>
+        /// <returns>The given bitboard with only the least significant bit set.</returns>
+        public static UInt64 Isolate(UInt64 bitboard) {
+            return bitboard & (0UL - bitboard);
+        }
+
+        /// <summary>
+        /// Returns the given bitboard with only the most significant bit set.
+        /// </summary>
+        /// <param name="bitboard">The bitboard to isolate the most significant bit.</param>
+        /// <returns>The given bitboard with only the most significant bit set.</returns>
+        public static UInt64 IsolateReverse(UInt64 bitboard) {
+            bitboard |= (bitboard >> 1);
+            bitboard |= (bitboard >> 2);
+            bitboard |= (bitboard >> 4);
+            bitboard |= (bitboard >> 8);
+            bitboard |= (bitboard >> 16);
+            bitboard |= (bitboard >> 32);
+            return bitboard & ~(bitboard >> 1);
+        }
+
+        /// <summary>
         /// Returns the number of set bits in the given bitboard.
         /// </summary>
         /// <param name="bitboard">The bitboard to count.</param>

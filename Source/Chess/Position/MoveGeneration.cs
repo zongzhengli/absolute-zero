@@ -62,16 +62,16 @@ namespace AbsoluteZero {
                 UInt64 defenceRemovedBitboard = OccupiedBitboard;
                 UInt64 defenceBitboard = Bit.RayNE[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.IsolateReverse(defenceBitboard);
                 defenceBitboard = Bit.RayNW[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.IsolateReverse(defenceBitboard);
                 defenceBitboard = Bit.RaySE[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.Isolate(defenceBitboard);
                 defenceBitboard = Bit.RaySW[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.Isolate(defenceBitboard);
 
                 if (defenceRemovedBitboard != OccupiedBitboard)
                     pinningBitboard |= enemyBishopQueenBitboard & Attack.Bishop(kingSquare, defenceRemovedBitboard);
@@ -86,16 +86,16 @@ namespace AbsoluteZero {
                 UInt64 defenceRemovedBitboard = OccupiedBitboard;
                 UInt64 defenceBitboard = Bit.RayN[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.IsolateReverse(defenceBitboard);
                 defenceBitboard = Bit.RayE[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.Isolate(defenceBitboard);
                 defenceBitboard = Bit.RayS[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.Scan(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.Isolate(defenceBitboard);
                 defenceBitboard = Bit.RayW[kingSquare] & selfBitboard;
                 if (defenceBitboard != 0)
-                    defenceRemovedBitboard ^= 1UL << Bit.ScanReverse(defenceBitboard);
+                    defenceRemovedBitboard ^= Bit.IsolateReverse(defenceBitboard);
 
                 if (defenceRemovedBitboard != OccupiedBitboard)
                     pinningBitboard |= enemyRookQueenBitboard & Attack.Rook(kingSquare, defenceRemovedBitboard);
