@@ -31,19 +31,6 @@ namespace AbsoluteZero {
         private static UInt64[][] PawnAttack = { new UInt64[64], new UInt64[64] };
 
         /// <summary>
-        /// The collection of cached queen attack bitboards. _cachedQueenAttack[s] 
-        /// gives the last generated queen attack bitboard for square s. 
-        /// </summary>
-        private static UInt64[] _cachedQueenAttack = new UInt64[64];
-
-        /// <summary>
-        /// The collection of cached queen block bitboards. _cachedQueenBlock[s] 
-        /// gives the bitboard of the squares where a queen's attack from square s 
-        /// was last blocked. 
-        /// </summary>
-        private static UInt64[] _cachedQueenBlock = new UInt64[64];
-
-        /// <summary>
         /// The collection of cached rook attack bitboards. _cachedRookAttack[s] 
         /// gives the last generated rook attack bitboard for square s. 
         /// </summary>
@@ -76,7 +63,6 @@ namespace AbsoluteZero {
             for (Int32 square = 0; square < 64; square++) {
 
                 // Initialize cached block bitboards. 
-                _cachedQueenBlock[square] = UInt64.MaxValue;
                 _cachedRookBlock[square] = UInt64.MaxValue;
                 _cachedBishopBlock[square] = UInt64.MaxValue;
 
@@ -183,7 +169,9 @@ namespace AbsoluteZero {
         /// <param name="occupiedBitboard">The occupancy bitboard.</param>
         /// <returns>The bishop's attack bitboard.</returns>
         public static UInt64 Bishop(Int32 square, UInt64 occupiedBitboard) {
-            if ((_cachedBishopAttack[square] & occupiedBitboard & BorderlessBitboard) != _cachedBishopBlock[square]) {
+            occupiedBitboard &= BorderlessBitboard;
+
+            if ((_cachedBishopAttack[square] & occupiedBitboard) != _cachedBishopBlock[square]) {
                 UInt64 attackBitboard = Bit.RayNE[square];
                 UInt64 blockBitboard = attackBitboard & occupiedBitboard;
                 if (blockBitboard != 0)
@@ -208,7 +196,7 @@ namespace AbsoluteZero {
                 attackBitboard |= partialBitboard;
 
                 _cachedBishopAttack[square] = attackBitboard;
-                _cachedBishopBlock[square] = attackBitboard & occupiedBitboard & BorderlessBitboard;
+                _cachedBishopBlock[square] = attackBitboard & occupiedBitboard;
             }
             return _cachedBishopAttack[square];
         }
