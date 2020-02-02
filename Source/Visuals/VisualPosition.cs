@@ -94,7 +94,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// Whether to draw lines.
         /// </summary>
-        public static Boolean DrawArrows = true;
+        public static Boolean DrawArrows = false;
 
         /// <summary>
         /// The collection of visual pieces for drawing. 
