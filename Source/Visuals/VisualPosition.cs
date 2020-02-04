@@ -248,10 +248,12 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="g">The graphics surface to draw on.</param>
         public static void DrawPieces(Graphics g) {
-            _pieces.ForEach(piece => {
-                if (piece != null)
-                    piece.Draw(g);
-            });
+            lock (PiecesLock) {
+                _pieces.ForEach(piece => {
+                    if (piece != null)
+                        piece.Draw(g);
+                });
+            }
         }
 
         /// <summary>
