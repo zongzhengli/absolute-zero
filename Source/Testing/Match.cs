@@ -72,9 +72,6 @@ namespace AbsoluteZero {
                     return MatchResult.Draw;
 
                 if (position.HalfMoves >= halfMovesLimit) {
-                    int materialDifference = position.Material[Colour.White] - position.Material[Colour.Black];
-                    if (Math.Abs(materialDifference) >= MaterialLimit)
-                        return materialDifference > 0 ? MatchResult.Win : MatchResult.Loss;
                     return MatchResult.Unresolved;
                 }
             }
