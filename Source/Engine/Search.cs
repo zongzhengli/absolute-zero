@@ -354,9 +354,8 @@ namespace AbsoluteZero {
                 _movesSearched++;
                 Int32 move = moves[i];
 
-                // Consider the move only if it doesn't immediately lose material. This 
-                // improves efficiency. 
-                if ((Move.Piece(move) & Piece.Mask) <= (Move.Capture(move) & Piece.Mask) || EvaluateStaticExchange(position, move) >= 0) {
+                // Consider the move only if it doesn't lose material.
+                if (EvaluateStaticExchange(position, move) >= 0) {
 
                     // Make the move. 
                     position.Make(move);
