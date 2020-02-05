@@ -121,7 +121,6 @@ namespace AbsoluteZero {
         /// <param name="position">The position the move is to be played on.</param>
         /// <param name="name">The representation of the move in coordinate notation.</param>
         /// <returns>A move that has the given representation in coordinate notation.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Create(Position position, String name) {
             foreach (Int32 move in position.LegalMoves())
                 if (name == Stringify.Move(move))
@@ -204,6 +203,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>Whether the given mode promotes a pawn.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsPromotion(Int32 move) {
             if ((move & TypePieceShifted) != PawnPieceShifted)
                 return false;

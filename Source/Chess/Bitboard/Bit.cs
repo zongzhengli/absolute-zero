@@ -138,8 +138,8 @@ namespace AbsoluteZero {
         /// <returns>The index of the least significant set bit.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Pop(ref UInt64 bitboard) {
-            UInt64 isolatedBit = bitboard & (0UL - bitboard);
-            bitboard &= bitboard - 1;
+            UInt64 isolatedBit = Isolate(bitboard);
+            bitboard &= bitboard - 1UL;
             return BitIndex[(isolatedBit * 0x07EDD5E59A4E28C2UL) >> 58];
         }
 
@@ -161,7 +161,7 @@ namespace AbsoluteZero {
         /// <returns>The index of the least significant set bit.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Scan(UInt64 bitboard) {
-            return BitIndex[((bitboard & (0UL - bitboard)) * 0x07EDD5E59A4E28C2UL) >> 58];
+            return Read(Isolate(bitboard));
         }
 
         /// <summary>
@@ -171,30 +171,7 @@ namespace AbsoluteZero {
         /// <returns>The index of the most significant set bit.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ScanReverse(UInt64 bitboard) {
-            Int32 result = 0;
-            if (bitboard > 0xFFFFFFFF) {
-                bitboard >>= 32;
-                result = 32;
-            }
-            if (bitboard > 0xFFFF) {
-                bitboard >>= 16;
-                result += 16;
-            }
-            if (bitboard > 0xFF) {
-                bitboard >>= 8;
-                result += 8;
-            }
-            if (bitboard > 0xF) {
-                bitboard >>= 4;
-                result += 4;
-            }
-            if (bitboard > 0x3) {
-                bitboard >>= 2;
-                result += 2;
-            }
-            if (bitboard > 0x1)
-                result++;
-            return result;
+            return Read(IsolateReverse(bitboard));
         }
 
         /// <summary>
@@ -246,7 +223,7 @@ namespace AbsoluteZero {
             Int32 count = 0;
             while (bitboard != 0) {
                 count++;
-                bitboard &= bitboard - 1;
+                bitboard &= bitboard - 1UL;
             }
             return count;
         }

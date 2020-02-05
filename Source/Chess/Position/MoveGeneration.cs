@@ -114,8 +114,8 @@ namespace AbsoluteZero {
             if (EnPassantSquare != InvalidSquare) {
 
                 UInt64 enPassantPawnBitboard = Bitboard[SideToMove | Piece.Pawn] & Attack.Pawn(EnPassantSquare, enemy);
-                UInt64 enPassantVictimBitboard = Move.Pawn(EnPassantSquare, enemy);
                 while (enPassantPawnBitboard != 0) {
+                    UInt64 enPassantVictimBitboard = Move.Pawn(EnPassantSquare, enemy);
 
                     // Perform minimal state changes to mimick en passant and check for 
                     // legality. 
