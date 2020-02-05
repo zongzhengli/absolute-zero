@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace AbsoluteZero {
 
@@ -16,7 +17,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="position">The position to search on.</param>
         /// <returns>The predicted best move.</returns>
-        private Int32 Search(Position position) {
+        private Int32 SearchRoot(Position position) {
 
             // Generate legal moves. Return immediately if there is only one legal move 
             // when playing with time controls. 
@@ -40,11 +41,12 @@ namespace AbsoluteZero {
             // Apply iterative deepening. The search is repeated with incrementally 
             // higher depths until it is terminated. 
             for (Int32 depth = 1; depth <= depthLimit; depth++) {
+                List<Thread> threads = SearchParallel(position, moves, depth);
                 Int32 alpha = -Infinity;
 
                 // Go through the move list. 
                 for (Int32 i = 0; i < moves.Count; i++) {
-                    _movesSearched++;
+                    Interlocked.Increment(ref _movesSearched);
 
                     Int32 value = alpha + 1;
                     Int32 move = moves[i];
@@ -59,10 +61,10 @@ namespace AbsoluteZero {
                         Int32 lower = _rootAlpha - AspirationWindow;
                         Int32 upper = _rootAlpha + AspirationWindow;
 
-                        value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck);
+                        value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck, 0);
                         if (value <= lower || value >= upper) {
                             TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
-                            value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
+                            value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck, 0);
                         }
                     }
 
@@ -70,15 +72,17 @@ namespace AbsoluteZero {
                     // better than the best value so far, a re-search is initiated with a wider 
                     // window.
                     else {
-                        value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
+                        value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck, 0);
                         if (value > alpha)
-                            value = -Search(position, depth - 1, 1, -Infinity, -alpha, causesCheck);
+                            value = -Search(position, depth - 1, 1, -Infinity, -alpha, causesCheck, 0);
                     }
 
                     // Unmake the move and check for search termination. 
                     position.Unmake(move);
-                    if (_abortSearch)
+                    if (_abortSearch) {
+                        threads.ForEach(thread => thread.Join());
                         goto exit;
+                    }
 
                     // Check for new best move. If the current move has the best value so far, 
                     // it is moved to the front of the list. This ensures the best move is 
@@ -99,6 +103,9 @@ namespace AbsoluteZero {
                     }
                 }
 
+                // Wait for worker threads to complete.
+                threads.ForEach(thread => thread.Join());
+
                 // Output principal variation for low depths. This happens once for every 
                 // depth since improvements are very frequent. 
                 if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
@@ -107,12 +114,89 @@ namespace AbsoluteZero {
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 
                 // one more depth is unlikely, the search is terminated. 
-                if (Restrictions.UseTimeControls && _timeExtension <= 0 && _stopwatch.ElapsedMilliseconds / _timeLimit > TimeControlsContinuationThreshold)
+                if (Restrictions.UseTimeControls && _timeExtension <= 0 && _stopwatch.ElapsedMilliseconds / _timeLimit > TimeControlsContinuationThreshold) {
+                    _abortSearch = true;
                     goto exit;
+                }
             }
         exit:
             _finalAlpha = _rootAlpha;
             return moves[0];
+        }
+
+        /// <summary>
+        /// Implementation of lazy SMP. Runs the root search on background worker threads.
+        /// </summary>
+        /// <param name="position">The position to search.</param>
+        /// <param name="moves">The moves available at the given position.</param>
+        /// <param name="depth">The depth to search to.</param>
+        /// <returns>The list of worker threads.</returns>
+        private List<Thread> SearchParallel(Position position, List<Int32> moves, Int32 depth) {
+            List<Thread> threads = new List<Thread>();
+            if (depth > SingleThreadDepth) {
+                for (Int32 i = 1; i < DefaultThreads; i++) {
+                    Position clonedPosition = position.DeepClone();
+                    Int32 threadID = i;
+
+                    Thread thread = new Thread(new ThreadStart(() => {
+                        SearchWorker(clonedPosition, moves, depth, threadID);
+                    })) { IsBackground = true };
+
+                    thread.Start();
+                    threads.Add(thread);
+                }
+            }
+            return threads;
+        }
+
+        /// <summary>
+        /// Runs the root search on a background worker thread.
+        /// </summary>
+        /// <param name="position">The position to search.</param>
+        /// <param name="moves">The moves available at the given position.</param>
+        /// <param name="depth">The depth to search to.</param>
+        /// <param name="threadID">The ID of the worker thread.</param>
+        private void SearchWorker(Position position, List<Int32> moves, Int32 depth, Int32 threadID) {
+            Int32 alpha = -Infinity;
+
+            for (Int32 i = 0; i < moves.Count; i++) {
+                Interlocked.Increment(ref _movesSearched);
+
+                Int32 value = alpha + 1;
+                Int32 move = moves[i];
+                Boolean causesCheck = position.CausesCheck(move);
+                position.Make(move);
+
+                // Apply principal variation search with aspiration windows. The first move 
+                // is searched with a window centered around the best value found from the 
+                // most recent preceding search. If the result does not lie within the 
+                // window, a re-search is initiated with an open window. 
+                if (i == 0) {
+                    Int32 lower = _rootAlpha - AspirationWindow;
+                    Int32 upper = _rootAlpha + AspirationWindow;
+
+                    value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck, threadID);
+                    if (value <= lower || value >= upper) {
+                        value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck, threadID);
+                    }
+                }
+
+                // Subsequent moves are searched with a zero window search. If the result is 
+                // better than the best value so far, a re-search is initiated with a wider 
+                // window.
+                else {
+                    value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck, threadID);
+                    if (value > alpha)
+                        value = -Search(position, depth - 1, 1, -Infinity, -alpha, causesCheck, threadID);
+                }
+
+                // Unmake the move and check for search termination. 
+                position.Unmake(move);
+                if (_abortSearch)
+                    return;
+                if (value > alpha)
+                    alpha = value;
+            }
         }
 
         /// <summary>
@@ -125,18 +209,23 @@ namespace AbsoluteZero {
         /// <param name="alpha">The lower bound on the value of the best move.</param>
         /// <param name="beta">The upper bound on the value of the best move.</param>
         /// <param name="inCheck">Whether the side to play is in check.</param>
+        /// <param name="threadID">The ID of the thread.</param>
         /// <param name="allowNull">Whether a null move is permitted.</param>
         /// <returns>The value of the termination position given optimal play.</returns>
-        private Int32 Search(Position position, Int32 depth, Int32 ply, Int32 alpha, Int32 beta, Boolean inCheck, Boolean allowNull = true) {
+        private Int32 Search(Position position, Int32 depth, Int32 ply, Int32 alpha, Int32 beta, Boolean inCheck, Int32 threadID, Boolean allowNull = true) {
 
             // Check whether to enter quiescence search and initialize pv length. 
-            _pvLength[ply] = 0;
+            Boolean isMainThread = threadID == 0;
+            if (isMainThread) {
+                _pvLength[ply] = 0;
+            }
             if (depth <= 0 && !inCheck)
-                return Quiescence(position, ply, alpha, beta);
+                return Quiescence(position, ply, alpha, beta, threadID);
 
             // Check for time extension and search termination. This is done once for 
             // every given number of nodes for efficency. 
-            if (++_totalNodes > _referenceNodes) {
+            Interlocked.Increment(ref _totalNodes);
+            if (isMainThread && _totalNodes > _referenceNodes) {
                 _referenceNodes += NodeResolution;
 
                 // Apply loss time extension. The value of the best move for the current 
@@ -167,7 +256,7 @@ namespace AbsoluteZero {
                 return mateAlpha;
 
             // Perform hash probe. 
-            _hashProbes++;
+            Interlocked.Increment(ref _hashProbes);
             Int32 hashMove = Move.Invalid;
             HashEntry hashEntry;
 
@@ -177,7 +266,7 @@ namespace AbsoluteZero {
                     Int32 hashType = hashEntry.Type;
                     Int32 hashValue = hashEntry.GetValue(ply);
                     if ((hashType == HashEntry.Beta && hashValue >= beta) || (hashType == HashEntry.Alpha && hashValue <= alpha)) {
-                        _hashCutoffs++;
+                        Interlocked.Increment(ref _hashCutoffs);
                         return hashValue;
                     }
                 }
@@ -189,34 +278,35 @@ namespace AbsoluteZero {
             if (allowNull && !inCheck && position.Bitboard[colour] != (position.Bitboard[colour | Piece.King] | position.Bitboard[colour | Piece.Pawn])) {
                 position.MakeNull();
                 Int32 reduction = NullMoveReduction + (depth >= NullMoveAggressiveDepth ? depth / NullMoveAggressiveDivisor : 0);
-                Int32 value = -Search(position, depth - 1 - reduction, ply + 1, -beta, -beta + 1, false, false);
+                Int32 value = -Search(position, depth - 1 - reduction, ply + 1, -beta, -beta + 1, false, threadID, false);
                 position.UnmakeNull();
                 if (value >= beta)
                     return value;
             }
 
             // Generate legal moves and perform basic move ordering. 
-            Int32[] moves = _generatedMoves[ply];
+            Int32[] moves = _generatedMoves[threadID][ply];
+            Single[] moveValues = _moveValues[threadID];
             Int32 movesCount = position.LegalMoves(moves);
             if (movesCount == 0)
                 return inCheck ? -(CheckmateValue - ply) : drawValue;
             for (Int32 i = 0; i < movesCount; i++)
-                _moveValues[i] = MoveOrderingValue(moves[i]);
+                moveValues[i] = MoveOrderingValue(moves[i]);
 
             // Apply single reply and check extensions. 
             if (movesCount == 1 || inCheck) 
                 depth++;
 
             // Perform killer move ordering. 
-            _killerMoveChecks++;
+            Interlocked.Increment(ref _killerMoveChecks);
             bool killerMoveFound = false;
             for (Int32 slot = 0; slot < KillerMovesAllocation; slot++) {
-                Int32 killerMove = _killerMoves[ply][slot];
+                Int32 killerMove = _killerMoves[threadID][ply][slot];
                 for (Int32 i = 0; i < movesCount; i++) {
                     if (moves[i] == killerMove) {
-                        _moveValues[i] = KillerMoveValue + slot * KillerMoveSlotValue;
+                        moveValues[i] = KillerMoveValue + slot * KillerMoveSlotValue;
                         if (!killerMoveFound)
-                            _killerMoveMatches++;
+                            Interlocked.Increment(ref _killerMoveMatches);
                         killerMoveFound = true;
                         break;
                     }
@@ -224,12 +314,12 @@ namespace AbsoluteZero {
             }
 
             // Perform hash move ordering. 
-            _hashMoveChecks++;
+            Interlocked.Increment(ref _hashMoveChecks);
             if (hashMove != Move.Invalid) {
                 for (Int32 i = 0; i < movesCount; i++) {
                     if (moves[i] == hashMove) {
-                        _moveValues[i] = HashMoveValue;
-                        _hashMoveMatches++;
+                        moveValues[i] = HashMoveValue;
+                        Interlocked.Increment(ref _hashMoveMatches);
                         break;
                     }
                 }
@@ -239,19 +329,19 @@ namespace AbsoluteZero {
             Boolean futileNode = false;
             Int32 futilityValue = 0;
             if (depth < FutilityMargin.Length && !inCheck) {
-                futilityValue = Evaluate(position) + FutilityMargin[depth];
+                futilityValue = Evaluate(position, threadID) + FutilityMargin[depth];
                 futileNode = futilityValue <= alpha;
             }
 
             // Sort the moves based on their ordering values and initialize variables. 
-            Int32 irreducibleMoves = Sort(moves, _moveValues, movesCount);
+            Int32 irreducibleMoves = Sort(moves, moveValues, movesCount);
             UInt64 preventionBitboard = PassedPawnPreventionBitboard(position);
             Int32 bestType = HashEntry.Alpha;
             Int32 bestMove = moves[0];
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
-                _movesSearched++;
+                Interlocked.Increment(ref _movesSearched);
 
                 Int32 move = moves[i];
                 Boolean causesCheck = position.CausesCheck(move);
@@ -260,7 +350,7 @@ namespace AbsoluteZero {
 
                 // Perform futility pruning. 
                 if (futileNode && !dangerous && futilityValue + PieceValue[Move.Capture(move)] <= alpha) {
-                    _futileMoves++;
+                    Interlocked.Increment(ref _futileMoves);
                     continue;
                 }
 
@@ -270,15 +360,15 @@ namespace AbsoluteZero {
 
                 // Perform late move reductions. 
                 if (reducible && !dangerous)
-                    value = -Search(position, depth - 1 - LateMoveReduction, ply + 1, -alpha - 1, -alpha, causesCheck);
+                    value = -Search(position, depth - 1 - LateMoveReduction, ply + 1, -alpha - 1, -alpha, causesCheck, threadID);
 
                 // Perform principal variation search.
                 else if (i > 0)
-                    value = -Search(position, depth - 1, ply + 1, -alpha - 1, -alpha, causesCheck);
+                    value = -Search(position, depth - 1, ply + 1, -alpha - 1, -alpha, causesCheck, threadID);
 
                 // Perform a full search.
                 if (value > alpha) 
-                    value = -Search(position, depth - 1, ply + 1, -beta, -alpha, causesCheck);
+                    value = -Search(position, depth - 1, ply + 1, -beta, -alpha, causesCheck, threadID);
 
                 // Unmake the move and check for search termination. 
                 position.Unmake(move);
@@ -289,9 +379,10 @@ namespace AbsoluteZero {
                 if (value >= beta) {
                     _table.Store(new HashEntry(position, depth, ply, move, value, HashEntry.Beta));
                     if (reducible) {
-                        for (Int32 j = _killerMoves[ply].Length - 2; j >= 0; j--)
-                            _killerMoves[ply][j + 1] = _killerMoves[ply][j];
-                        _killerMoves[ply][0] = move;
+                        Int32[] killerMoves = _killerMoves[threadID][ply];
+                        for (Int32 j = killerMoves.Length - 2; j >= 0; j--)
+                            killerMoves[j + 1] = killerMoves[j];
+                        killerMoves[0] = move;
                     }
                     return value;
                 }
@@ -302,11 +393,9 @@ namespace AbsoluteZero {
                     bestMove = move;
                     bestType = HashEntry.Exact;
 
-                    // Collect the principal variation. 
-                    _pvMoves[ply][0] = move;
-                    for (Int32 j = 0; j < _pvLength[ply + 1]; j++)
-                        _pvMoves[ply][j + 1] = _pvMoves[ply + 1][j];
-                    _pvLength[ply] = _pvLength[ply + 1] + 1;
+                    // Collect the principal variation for the main thread. 
+                    if (isMainThread) 
+                        PrependPV(move, ply);
                 }
             }
 
@@ -324,14 +413,15 @@ namespace AbsoluteZero {
         /// <param name="ply">The number of plies from the root position.</param>
         /// <param name="alpha">The lower bound on the value of the best move.</param>
         /// <param name="beta">The upper bound on the value of the best move.</param>
+        /// <param name="threadID">The ID of the thread.</param>
         /// <returns>The value of the termination position given optimal play.</returns>
-        private Int32 Quiescence(Position position, Int32 ply, Int32 alpha, Int32 beta) {
-            _totalNodes++;
-            _quiescenceNodes++;
+        private Int32 Quiescence(Position position, Int32 ply, Int32 alpha, Int32 beta, Int32 threadID) {
+            Interlocked.Increment(ref _totalNodes);
+            Interlocked.Increment(ref _quiescenceNodes);
 
             // Evaluate the position statically. Check for upper bound cutoff and lower 
             // bound improvement. 
-            Int32 value = Evaluate(position);
+            Int32 value = Evaluate(position, threadID);
             if (value >= beta)
                 return value;
             if (value > alpha)
@@ -340,15 +430,16 @@ namespace AbsoluteZero {
             // Initialize variables and generate the pseudo-legal moves to be 
             // considered. Perform basic move ordering and sort the moves. 
             Int32 colour = position.SideToMove;
-            Int32[] moves = _generatedMoves[ply];
+            Int32[] moves = _generatedMoves[threadID][ply];
+            Single[] moveValues = _moveValues[threadID];
             Int32 movesCount = position.PseudoQuiescenceMoves(moves);
             for (Int32 i = 0; i < movesCount; i++)
-                _moveValues[i] = MoveOrderingValue(moves[i]);
-            Sort(moves, _moveValues, movesCount);
+                moveValues[i] = MoveOrderingValue(moves[i]);
+            Sort(moves, moveValues, movesCount);
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
-                _movesSearched++;
+                Interlocked.Increment(ref _movesSearched);
                 Int32 move = moves[i];
 
                 // Consider the move only if it doesn't lose material.
@@ -360,7 +451,7 @@ namespace AbsoluteZero {
                     // Search the move if it is legal. This is equivalent to not leaving the 
                     // king in check. 
                     if (!position.InCheck(colour)) {
-                        value = -Quiescence(position, ply + 1, -beta, -alpha);
+                        value = -Quiescence(position, ply + 1, -beta, -alpha, threadID);
 
                         // Check for upper bound cutoff and lower bound improvement. 
                         if (value >= beta) {

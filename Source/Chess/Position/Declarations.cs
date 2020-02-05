@@ -33,7 +33,7 @@ namespace AbsoluteZero {
         /// The collection of bitboards in representing the sets of pieces. 
         /// Bitboard[p] gives the bitboard for the piece represented by p. 
         /// </summary>
-        public UInt64[] Bitboard = new UInt64[16];
+        public UInt64[] Bitboard = new UInt64[14];
 
         /// <summary>
         /// The bitboard of all pieces in play. 

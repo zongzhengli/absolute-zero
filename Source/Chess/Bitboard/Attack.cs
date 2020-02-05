@@ -32,41 +32,10 @@ namespace AbsoluteZero {
         private static UInt64[][] PawnAttack = { new UInt64[64], new UInt64[64] };
 
         /// <summary>
-        /// The collection of cached rook attack bitboards. _cachedRookAttack[s] 
-        /// gives the last generated rook attack bitboard for square s. 
-        /// </summary>
-        private static UInt64[] _cachedRookAttack = new UInt64[64];
-
-        /// <summary>
-        /// The collection of cached rook block bitboards. _cachedRookBlock[s] gives 
-        /// the bitboard of the squares where a rook's attack from square s was last 
-        /// blocked. 
-        /// </summary>
-        private static UInt64[] _cachedRookBlock = new UInt64[64];
-
-        /// <summary>
-        /// The collection of cached bishop attack bitboards. _cachedBishopAttack[s] 
-        /// gives the last generated bishop attack bitboard for square s. 
-        /// </summary>
-        private static UInt64[] _cachedBishopAttack = new UInt64[64];
-
-        /// <summary>
-        /// The collection of cached bishop block bitboards. _cachedBishopBlock[s] 
-        /// gives the bitboard of the squares where a bishop's attack from square s 
-        /// was last blocked. 
-        /// </summary>
-        private static UInt64[] _cachedBishopBlock = new UInt64[64];
-
-        /// <summary>
         /// Initializes lookup tables. 
         /// </summary>
         static Attack() {
             for (Int32 square = 0; square < 64; square++) {
-
-                // Initialize cached block bitboards. 
-                _cachedRookBlock[square] = UInt64.MaxValue;
-                _cachedBishopBlock[square] = UInt64.MaxValue;
-
                 Int32 file = Position.File(square);
                 Int32 rank = Position.Rank(square);
 
@@ -133,34 +102,30 @@ namespace AbsoluteZero {
         /// <param name="occupiedBitboard">The occupancy bitboard.</param>
         /// <returns>The rook's attack bitboard.</returns>
         public static UInt64 Rook(Int32 square, UInt64 occupiedBitboard) {
-            if ((_cachedRookAttack[square] & occupiedBitboard) != _cachedRookBlock[square]) {
-                UInt64 attackBitboard = Bit.RayN[square];
-                UInt64 blockBitboard = attackBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    attackBitboard ^= Bit.RayN[Bit.ScanReverse(blockBitboard)];
+            UInt64 attackBitboard = Bit.RayN[square];
+            UInt64 blockBitboard = attackBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                attackBitboard ^= Bit.RayN[Bit.ScanReverse(blockBitboard)];
 
-                UInt64 partialBitboard = Bit.RayE[square];
-                blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    partialBitboard ^= Bit.RayE[Bit.Scan(blockBitboard)];
-                attackBitboard |= partialBitboard;
+            UInt64 partialBitboard = Bit.RayE[square];
+            blockBitboard = partialBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                partialBitboard ^= Bit.RayE[Bit.Scan(blockBitboard)];
+            attackBitboard |= partialBitboard;
 
-                partialBitboard = Bit.RayS[square];
-                blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    partialBitboard ^= Bit.RayS[Bit.Scan(blockBitboard)];
-                attackBitboard |= partialBitboard;
+            partialBitboard = Bit.RayS[square];
+            blockBitboard = partialBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                partialBitboard ^= Bit.RayS[Bit.Scan(blockBitboard)];
+            attackBitboard |= partialBitboard;
 
-                partialBitboard = Bit.RayW[square];
-                blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    partialBitboard ^= Bit.RayW[Bit.ScanReverse(blockBitboard)];
-                attackBitboard |= partialBitboard;
+            partialBitboard = Bit.RayW[square];
+            blockBitboard = partialBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                partialBitboard ^= Bit.RayW[Bit.ScanReverse(blockBitboard)];
+            attackBitboard |= partialBitboard;
 
-                _cachedRookAttack[square] = attackBitboard;
-                _cachedRookBlock[square] = attackBitboard & occupiedBitboard;
-            }
-            return _cachedRookAttack[square];
+            return attackBitboard;
         }
 
         /// <summary>
@@ -171,36 +136,30 @@ namespace AbsoluteZero {
         /// <param name="occupiedBitboard">The occupancy bitboard.</param>
         /// <returns>The bishop's attack bitboard.</returns>
         public static UInt64 Bishop(Int32 square, UInt64 occupiedBitboard) {
-            occupiedBitboard &= BorderlessBitboard;
+            UInt64 attackBitboard = Bit.RayNE[square];
+            UInt64 blockBitboard = attackBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                attackBitboard ^= Bit.RayNE[Bit.ScanReverse(blockBitboard)];
 
-            if ((_cachedBishopAttack[square] & occupiedBitboard) != _cachedBishopBlock[square]) {
-                UInt64 attackBitboard = Bit.RayNE[square];
-                UInt64 blockBitboard = attackBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    attackBitboard ^= Bit.RayNE[Bit.ScanReverse(blockBitboard)];
+            UInt64 partialBitboard = Bit.RayNW[square];
+            blockBitboard = partialBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                partialBitboard ^= Bit.RayNW[Bit.ScanReverse(blockBitboard)];
+            attackBitboard |= partialBitboard;
 
-                UInt64 partialBitboard = Bit.RayNW[square];
-                blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    partialBitboard ^= Bit.RayNW[Bit.ScanReverse(blockBitboard)];
-                attackBitboard |= partialBitboard;
+            partialBitboard = Bit.RaySE[square];
+            blockBitboard = partialBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                partialBitboard ^= Bit.RaySE[Bit.Scan(blockBitboard)];
+            attackBitboard |= partialBitboard;
 
-                partialBitboard = Bit.RaySE[square];
-                blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    partialBitboard ^= Bit.RaySE[Bit.Scan(blockBitboard)];
-                attackBitboard |= partialBitboard;
+            partialBitboard = Bit.RaySW[square];
+            blockBitboard = partialBitboard & occupiedBitboard;
+            if (blockBitboard != 0)
+                partialBitboard ^= Bit.RaySW[Bit.Scan(blockBitboard)];
+            attackBitboard |= partialBitboard;
 
-                partialBitboard = Bit.RaySW[square];
-                blockBitboard = partialBitboard & occupiedBitboard;
-                if (blockBitboard != 0)
-                    partialBitboard ^= Bit.RaySW[Bit.Scan(blockBitboard)];
-                attackBitboard |= partialBitboard;
-
-                _cachedBishopAttack[square] = attackBitboard;
-                _cachedBishopBlock[square] = attackBitboard & occupiedBitboard;
-            }
-            return _cachedBishopAttack[square];
+            return attackBitboard;
         }
 
         /// <summary>

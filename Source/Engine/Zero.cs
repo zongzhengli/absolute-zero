@@ -85,7 +85,7 @@ namespace AbsoluteZero {
             _stopwatch.Start();
 
             // Perform the search. 
-            Int32 move = Search(position);
+            Int32 move = SearchRoot(position);
             _abortSearch = true;
 
             // Output search statistics. 
@@ -107,7 +107,7 @@ namespace AbsoluteZero {
                     String.Format("Hash cutoffs       {0:0.00 %}", (Double)_hashCutoffs / Math.Max(_hashProbes, 1)),
                     String.Format("Hash move found    {0:0.00 %}", (Double)_hashMoveMatches / Math.Max(_hashMoveChecks, 1)),
                     String.Format("Killer move found  {0:0.00 %}", (Double)_killerMoveMatches / Math.Max(_killerMoveChecks, 1)),
-                    String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position) / 100.0)));
+                    String.Format("Static evaluation  {0:+0.00;-0.00}", Evaluate(position, 0) / 100.0)));
                 Terminal.WriteLine();
             }
             return move;
@@ -125,8 +125,11 @@ namespace AbsoluteZero {
         /// </summary>
         public void Reset() {
             _table.Clear();
-            for (Int32 i = 0; i < _killerMoves.Length; i++)
-                Array.Clear(_killerMoves[i], 0, _killerMoves[i].Length);
+            for (Int32 i = 0; i < _killerMoves.Length; i++) {
+                for (Int32 j = 0; j < _killerMoves[i].Length; j++) {
+                    Array.Clear(_killerMoves[i][j], 0, _killerMoves[i][j].Length);
+                }
+            }
             _finalAlpha = 0;
             _rootAlpha = 0;
             _totalNodes = 0;

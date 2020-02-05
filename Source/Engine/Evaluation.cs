@@ -13,20 +13,22 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="position">The position to evaluate.</param>
         /// <returns>The estimated value of the position.</returns>
-        private Int32 Evaluate(Position position) {
+        private Int32 Evaluate(Position position, Int32 threadID) {
             UInt64[] bitboard = position.Bitboard;
             Single opening = PhaseCoefficient * Math.Min(position.Material[Colour.White], position.Material[Colour.Black]);
             Single endgame = 1 - opening;
 
-            _pawnAttackBitboard[Colour.White] = (bitboard[Colour.White | Piece.Pawn] & NotAFileBitboard) >> 9
+            UInt64[] minorAttackBitboard = _minorAttackBitboard[threadID];
+            UInt64[] pawnAttackBitboard = _pawnAttackBitboard[threadID];
+            pawnAttackBitboard[Colour.White] = (bitboard[Colour.White | Piece.Pawn] & NotAFileBitboard) >> 9
                                               | (bitboard[Colour.White | Piece.Pawn] & NotHFileBitboard) >> 7;
-            _pawnAttackBitboard[Colour.Black] = (bitboard[Colour.Black | Piece.Pawn] & NotAFileBitboard) << 7
+            pawnAttackBitboard[Colour.Black] = (bitboard[Colour.Black | Piece.Pawn] & NotAFileBitboard) << 7
                                               | (bitboard[Colour.Black | Piece.Pawn] & NotHFileBitboard) << 9;
             Single totalValue = TempoValue;
 
             // Evaluate symmetric features (material, position, etc).
             for (Int32 colour = Colour.White; colour <= Colour.Black; colour++) {
-                UInt64 targetBitboard = ~bitboard[colour] & ~_pawnAttackBitboard[1 - colour];
+                UInt64 targetBitboard = ~bitboard[colour] & ~pawnAttackBitboard[1 - colour];
                 UInt64 pawnBitboard = bitboard[colour | Piece.Pawn];
                 UInt64 enemyPawnBitboard = bitboard[(1 - colour) | Piece.Pawn];
                 UInt64 allPawnBitboard = pawnBitboard | enemyPawnBitboard;
@@ -49,7 +51,7 @@ namespace AbsoluteZero {
 
                 // Evaluate bishops. 
                 UInt64 pieceBitboard = bitboard[colour | Piece.Bishop];
-                _minorAttackBitboard[colour] = 0;
+                minorAttackBitboard[colour] = 0UL;
 
                 if ((pieceBitboard & (pieceBitboard - 1)) != 0)
                     value += BishopPairValue;
@@ -60,7 +62,7 @@ namespace AbsoluteZero {
 
                     UInt64 pseudoMoveBitboard = Attack.Bishop(square, position.OccupiedBitboard);
                     value += BishopMobilityValue[Bit.Count(targetBitboard & pseudoMoveBitboard)];
-                    _minorAttackBitboard[colour] |= pseudoMoveBitboard;
+                    minorAttackBitboard[colour] |= pseudoMoveBitboard;
                 }
 
                 // Evaluate knights. 
@@ -72,7 +74,7 @@ namespace AbsoluteZero {
 
                     UInt64 pseudoMoveBitboard = Attack.Knight(square);
                     value += KnightMobilityValue[Bit.Count(targetBitboard & pseudoMoveBitboard)];
-                    _minorAttackBitboard[colour] |= pseudoMoveBitboard;
+                    minorAttackBitboard[colour] |= pseudoMoveBitboard;
                 }
 
                 // Evaluate queens. 
@@ -111,11 +113,11 @@ namespace AbsoluteZero {
 
                 // Evaluate pawn threat to enemy minor pieces.
                 UInt64 victimBitboard = bitboard[(1 - colour)] ^ enemyPawnBitboard;
-                value += PawnAttackValue * Bit.CountSparse(_pawnAttackBitboard[colour] & victimBitboard);
+                value += PawnAttackValue * Bit.CountSparse(pawnAttackBitboard[colour] & victimBitboard);
 
                 // Evaluate pawn defence to friendly minor pieces. 
                 UInt64 lowValueBitboard = bitboard[colour | Piece.Bishop] | bitboard[colour | Piece.Knight] | bitboard[colour | Piece.Pawn];
-                value += PawnDefenceValue * Bit.Count(_pawnAttackBitboard[colour] & lowValueBitboard);
+                value += PawnDefenceValue * Bit.Count(pawnAttackBitboard[colour] & lowValueBitboard);
 
                 if (colour == position.SideToMove)
                     totalValue += value;
@@ -128,27 +130,27 @@ namespace AbsoluteZero {
                 Int32 colour = position.SideToMove;
 
                 // Pawn takes queen.
-                if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
+                if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
                     totalValue += PieceValue[Piece.Queen] - PieceValue[Piece.Pawn];
 
                 // Minor takes queen. 
-                else if ((_minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
+                else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Queen]) != 0)
                     totalValue += PieceValue[Piece.Queen] - PieceValue[Piece.Bishop];
 
                 // Pawn takes rook. 
-                else if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
+                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
                     totalValue += PieceValue[Piece.Rook] - PieceValue[Piece.Pawn];
 
                 // Pawn takes bishop. 
-                else if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Bishop]) != 0)
+                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Bishop]) != 0)
                     totalValue += PieceValue[Piece.Bishop] - PieceValue[Piece.Pawn];
 
                 // Pawn takes knight. 
-                else if ((_pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Knight]) != 0)
+                else if ((pawnAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Knight]) != 0)
                     totalValue += PieceValue[Piece.Knight] - PieceValue[Piece.Pawn];
 
                 // Minor takes rook. 
-                else if ((_minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
+                else if ((minorAttackBitboard[colour] & bitboard[(1 - colour) | Piece.Rook]) != 0)
                     totalValue += PieceValue[Piece.Rook] - PieceValue[Piece.Bishop];
             }
             
