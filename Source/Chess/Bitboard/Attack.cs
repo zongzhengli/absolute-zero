@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace AbsoluteZero {
 
@@ -108,6 +109,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="square">The square the king is on.</param>
         /// <returns>The king's attack bitboard.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 King(Int32 square) {
             return KingAttack[square];
         }
@@ -206,6 +208,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="square">The square the knight is on.</param>
         /// <returns>The knight's attack bitboard.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 Knight(Int32 square) {
             return KnightAttack[square];
         }
@@ -217,6 +220,7 @@ namespace AbsoluteZero {
         /// <param name="square">The square the pawn is on.</param>
         /// <param name="colour">The colour of the pawn.</param>
         /// <returns>The pawn's attack bitboard.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 Pawn(Int32 square, Int32 colour) {
             return PawnAttack[colour][square];
         }

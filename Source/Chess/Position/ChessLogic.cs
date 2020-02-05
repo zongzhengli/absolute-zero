@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace AbsoluteZero {
 
@@ -16,6 +13,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="colour">The side to test for check.</param>
         /// <returns>Whether the given side is in check.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Boolean InCheck(Int32 colour) {
             return IsAttacked(colour, Bit.Read(Bitboard[colour | Piece.King]));
         }
@@ -152,6 +150,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="square">The square to determine the file of.</param>
         /// <returns>The file of the given square.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 File(Int32 square) {
             return square & 7;
         }
@@ -161,6 +160,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="square">The square to determine the rank of.</param>
         /// <returns>The rank of the given square.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Rank(Int32 square) {
             return square >> 3;
         }

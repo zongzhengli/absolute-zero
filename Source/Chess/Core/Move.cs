@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using PieceClass = AbsoluteZero.Piece;
 
 namespace AbsoluteZero {
@@ -95,6 +96,7 @@ namespace AbsoluteZero {
         /// <param name="square">The square the pawn is on.</param>
         /// <param name="colour">The colour of the pawn.</param>
         /// <returns>The pawn's move bitboard.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 Pawn(Int32 square, Int32 colour) {
             return 1UL << (square + 16 * colour - 8);
         }
@@ -107,6 +109,7 @@ namespace AbsoluteZero {
         /// <param name="to">The to square of the move.</param>
         /// <param name="special">The special piece of the move.</param>
         /// <returns>A move encoded from the given parameters.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Create(Position position, Int32 from, Int32 to, Int32 special = PieceClass.Empty) {
             return from | (to << ToShift) | (position.Square[from] << PieceShift) | (position.Square[to] << CaptureShift) | (special << SpecialShift);
         }
@@ -118,6 +121,7 @@ namespace AbsoluteZero {
         /// <param name="position">The position the move is to be played on.</param>
         /// <param name="name">The representation of the move in coordinate notation.</param>
         /// <returns>A move that has the given representation in coordinate notation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Create(Position position, String name) {
             foreach (Int32 move in position.LegalMoves())
                 if (name == Stringify.Move(move))
@@ -130,6 +134,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>The from square of the given move.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 From(Int32 move) {
             return move & SquareMask;
         }
@@ -139,6 +144,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>The to square of the given move.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 To(Int32 move) {
             return (move >> ToShift) & SquareMask;
         }
@@ -148,6 +154,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>The moving piece of the given move.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Piece(Int32 move) {
             return (move >> PieceShift) & PieceMask;
         }
@@ -157,6 +164,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>The captured piece of the given move.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Capture(Int32 move) {
             return (move >> CaptureShift) & PieceMask;
         }
@@ -166,6 +174,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>The special piece of the given move.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Special(Int32 move) {
             return move >> SpecialShift;
         }
@@ -175,6 +184,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>Whether the given move captures an opposing piece.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsCapture(Int32 move) {
             return (move & TypeCaptureShifted) != EmptyCaptureShifted;
         }
@@ -184,6 +194,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>Whether the given move is a castling move.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsCastle(Int32 move) {
             return (move & TypeSpecialShifted) == KingSpecialShifted;
         }
@@ -205,6 +216,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>Whether the given mode is en passant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsEnPassant(Int32 move) {
             return (move & TypeSpecialShifted) == PawnSpecialShifted;
         }
@@ -214,6 +226,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>Whether the given move is a pawn advance.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsPawnAdvance(Int32 move) {
             return (move & TypePieceShifted) == PawnPieceShifted;
         }
@@ -223,6 +236,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="move">The move to decode.</param>
         /// <returns>Whether the given mode promotes a pawn to a queen.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Boolean IsQueenPromotion(Int32 move) {
             return (move & TypeSpecialShifted) == QueenSpecialShifted;
         }
