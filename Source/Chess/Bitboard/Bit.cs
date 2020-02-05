@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace AbsoluteZero {
@@ -135,6 +136,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to pop.</param>
         /// <returns>The index of the least significant set bit.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Pop(ref UInt64 bitboard) {
             UInt64 isolatedBit = bitboard & (0UL - bitboard);
             bitboard &= bitboard - 1;
@@ -146,6 +148,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to read.</param>
         /// <returns>The index of the single set bit.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Read(UInt64 bitboard) {
             return BitIndex[(bitboard * 0x07EDD5E59A4E28C2UL) >> 58];
         }
@@ -156,6 +159,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to scan.</param>
         /// <returns>The index of the least significant set bit.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Scan(UInt64 bitboard) {
             return BitIndex[((bitboard & (0UL - bitboard)) * 0x07EDD5E59A4E28C2UL) >> 58];
         }
@@ -165,6 +169,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to scan.</param>
         /// <returns>The index of the most significant set bit.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 ScanReverse(UInt64 bitboard) {
             Int32 result = 0;
             if (bitboard > 0xFFFFFFFF) {
@@ -197,6 +202,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to isolate the least significant bit.</param>
         /// <returns>The given bitboard with only the least significant bit set.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 Isolate(UInt64 bitboard) {
             return bitboard & (0UL - bitboard);
         }
@@ -206,6 +212,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to isolate the most significant bit.</param>
         /// <returns>The given bitboard with only the most significant bit set.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 IsolateReverse(UInt64 bitboard) {
             bitboard |= (bitboard >> 1);
             bitboard |= (bitboard >> 2);
@@ -221,6 +228,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to count.</param>
         /// <returns>The number of set bits.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 Count(UInt64 bitboard) {
             bitboard -= (bitboard >> 1) & 0x5555555555555555UL;
             bitboard = (bitboard & 0x3333333333333333UL) + ((bitboard >> 2) & 0x3333333333333333UL);
@@ -233,6 +241,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="bitboard">The bitboard to count.</param>
         /// <returns>The number of set bits.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Int32 CountSparse(UInt64 bitboard) {
             Int32 count = 0;
             while (bitboard != 0) {
