@@ -6,7 +6,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for attack bitboard generation. 
     /// </summary>
-    static class Attack {
+    public static class Attack {
 
         /// <summary>
         /// The bitboard with all bits set except those on edges and corners.

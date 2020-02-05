@@ -6,7 +6,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for Zobrist hashing. 
     /// </summary>
-    static class Zobrist {
+    public static class Zobrist {
 
         /// <summary>
         /// The table giving the hash value for a given piece on a given square. 

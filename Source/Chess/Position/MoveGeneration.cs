@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Text;
-
 namespace AbsoluteZero {
 
     /// <summary>
@@ -400,7 +396,7 @@ namespace AbsoluteZero {
         /// <param name="moves">The array to populate with the pseudo-legal moves.</param>
         /// <returns>The number of moves generated for the position.</returns>
         public Int32 PseudoQuiescenceMoves(Int32[] moves) {
-            UInt64 targetBitboard = Bitboard[(1 - SideToMove)];
+            UInt64 targetBitboard = Bitboard[1 - SideToMove];
             Int32 index = 0;
 
             // Consider king moves. 

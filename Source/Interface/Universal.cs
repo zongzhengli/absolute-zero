@@ -10,7 +10,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for UCI/command-line parsing. 
     /// </summary>
-    static class Universal {
+    public static class Universal {
 
         /// <summary>
         /// Executes the parsing. 

@@ -8,7 +8,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Represents the terminal for engine input and output. 
     /// </summary>
-    static class Terminal {
+    public static class Terminal {
 
         /// <summary>
         /// The width of the terminal window. 

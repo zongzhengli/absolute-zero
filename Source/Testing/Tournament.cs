@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for playing a tournament between two engines. 
     /// </summary>
-    static class Tournament {
+    public static class Tournament {
 
         /// <summary>
         /// Specifies header and result formatting. 

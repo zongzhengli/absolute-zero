@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for move encoding and decoding. 
     /// </summary>
-    static class Move {
+    public static class Move {
 
         /// <summary>
         /// The value representing an invalid move.

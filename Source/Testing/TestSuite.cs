@@ -9,7 +9,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for evaluating engine analysis on test suites. 
     /// </summary>
-    static class TestSuite {
+    public static class TestSuite {
 
         /// <summary>
         /// The string that determines output formatting. 

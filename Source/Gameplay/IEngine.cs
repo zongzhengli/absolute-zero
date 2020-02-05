@@ -6,7 +6,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Defines a chess engine.
     /// </summary>
-    interface IEngine : IPlayer {
+    public interface IEngine : IPlayer {
 
         /// <summary>
         /// Returns the principal variation of the most recent search.

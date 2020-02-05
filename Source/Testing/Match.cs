@@ -15,7 +15,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for playing matches between two engine. 
     /// </summary>
-    static class Match {
+    public static class Match {
 
         /// <summary>
         /// The number of plies before the match is terminated as unresolved. 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Text;
 
 namespace AbsoluteZero {
 
@@ -53,7 +49,7 @@ namespace AbsoluteZero {
                     goto default;
                 default:
                     Bitboard[capture] ^= 1UL << to;
-                    Bitboard[(1 - SideToMove)] ^= 1UL << to;
+                    Bitboard[1 - SideToMove] ^= 1UL << to;
                     OccupiedBitboard |= 1UL << to;
                     ZobristKey ^= Zobrist.PiecePosition[capture][to];
                     Material[1 - SideToMove] -= Zero.PieceValue[capture];
@@ -118,7 +114,7 @@ namespace AbsoluteZero {
                 case Piece.Pawn:
                     Square[File(to) + Rank(from) * 8] = Piece.Empty;
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
-                    Bitboard[(1 - SideToMove)] ^= 1UL << (File(to) + Rank(from) * 8);
+                    Bitboard[1 - SideToMove] ^= 1UL << (File(to) + Rank(from) * 8);
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     ZobristKey ^= Zobrist.PiecePosition[special][File(to) + Rank(from) * 8];
                     Material[1 - SideToMove] -= Zero.PieceValue[special];
@@ -177,7 +173,7 @@ namespace AbsoluteZero {
                     goto default;
                 default:
                     Bitboard[capture] ^= 1UL << to;
-                    Bitboard[(1 - SideToMove)] ^= 1UL << to;
+                    Bitboard[1 - SideToMove] ^= 1UL << to;
                     OccupiedBitboard |= 1UL << to;
                     Material[1 - SideToMove] += Zero.PieceValue[capture];
                     break;
@@ -224,7 +220,7 @@ namespace AbsoluteZero {
                 case Piece.Pawn:
                     Square[File(to) + Rank(from) * 8] = special;
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
-                    Bitboard[(1 - SideToMove)] ^= 1UL << (File(to) + Rank(from) * 8);
+                    Bitboard[1 - SideToMove] ^= 1UL << (File(to) + Rank(from) * 8);
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     Material[1 - SideToMove] += Zero.PieceValue[special];
                     break;

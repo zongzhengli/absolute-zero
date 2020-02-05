@@ -10,7 +10,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Defines restrictions for engines in standard games. 
     /// </summary>
-    static class Restrictions {
+    public static class Restrictions {
 
         /// <summary>
         /// The output type.

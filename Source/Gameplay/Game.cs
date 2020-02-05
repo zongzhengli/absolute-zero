@@ -11,7 +11,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Represents a game between two players. 
     /// </summary>
-    class Game {
+    public sealed class Game {
 
         // Graphics constants. 
         private static readonly SolidBrush OverlayBrush = new SolidBrush(Color.FromArgb(190, Color.White));

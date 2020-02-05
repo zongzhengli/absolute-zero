@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Represents a chess piece in the visual interface. 
     /// </summary>
-    class VisualPiece {
+    public sealed class VisualPiece {
 
         /// <summary>
         /// The offset for centering pieces on squares when drawing.

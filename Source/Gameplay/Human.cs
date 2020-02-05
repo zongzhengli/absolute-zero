@@ -9,7 +9,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Represents a human player in the chess game. 
     /// </summary>
-    class Human : IPlayer {
+    public sealed class Human : IPlayer {
 
         /// <summary>
         /// The brush used to paint the piece selection background. 

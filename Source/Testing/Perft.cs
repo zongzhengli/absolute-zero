@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for performing perft-related functions. 
     /// </summary>
-    static class Perft {
+    public static class Perft {
 
         /// <summary>
         /// The maximum depth for perft. 

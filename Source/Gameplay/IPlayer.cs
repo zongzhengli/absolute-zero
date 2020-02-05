@@ -6,7 +6,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Defines a chess player.
     /// </summary>
-    interface IPlayer {
+    public interface IPlayer {
 
         /// <summary>
         /// The name of the player. 

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 
 namespace AbsoluteZero {
-    
+
     /// <summary>
     /// Encapsulates the main IEngine interface of the Absolute Zero chess
     /// engine. 
     /// </summary>
-    partial class Zero : IEngine {
+    public sealed partial class Zero : IEngine {
 
         /// <summary>
         /// The number of nodes visited during the most recent search. 

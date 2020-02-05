@@ -11,7 +11,7 @@ namespace AbsoluteZero {
     /// visual components are static, which isn't great, but acceptable due to
     /// the rotate state being tied to a global user option.
     /// </summary>
-    static class VisualPosition {
+    public static class VisualPosition {
 
         /// <summary>
         /// The colour of light squares on the chessboard. 

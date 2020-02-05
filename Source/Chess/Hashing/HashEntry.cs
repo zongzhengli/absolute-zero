@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Represents an entry in the transposition hash table. 
     /// </summary>
-    public struct HashEntry {
+    public readonly struct HashEntry {
 
         /// <summary>
         /// Specifies the hash entry is invalid. 

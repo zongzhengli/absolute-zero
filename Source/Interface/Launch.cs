@@ -8,7 +8,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Handles the application launch. 
     /// </summary>
-    static class Launch {
+    public static class Launch {
 
         /// <summary>
         /// Encapsulates a method that takes no parameters and returns no value. 

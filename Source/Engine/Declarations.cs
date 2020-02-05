@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Reflection;
 
 namespace AbsoluteZero {
@@ -11,7 +10,7 @@ namespace AbsoluteZero {
     /// Encapsulates the declarations component of the Absolute Zero chess 
     /// engine. 
     /// </summary>
-    partial class Zero : IEngine {
+    public sealed partial class Zero : IEngine {
 
         // Miscellaneous constants. 
         public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;

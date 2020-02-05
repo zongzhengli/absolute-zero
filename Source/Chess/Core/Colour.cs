@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Defines colours and masks. 
     /// </summary>
-    static class Colour {
+    public static class Colour {
 
         /// <summary>
         /// The mask for extracting the colour of a piece. 

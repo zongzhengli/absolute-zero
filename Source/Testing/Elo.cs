@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for Elo calculation.
     /// </summary>
-    static class Elo {
+    public static class Elo {
 
         /// <summary>
         /// The maximum magnitude for results. 

@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Encapsulates the search component of the Absolute Zero chess engine. 
     /// </summary>
-    partial class Zero : IEngine {
+    public sealed partial class Zero : IEngine {
 
         /// <summary>
         /// Returns the best move for the given position as determined by an 

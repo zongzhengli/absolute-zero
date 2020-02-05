@@ -6,7 +6,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Represents a transposition hash table. 
     /// </summary>
-    public class HashTable {
+    public sealed class HashTable {
 
         /// <summary>
         /// The collection of hash entries. 

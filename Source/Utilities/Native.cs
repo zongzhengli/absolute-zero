@@ -6,7 +6,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods that give access to the native Windows API. 
     /// </summary>
-    class Native {
+    public static class Native {
         public const Int32 SW_HIDE = 0;
 
         /// <summary>

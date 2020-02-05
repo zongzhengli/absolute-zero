@@ -18,7 +18,7 @@ namespace AbsoluteZero {
     /// Provides methods that gives text representations of various chess data 
     /// types. 
     /// </summary>
-    static class Stringify {
+    public static class Stringify {
 
         /// <summary>
         /// Returns the text representation of the file for the given square. 

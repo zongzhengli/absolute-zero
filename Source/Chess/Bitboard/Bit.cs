@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods and constants for bitwise operations. 
     /// </summary>
-    static class Bit {
+    public static class Bit {
 
         /// <summary>
         /// The collection of bitboard files for a given square. File[s] gives the a 
@@ -112,14 +112,14 @@ namespace AbsoluteZero {
                 Rank[square] = LineFill(Position.Rank(square) * 8, 1, 0);
 
                 // Initialize ray tables. 
-                RayN[square] = Bit.LineFill(square, 0, -1) ^ (1UL << square);
-                RayE[square] = Bit.LineFill(square, 1, 0) ^ (1UL << square);
-                RayS[square] = Bit.LineFill(square, 0, 1) ^ (1UL << square);
-                RayW[square] = Bit.LineFill(square, -1, 0) ^ (1UL << square);
-                RayNE[square] = Bit.LineFill(square, 1, -1) ^ (1UL << square);
-                RayNW[square] = Bit.LineFill(square, -1, -1) ^ (1UL << square);
-                RaySE[square] = Bit.LineFill(square, 1, 1) ^ (1UL << square);
-                RaySW[square] = Bit.LineFill(square, -1, 1) ^ (1UL << square);
+                RayN[square] = LineFill(square, 0, -1) ^ (1UL << square);
+                RayE[square] = LineFill(square, 1, 0) ^ (1UL << square);
+                RayS[square] = LineFill(square, 0, 1) ^ (1UL << square);
+                RayW[square] = LineFill(square, -1, 0) ^ (1UL << square);
+                RayNE[square] = LineFill(square, 1, -1) ^ (1UL << square);
+                RayNW[square] = LineFill(square, -1, -1) ^ (1UL << square);
+                RaySE[square] = LineFill(square, 1, 1) ^ (1UL << square);
+                RaySW[square] = LineFill(square, -1, 1) ^ (1UL << square);
                 Axes[square] = RayN[square] | RayE[square] | RayS[square] | RayW[square];
                 Diagonals[square] = RayNE[square] | RayNW[square] | RaySE[square] | RaySW[square];
             }
@@ -214,12 +214,12 @@ namespace AbsoluteZero {
         /// <returns>The given bitboard with only the most significant bit set.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt64 IsolateReverse(UInt64 bitboard) {
-            bitboard |= (bitboard >> 1);
-            bitboard |= (bitboard >> 2);
-            bitboard |= (bitboard >> 4);
-            bitboard |= (bitboard >> 8);
-            bitboard |= (bitboard >> 16);
-            bitboard |= (bitboard >> 32);
+            bitboard |= bitboard >> 1;
+            bitboard |= bitboard >> 2;
+            bitboard |= bitboard >> 4;
+            bitboard |= bitboard >> 8;
+            bitboard |= bitboard >> 16;
+            bitboard |= bitboard >> 32;
             return bitboard & ~(bitboard >> 1);
         }
 

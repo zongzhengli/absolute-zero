@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for pseudorandom number generation. 
     /// </summary>
-    static class Random {
+    public static class Random {
 
         /// <summary>
         /// Holds the state of the number generator. 

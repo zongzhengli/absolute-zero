@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Defines pieces and masks. 
     /// </summary>
-    static class Piece {
+    public static class Piece {
         
         /// <summary>
         /// The mask for extracting the type of a piece. 
