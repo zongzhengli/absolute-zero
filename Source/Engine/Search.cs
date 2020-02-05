@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace AbsoluteZero {
@@ -244,10 +245,7 @@ namespace AbsoluteZero {
             }
 
             // Sort the moves based on their ordering values and initialize variables. 
-            Sort(moves, _moveValues, movesCount);
-            Int32 irreducibleMoves = 1;
-            while (irreducibleMoves < movesCount && _moveValues[irreducibleMoves] > 0)
-                irreducibleMoves++;
+            Int32 irreducibleMoves = Sort(moves, _moveValues, movesCount);
             UInt64 preventionBitboard = PassedPawnPreventionBitboard(position);
             Int32 bestType = HashEntry.Alpha;
             Int32 bestMove = moves[0];
@@ -494,21 +492,45 @@ namespace AbsoluteZero {
 
         /// <summary>
         /// Sorts the given array of moves based on the given array of values. 
+        /// Is optimized for sparsely positive move values.
         /// </summary>
         /// <param name="moves">The array of moves to sort.</param>
         /// <param name="values">The array of values to sort.</param>
         /// <param name="count">The number of elements to sort.</param>
-        private static void Sort(Int32[] moves, Single[] values, Int32 count) {
-            for (Int32 i = 1; i < count; i++) {
-                for (Int32 j = i; j > 0 && values[j] > values[j - 1]; j--) {
-                    Single tempValue = values[j - 1];
-                    values[j - 1] = values[j];
-                    values[j] = tempValue;
-                    Int32 tempMove = moves[j - 1];
-                    moves[j - 1] = moves[j];
-                    moves[j] = tempMove;
+        /// <returns>The number of moves which have positive value.</returns>
+        private static Int32 Sort(Int32[] moves, Single[] values, Int32 count) {
+            Int32 positiveMoves = 0;
+
+            // Move positive moves to the front.
+            for (Int32 i = 0; i < count; i++) {
+                if (values[i] > 0) {
+                    Swap(ref values[positiveMoves], ref values[i]);
+                    Swap(ref moves[positiveMoves], ref moves[i]);
+                    positiveMoves++;
                 }
             }
+
+            // Sort positive moves using insertion sort.
+            for (Int32 i = 1; i < positiveMoves; i++) {
+                for (Int32 j = i; j > 0 && values[j] > values[j - 1]; j--) {
+                    Swap(ref values[j - 1], ref values[j]);
+                    Swap(ref moves[j - 1], ref moves[j]);
+                }
+            }
+            return positiveMoves;
+        }
+
+        /// <summary>
+        /// Swaps the values of the given reference variables.
+        /// </summary>
+        /// <typeparam name="T">The type of the variables.</typeparam>
+        /// <param name="a">The first reference variable.</param>
+        /// <param name="b">The second reference variable.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Swap<T>(ref T a, ref T b) {
+            T c = b;
+            b = a;
+            a = c;
         }
     }
 }
