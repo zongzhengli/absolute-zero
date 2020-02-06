@@ -42,7 +42,7 @@ namespace AbsoluteZero {
         /// </summary>
         public String Name {
             get {
-                return "Absolute Zero " + Version;
+                return String.Format("Absolute Zero {0} {1}-bit {2}-threads", Version, IntPtr.Size * 8, DefaultThreads);
             }
         }
 
@@ -97,7 +97,7 @@ namespace AbsoluteZero {
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();
                 Terminal.WriteLine(position.ToString(
-                    String.Format("Absolute Zero {0} ({1}-bit)", Version, IntPtr.Size * 8),
+                    Name,
                     String.Format("Search time        {0:0} ms", elapsed),
                     String.Format("Search speed       {0:0} kN/s", _totalNodes / Math.Max(elapsed, 1.0)),
                     String.Format("Nodes visited      {0}", _totalNodes),
