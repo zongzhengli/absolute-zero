@@ -48,8 +48,10 @@ namespace AbsoluteZero {
         public Int32[] FutilityMargin = { 0, 104, 125, 250, 271, 375 };
         public Int32 DrawValue = -30;
 
-        private const Double TimeControlsExpectedLatency = 60;
+        private const Double TimeControlsExpectedLatency = 55;
         private const Double TimeControlsContinuationThreshold = 0.7;
+        private const Double TimeControlsResearchThreshold = 0.5;
+        private const Double TimeControlsResearchExtension = 0.8;
         private const Int32 TimeControlsLossResolution = 40;
         private const Double TimeControlsLossThreshold = 0.5;
         private static readonly Double[] TimeControlsLossExtension = { 0, 0.1, 0.6, 1.2, 1.5 };

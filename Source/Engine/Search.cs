@@ -60,8 +60,10 @@ namespace AbsoluteZero {
                         Int32 upper = _rootAlpha + AspirationWindow;
 
                         value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck);
-                        if (value <= lower || value >= upper) 
+                        if (value <= lower || value >= upper) {
+                            TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
                             value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
+                        }
                     }
 
                     // Subsequent moves are searched with a zero window search. If the result is 
