@@ -33,7 +33,7 @@ namespace AbsoluteZero {
 
             // Allocate search time when playing with time controls. 
             if (Restrictions.UseTimeControls) {
-                Double timeAllocation = Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-0.007 * position.HalfMoves)));
+                Double timeAllocation = Restrictions.TimeControl[colour] / Math.Max(30, Math.Ceiling(70 * Math.Exp(-0.007 * position.HalfMoves)));
                 _timeLimit = timeAllocation + Restrictions.TimeIncrement[colour] - TimeControlsExpectedLatency;
                 _timeExtensionLimit = 0.3 * Restrictions.TimeControl[colour] - timeAllocation;
             }

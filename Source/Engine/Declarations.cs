@@ -30,7 +30,7 @@ namespace AbsoluteZero {
         public const Int32 PlyLimit = DepthLimit + 64;
         public const Int32 MovesLimit = 256;
         public const Int32 DefaultHashAllocation = 64;
-        public const Int32 DefaultThreads = 8;
+        public const Int32 DefaultThreads = 4;
         public const Int32 SingleThreadDepth = 5;
         public const Int32 NodeResolution = 1000;
         public const Int32 CheckmateValue = 10000;
@@ -50,7 +50,7 @@ namespace AbsoluteZero {
         public Int32[] FutilityMargin = { 0, 104, 125, 250, 271, 375 };
         public Int32 DrawValue = -30;
 
-        private const Double TimeControlsExpectedLatency = 50;
+        private const Double TimeControlsExpectedLatency = 60;
         private const Double TimeControlsContinuationThreshold = 0.7;
         private const Double TimeControlsResearchThreshold = 0.5;
         private const Double TimeControlsResearchExtension = 0.7;
