@@ -32,9 +32,9 @@ namespace AbsoluteZero {
 
             // Allocate search time when playing with time controls. 
             if (Restrictions.UseTimeControls) {
-                Double timeAllocation = Restrictions.TimeControl[colour] / Math.Max(20, Math.Ceiling(60 * Math.Exp(-0.007 * position.HalfMoves)));
+                Double timeAllocation = (Restrictions.TimeControl[colour] - Restrictions.TimeIncrement[colour]) / Math.Max(40, 100 - 0.5 * position.HalfMoves);
                 _timeLimit = timeAllocation + Restrictions.TimeIncrement[colour] - TimeControlsExpectedLatency;
-                _timeExtensionLimit = 0.3 * Restrictions.TimeControl[colour] - timeAllocation;
+                _timeExtensionLimit = 0.3 * (Restrictions.TimeControl[colour] - Restrictions.TimeIncrement[colour]);
             }
 
             // Apply iterative deepening. The search is repeated with incrementally 
@@ -60,10 +60,8 @@ namespace AbsoluteZero {
                         Int32 upper = _rootAlpha + AspirationWindow;
 
                         value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck);
-                        if (value <= lower || value >= upper) {
-                            TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
+                        if (value <= lower || value >= upper) 
                             value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
-                        }
                     }
 
                     // Subsequent moves are searched with a zero window search. If the result is 
@@ -434,9 +432,11 @@ namespace AbsoluteZero {
         /// <param name="threshold">The ratio between time elapsed and time allotted needed to trigger the time extension.</param>
         /// <param name="coefficient">The proportion of time allotted to extend by.</param>
         private void TryTimeExtension(Double threshold, Double coefficient) {
-            Double newExtension = Math.Min(coefficient * _timeLimit, _timeExtensionLimit);
-            if (Restrictions.UseTimeControls && newExtension > _timeExtension && _stopwatch.ElapsedMilliseconds / _timeLimit > threshold)
-                _timeExtension = newExtension;
+            if (Restrictions.UseTimeControls) {
+                Double newExtension = Math.Min(coefficient * _timeLimit, _timeExtensionLimit);
+                if (newExtension > _timeExtension && _stopwatch.ElapsedMilliseconds / _timeLimit > threshold)
+                    _timeExtension = newExtension;
+            }
         }
 
         /// <summary>
