@@ -77,6 +77,8 @@ namespace AbsoluteZero {
                                 break;
 
                             // UCI mode.
+                            case "uci":
+                            case "-uci":
                             case "-u":
                                 run = () => { Universal.Run(); };
                                 break;
