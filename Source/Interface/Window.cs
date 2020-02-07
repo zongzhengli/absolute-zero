@@ -129,8 +129,11 @@ namespace AbsoluteZero {
                 undoMoveMenuItem.Enabled = hasHuman;
 
                 // Update Engine menu.
-                searchMenuItem.Enabled = hasEngine;
+                searchTimeMenuItem.Enabled = hasEngine;
+                searchDepthMenuItem.Enabled = hasEngine;
+                searchNodesMenuItem.Enabled = hasEngine;
                 hashSizeMenuItem.Enabled = hasEngine;
+                multiPVMenuItem.Enabled = hasEngine;
 
                 // Update Display menu.
                 arrowsMenuItem.Enabled = hasEngine;
@@ -292,6 +295,23 @@ namespace AbsoluteZero {
                     if (_game.Black is IEngine)
                         (_game.Black as IEngine).HashAllocation = value;
                     return;
+                } else
+                    MessageBox.Show("Input must be a positive integer.");
+            }
+        }
+
+        /// <summary>
+        /// Handles the Multi PV button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The raised event.</param>
+        private void MultiPVClick(Object sender, EventArgs e) {
+            while (true) {
+                String input = InputBox.Show("Please specify the number of principal variations.", Restrictions.PrincipalVariations.ToString());
+                Int32 value;
+                if (Int32.TryParse(input, out value) && value > 0) {
+                    Restrictions.PrincipalVariations = value;
+                    break;
                 } else
                     MessageBox.Show("Input must be a positive integer.");
             }

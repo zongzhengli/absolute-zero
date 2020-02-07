@@ -36,11 +36,11 @@
             this.restartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.engineMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.searchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.timeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.depthMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nodesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchDepthMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchNodesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hashSizeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.multiPVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.rotateBoardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,8 +60,7 @@
             this.aboutMenu});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.menuStrip.Size = new System.Drawing.Size(512, 24);
+            this.menuStrip.Size = new System.Drawing.Size(384, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -152,50 +151,48 @@
             // engineMenu
             // 
             this.engineMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.searchMenuItem,
-            this.hashSizeMenuItem});
+            this.searchTimeMenuItem,
+            this.searchDepthMenuItem,
+            this.searchNodesMenuItem,
+            this.hashSizeMenuItem,
+            this.multiPVMenuItem});
             this.engineMenu.ForeColor = System.Drawing.SystemColors.ControlDark;
             this.engineMenu.Name = "engineMenu";
             this.engineMenu.Size = new System.Drawing.Size(55, 20);
             this.engineMenu.Text = "Engine";
             // 
-            // searchMenuItem
+            // searchTimeMenuItem
             // 
-            this.searchMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.timeMenuItem,
-            this.depthMenuItem,
-            this.nodesMenuItem});
-            this.searchMenuItem.Name = "searchMenuItem";
-            this.searchMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.searchMenuItem.Text = "Search";
+            this.searchTimeMenuItem.Name = "searchTimeMenuItem";
+            this.searchTimeMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.searchTimeMenuItem.Text = "Time";
+            this.searchTimeMenuItem.Click += new System.EventHandler(this.SearchNodesClick);
             // 
-            // timeMenuItem
+            // searchDepthMenuItem
             // 
-            this.timeMenuItem.Name = "timeMenuItem";
-            this.timeMenuItem.Size = new System.Drawing.Size(108, 22);
-            this.timeMenuItem.Text = "Time";
-            this.timeMenuItem.Click += new System.EventHandler(this.SearchTimeClick);
+            this.searchDepthMenuItem.Name = "searchDepthMenuItem";
+            this.searchDepthMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.searchDepthMenuItem.Text = "Depth";
             // 
-            // depthMenuItem
+            // searchNodesMenuItem
             // 
-            this.depthMenuItem.Name = "depthMenuItem";
-            this.depthMenuItem.Size = new System.Drawing.Size(108, 22);
-            this.depthMenuItem.Text = "Depth";
-            this.depthMenuItem.Click += new System.EventHandler(this.SearchDepthClick);
-            // 
-            // nodesMenuItem
-            // 
-            this.nodesMenuItem.Name = "nodesMenuItem";
-            this.nodesMenuItem.Size = new System.Drawing.Size(108, 22);
-            this.nodesMenuItem.Text = "Nodes";
-            this.nodesMenuItem.Click += new System.EventHandler(this.SearchNodesClick);
+            this.searchNodesMenuItem.Name = "searchNodesMenuItem";
+            this.searchNodesMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.searchNodesMenuItem.Text = "Nodes";
             // 
             // hashSizeMenuItem
             // 
             this.hashSizeMenuItem.Name = "hashSizeMenuItem";
-            this.hashSizeMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.hashSizeMenuItem.Size = new System.Drawing.Size(180, 22);
             this.hashSizeMenuItem.Text = "Hash Size";
             this.hashSizeMenuItem.Click += new System.EventHandler(this.HashSizeClick);
+            // 
+            // multiPVMenuItem
+            // 
+            this.multiPVMenuItem.Name = "multiPVMenuItem";
+            this.multiPVMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.multiPVMenuItem.Text = "Multi PV";
+            this.multiPVMenuItem.Click += new System.EventHandler(this.MultiPVClick);
             // 
             // displayMenu
             // 
@@ -211,21 +208,21 @@
             // rotateBoardMenuItem
             // 
             this.rotateBoardMenuItem.Name = "rotateBoardMenuItem";
-            this.rotateBoardMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rotateBoardMenuItem.Size = new System.Drawing.Size(142, 22);
             this.rotateBoardMenuItem.Text = "Rotate Board";
             this.rotateBoardMenuItem.Click += new System.EventHandler(this.RotateBoardClick);
             // 
             // animationsMenuItem
             // 
             this.animationsMenuItem.Name = "animationsMenuItem";
-            this.animationsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.animationsMenuItem.Size = new System.Drawing.Size(142, 22);
             this.animationsMenuItem.Text = "Animations";
             this.animationsMenuItem.Click += new System.EventHandler(this.AnimationsClick);
             // 
             // arrowsMenuItem
             // 
             this.arrowsMenuItem.Name = "arrowsMenuItem";
-            this.arrowsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.arrowsMenuItem.Size = new System.Drawing.Size(142, 22);
             this.arrowsMenuItem.Text = "Arrows";
             this.arrowsMenuItem.Click += new System.EventHandler(this.ArrowsClick);
             // 
@@ -239,14 +236,13 @@
             // 
             // Window
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 475);
+            this.ClientSize = new System.Drawing.Size(384, 386);
             this.Controls.Add(this.menuStrip);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "Window";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -277,11 +273,11 @@
         private System.Windows.Forms.ToolStripMenuItem undoMoveMenuItem;
         private System.Windows.Forms.ToolStripMenuItem offerDrawMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem searchMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem timeMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem depthMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem nodesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hashSizeMenuItem;
         private System.Windows.Forms.ToolStripMenuItem arrowsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchTimeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchDepthMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchNodesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem multiPVMenuItem;
     }
 }

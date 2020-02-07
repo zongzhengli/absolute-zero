@@ -40,7 +40,7 @@ namespace AbsoluteZero {
             // Apply iterative deepening. The search is repeated with incrementally 
             // higher depths until it is terminated. 
             for (Int32 depth = 1; depth <= depthLimit; depth++) {
-                Int32 pvsLimit = Math.Min(moves.Count, Restrictions.PrincipleVariations);
+                Int32 pvsLimit = Math.Min(moves.Count, Restrictions.PrincipalVariations);
 
                 // Possibly search multiple times for multi PV.
                 for (Int32 pvs = 0; pvs < pvsLimit; pvs++) {
@@ -101,7 +101,7 @@ namespace AbsoluteZero {
                             // Output principal variation for high depths. This happens on every depth 
                             // increase and every time an improvement is found. 
                             if (Restrictions.Output != OutputType.None &&
-                                Restrictions.PrincipleVariations == 1 &&
+                                Restrictions.PrincipalVariations == 1 &&
                                 depth > SingleVariationDepth)
                                 Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                         }
@@ -110,7 +110,7 @@ namespace AbsoluteZero {
                     // Output principal variation for low depths. This happens once for every 
                     // depth since improvements are very frequent. 
                     if (Restrictions.Output != OutputType.None &&
-                        (Restrictions.PrincipleVariations > 1 || depth <= SingleVariationDepth))
+                        (Restrictions.PrincipalVariations > 1 || depth <= SingleVariationDepth))
                         Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                 }
 
