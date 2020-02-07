@@ -41,8 +41,8 @@ namespace AbsoluteZero {
              || FiftyMovesClock != other.FiftyMovesClock
              || EnPassantSquare != other.EnPassantSquare
              || SideToMove != other.SideToMove
-             || Material[Colour.White] != other.Material[Colour.White] 
-             || Material[Colour.Black] != other.Material[Colour.Black])
+             || Value[Colour.White] != other.Value[Colour.White] 
+             || Value[Colour.Black] != other.Value[Colour.Black])
                 return false;
 
             for (Int32 colour = Colour.White; colour <= Colour.Black; colour++) 
@@ -80,7 +80,7 @@ namespace AbsoluteZero {
                 CastleQueenside = this.CastleQueenside.Clone() as Int32[],
                 EnPassantHistory = this.EnPassantHistory.Clone() as Int32[],
                 EnPassantSquare = this.EnPassantSquare,
-                Material = this.Material.Clone() as Int32[],
+                Value = this.Value.Clone() as Int32[],
                 SideToMove = this.SideToMove,
                 HalfMoves = this.HalfMoves,
                 FiftyMovesHistory = this.FiftyMovesHistory.Clone() as Int32[],

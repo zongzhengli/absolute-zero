@@ -23,12 +23,6 @@ namespace AbsoluteZero {
         public static Int32 HalfMovesLimit = 400;
 
         /// <summary>
-        /// The material difference at which an unresolved match is given to the side 
-        /// with more material. 
-        /// </summary>
-        public static Int32 MaterialLimit = Zero.PieceValue[Piece.Bishop] + Zero.PieceValue[Piece.Pawn];
-
-        /// <summary>
         /// Facilitates play between the two engines for the given position with the 
         /// given match option. 
         /// </summary>

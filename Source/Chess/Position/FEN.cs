@@ -99,16 +99,25 @@ namespace AbsoluteZero {
             EnPassantHistory[HalfMoves] = EnPassantSquare;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
 
-            // Initialize bitboards and material information. 
-            for (Int32 square = 0; square < Square.Length; square++)
+            // Initialize bitboards and positional value. 
+            for (Int32 square = 0; square < Square.Length; square++) {
                 if (Square[square] != Piece.Empty) {
-                    Int32 colour = Square[square] & Colour.Mask;
-                    Bitboard[Square[square]] |= 1UL << square;
+                    Int32 piece = Square[square];
+                    Int32 colour = piece & Colour.Mask;
+                    Bitboard[piece] |= 1UL << square;
                     Bitboard[colour] |= 1UL << square;
                     OccupiedBitboard |= 1UL << square;
-                    if ((Square[square] & Piece.Mask) != Piece.King)
-                        Material[colour] += Zero.PieceValue[Square[square]];
+                    if ((piece & Piece.Mask) != Piece.King)
+                        Value[colour] += Zero.PieceValue[piece];
                 }
+            }
+            for (Int32 square = 0; square < Square.Length; square++) {
+                if (Square[square] != Piece.Empty) {
+                    Int32 piece = Square[square];
+                    Int32 colour = piece & Colour.Mask;
+                    Value[colour] += GetIncrementalValue(square, piece);
+                }
+            }
 
             // Initialize Zobrist key and history. 
             ZobristKey = GetZobristKey();

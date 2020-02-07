@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace AbsoluteZero {
 
@@ -19,6 +20,7 @@ namespace AbsoluteZero {
             Int32 special = Move.Special(move);
 
             // Update core board state.
+            Value[SideToMove] -= GetIncrementalValue(from, piece);
             Square[to] = piece;
             Square[from] = Piece.Empty;
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
@@ -52,7 +54,7 @@ namespace AbsoluteZero {
                     Bitboard[1 - SideToMove] ^= 1UL << to;
                     OccupiedBitboard |= 1UL << to;
                     ZobristKey ^= Zobrist.PiecePosition[capture][to];
-                    Material[1 - SideToMove] -= Zero.PieceValue[capture];
+                    Value[1 - SideToMove] -= Zero.PieceValue[capture];
                     FiftyMovesClock = 0;
                     break;
             }
@@ -117,7 +119,7 @@ namespace AbsoluteZero {
                     Bitboard[1 - SideToMove] ^= 1UL << (File(to) + Rank(from) * 8);
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
                     ZobristKey ^= Zobrist.PiecePosition[special][File(to) + Rank(from) * 8];
-                    Material[1 - SideToMove] -= Zero.PieceValue[special];
+                    Value[1 - SideToMove] -= Zero.PieceValue[special];
                     break;
                 // Handle pawn promotion.
                 default:
@@ -125,11 +127,12 @@ namespace AbsoluteZero {
                     Bitboard[special] ^= 1UL << to;
                     ZobristKey ^= Zobrist.PiecePosition[piece][to];
                     ZobristKey ^= Zobrist.PiecePosition[special][to];
-                    Material[SideToMove] += Zero.PieceValue[special] - Zero.PieceValue[piece];
+                    Value[SideToMove] += Zero.PieceValue[special] - Zero.PieceValue[piece];
                     Square[to] = special;
                     break;
             }
 
+            Value[SideToMove] += GetIncrementalValue(to, piece);
             SideToMove = 1 - SideToMove;
             FiftyMovesHistory[HalfMoves] = FiftyMovesClock;
             ZobristKeyHistory[HalfMoves] = ZobristKey;
@@ -148,6 +151,7 @@ namespace AbsoluteZero {
 
             // Rewind core board state.
             SideToMove = 1 - SideToMove;
+            Value[SideToMove] -= GetIncrementalValue(to, piece);
             Square[from] = piece;
             Square[to] = capture;
             Bitboard[piece] ^= (1UL << from) | (1UL << to);
@@ -175,7 +179,7 @@ namespace AbsoluteZero {
                     Bitboard[capture] ^= 1UL << to;
                     Bitboard[1 - SideToMove] ^= 1UL << to;
                     OccupiedBitboard |= 1UL << to;
-                    Material[1 - SideToMove] += Zero.PieceValue[capture];
+                    Value[1 - SideToMove] += Zero.PieceValue[capture];
                     break;
             }
 
@@ -222,15 +226,16 @@ namespace AbsoluteZero {
                     Bitboard[special] ^= 1UL << (File(to) + Rank(from) * 8);
                     Bitboard[1 - SideToMove] ^= 1UL << (File(to) + Rank(from) * 8);
                     OccupiedBitboard ^= 1UL << (File(to) + Rank(from) * 8);
-                    Material[1 - SideToMove] += Zero.PieceValue[special];
+                    Value[1 - SideToMove] += Zero.PieceValue[special];
                     break;
                 // Rewind pawn promotion.
                 default:
                     Bitboard[piece] ^= 1UL << to;
                     Bitboard[special] ^= 1UL << to;
-                    Material[SideToMove] -= Zero.PieceValue[special] - Zero.PieceValue[piece];
+                    Value[SideToMove] -= Zero.PieceValue[special] - Zero.PieceValue[piece];
                     break;
             }
+            Value[SideToMove] += GetIncrementalValue(from, piece);
         }
 
         /// <summary>
@@ -258,6 +263,48 @@ namespace AbsoluteZero {
             EnPassantSquare = EnPassantHistory[HalfMoves - 1];
             SideToMove = 1 - SideToMove;
             HalfMoves--;
+        }
+
+        private Int32 GetIncrementalValue(Int32 square, Int32 piece) {
+            Int32 colour = piece & Colour.Mask;
+            Single value = 0;
+            switch (piece & Piece.Mask) {
+                case Piece.Pawn: {
+                    value += Zero.PawnPositionValue[colour][square];
+                    break;
+                }
+                case Piece.Bishop: {
+                    value += Zero.BishopPositionValue[colour][square];
+                    break;
+                }
+                case Piece.Knight: {
+                    Single opening = GetPhase();
+                    value += opening * Zero.KnightOpeningPositionValue[colour][square];
+                    break;
+                }
+                case Piece.Rook: {
+                    value += Zero.RookPositionValue[colour][square];
+                    break;
+                }
+                case Piece.Queen: {
+                    Single opening = GetPhase();
+                    value += opening * Zero.QueenOpeningPositionValue[colour][square];
+                    break;
+                }
+                case Piece.King: {
+                    Single opening = GetPhase();
+                    Single endgame = 1 - opening;
+                    value += opening * Zero.KingOpeningPositionValue[colour][square];
+                    value += endgame * Zero.KingEndgamePositionValue[colour][square];
+                    break;
+                }
+            }
+            return (Int32)value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Single GetPhase() {
+            return (Bit.Count(OccupiedBitboard) - 2) / 30F;
         }
     }
 }

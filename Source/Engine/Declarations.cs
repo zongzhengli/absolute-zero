@@ -57,43 +57,42 @@ namespace AbsoluteZero {
         private static readonly Double[] TimeControlsLossExtension = { 0, 0.1, 0.6, 1.2, 1.5 };
 
         // Evaluation constants. 
-        public Int32 KingOnOpenFileValue = -58;
-        public Int32 KingAdjacentToOpenFileValue = -42;
+        public static Int32 KingOnOpenFileValue = -58;
+        public static Int32 KingAdjacentToOpenFileValue = -42;
 
-        public Int32[][] QueenToEnemyKingSpatialValue = new Int32[64][];
-        public Int32[] QueenDistanceToEnemyKingValue = { 0, 17, 8, 4, 0, -4, -8, -12 };
+        public static Int32[][] QueenToEnemyKingSpatialValue = new Int32[64][];
+        public static Int32[] QueenDistanceToEnemyKingValue = { 0, 17, 8, 4, 0, -4, -8, -12 };
 
-        public Int32 BishopPairValue = 29;
-        public Int32[] BishopMobilityValue = { -25, -12, -3, 0, 2, 5, 8, 10, 12, 13, 15, 17, 18, 18 };
+        public static Int32 BishopPairValue = 29;
+        public static Int32[] BishopMobilityValue = { -25, -12, -3, 0, 2, 5, 8, 10, 12, 13, 15, 17, 18, 18 };
 
-        public Int32[][] KnightToEnemyKingSpatialValue = new Int32[64][];
-        public Int32[] KnightDistanceToEnemyKingValue = { 0, 8, 8, 6, 4, 0, -4, -6, -8, -10, -12, -13, -15, -17, -25 };
-        public Int32[] KnightMovesToEnemyKingValue = { 0, 21, 8, 0, -4, -8, -12 };
-        public Int32[] KnightMobilityValue = { -21, -8, -2, 0, 2, 5, 8, 10, 12 };
+        public static Int32[][] KnightToEnemyKingSpatialValue = new Int32[64][];
+        public static Int32[] KnightDistanceToEnemyKingValue = { 0, 8, 8, 6, 4, 0, -4, -6, -8, -10, -12, -13, -15, -17, -25 };
+        public static Int32[] KnightMovesToEnemyKingValue = { 0, 21, 8, 0, -4, -8, -12 };
+        public static Int32[] KnightMobilityValue = { -21, -8, -2, 0, 2, 5, 8, 10, 12 };
 
-        public Int32 PawnEndgameGainValue = 17;
-        public Int32 PawnNearKingValue = 14;
-        public Int32 DoubledPawnValue = -21;
-        public Int32 IsolatedPawnValue = -17;
-        public Int32 PassedPawnValue = 25;
-        public Int32 PawnAttackValue = 17;
-        public Int32 PawnDefenceValue = 6;
-        public Int32 PawnDeficiencyValue = -29;
+        public static Int32 PawnEndgameGainValue = 17;
+        public static Int32 PawnNearKingValue = 14;
+        public static Int32 DoubledPawnValue = -21;
+        public static Int32 IsolatedPawnValue = -17;
+        public static Int32 PassedPawnValue = 25;
+        public static Int32 PawnAttackValue = 17;
+        public static Int32 PawnDefenceValue = 6;
+        public static Int32 PawnDeficiencyValue = -29;
 
         public static readonly Int32[] PieceValue = new Int32[14];
-        public Int32 TempoValue = 6;
+        public static Int32 TempoValue = 6;
 
-        private static readonly UInt64[] PawnShieldBitboard = new UInt64[64];
-        private static readonly UInt64[] ShortAdjacentFilesBitboard = new UInt64[64];
-        private static readonly UInt64[][] PawnBlockadeBitboard = { new UInt64[64], new UInt64[64] };
-        private static readonly UInt64[][] ShortForwardFileBitboard = { new UInt64[64], new UInt64[64] };
-        private const UInt64 NotAFileBitboard = 0xFEFEFEFEFEFEFEFEUL;
-        private const UInt64 NotHFileBitboard = 0x7F7F7F7F7F7F7F7FUL;
+        public static readonly UInt64[] PawnShieldBitboard = new UInt64[64];
+        public static readonly UInt64[] ShortAdjacentFilesBitboard = new UInt64[64];
+        public static readonly UInt64[][] PawnBlockadeBitboard = { new UInt64[64], new UInt64[64] };
+        public static readonly UInt64[][] ShortForwardFileBitboard = { new UInt64[64], new UInt64[64] };
+        public const UInt64 NotAFileBitboard = 0xFEFEFEFEFEFEFEFEUL;
+        public const UInt64 NotHFileBitboard = 0x7F7F7F7F7F7F7F7FUL;
 
-        private static readonly Int32[][] RectilinearDistance = new Int32[64][];
-        private static readonly Int32[][] ChebyshevDistance = new Int32[64][];
-        private static readonly Int32[][] KnightMoveDistance = new Int32[64][];
-        private static readonly Single PhaseCoefficient;
+        public static readonly Int32[][] RectilinearDistance = new Int32[64][];
+        public static readonly Int32[][] ChebyshevDistance = new Int32[64][];
+        public static readonly Int32[][] KnightMoveDistance = new Int32[64][];
 
         // Search variables. 
         private HashTable _table = new HashTable(DefaultHashAllocation << 20);
@@ -139,13 +138,6 @@ namespace AbsoluteZero {
             for (Int32 piece = Piece.Min; piece <= Piece.Max; piece += 2)
                 PieceValue[Colour.Black | piece] = PieceValue[piece];
             PieceValue[Piece.Empty] = 0;
-
-            PhaseCoefficient += PieceValue[Piece.Queen];
-            PhaseCoefficient += 2 * PieceValue[Piece.Rook];
-            PhaseCoefficient += 2 * PieceValue[Piece.Bishop];
-            PhaseCoefficient += 2 * PieceValue[Piece.Knight];
-            PhaseCoefficient += 8 * PieceValue[Piece.Pawn];
-            PhaseCoefficient = 1 / PhaseCoefficient;
 
             for (Int32 square = 0; square < 64; square++) {
 
@@ -212,15 +204,6 @@ namespace AbsoluteZero {
                     }
                 }
             }
-        }
-
-        public Zero() {
-            for (Int32 i = 0; i < _generatedMoves.Length; i++)
-                _generatedMoves[i] = new Int32[MovesLimit];
-            for (Int32 i = 0; i < _pvMoves.Length; i++)
-                _pvMoves[i] = new Int32[PlyLimit];
-            for (Int32 i = 0; i < _killerMoves.Length; i++)
-                _killerMoves[i] = new Int32[KillerMovesAllocation];
 
             for (Int32 square = 0; square < 64; square++) {
 
@@ -232,14 +215,23 @@ namespace AbsoluteZero {
                 // Initialize knight to enemy king spatial value table. 
                 KnightToEnemyKingSpatialValue[square] = new Int32[64];
                 for (Int32 to = 0; to < 64; to++)
-                    KnightToEnemyKingSpatialValue[square][to] = 
-                        KnightDistanceToEnemyKingValue[RectilinearDistance[square][to]] + 
+                    KnightToEnemyKingSpatialValue[square][to] =
+                        KnightDistanceToEnemyKingValue[RectilinearDistance[square][to]] +
                         KnightMovesToEnemyKingValue[KnightMoveDistance[square][to]];
             }
         }
 
+        public Zero() {
+            for (Int32 i = 0; i < _generatedMoves.Length; i++)
+                _generatedMoves[i] = new Int32[MovesLimit];
+            for (Int32 i = 0; i < _pvMoves.Length; i++)
+                _pvMoves[i] = new Int32[PlyLimit];
+            for (Int32 i = 0; i < _killerMoves.Length; i++)
+                _killerMoves[i] = new Int32[KillerMovesAllocation];
+        }
+
         // Piece square tables. 
-        private static readonly Int32[][] KingOpeningPositionValue = {
+        public static readonly Int32[][] KingOpeningPositionValue = {
             new Int32[] {
                 -25,-33,-33,-33,-33,-33,-33,-25,
                 -25,-33,-33,-33,-33,-33,-33,-25,
@@ -253,7 +245,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] KingEndgamePositionValue = {
+        public static readonly Int32[][] KingEndgamePositionValue = {
             new Int32[] {
                 -42,-33,-25,-17,-17,-25,-33,-42,
                 -33,-17, -8, -8, -8, -8,-17,-33,
@@ -267,7 +259,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] QueenOpeningPositionValue = {
+        public static readonly Int32[][] QueenOpeningPositionValue = {
             new Int32[] {
                 -17,-12, -8,  8,  0, -8,-12,-17,
                  -8,  0,  0,  0,  0,  0,  0, -8,
@@ -281,7 +273,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] RookPositionValue = {
+        public static readonly Int32[][] RookPositionValue = {
             new Int32[] {
                   0,  0,  0,  0,  0,  0,  0,  0,
                   4,  8,  8,  8,  8,  8,  8,  4,
@@ -295,7 +287,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] BishopPositionValue = {
+        public static readonly Int32[][] BishopPositionValue = {
             new Int32[] {
                 -17, -8, -8, -8, -8, -8, -8,-17,
                  -8,  0,  0,  0,  0,  0,  0, -8,
@@ -309,7 +301,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] KnightOpeningPositionValue = {
+        public static readonly Int32[][] KnightOpeningPositionValue = {
             new Int32[] {
                 -25,-17,-17,-17,-17,-17,-17,-25,
                 -17,-12,  0,  8,  8,  0,-12,-17,
@@ -323,7 +315,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] PawnPositionValue = {
+        public static readonly Int32[][] PawnPositionValue = {
             new Int32[] {
                   0,  0,  0,  0,  0,  0,  0,  0,
                  75, 75, 75, 75, 75, 75, 75, 75,
@@ -337,7 +329,7 @@ namespace AbsoluteZero {
             new Int32[64],
         };
 
-        private static readonly Int32[][] PassedPawnEndgamePositionValue = {
+        public static readonly Int32[][] PassedPawnEndgamePositionValue = {
             new Int32[] {
                   0,  0,  0,  0,  0,  0,  0,  0,
                 100,100,100,100,100,100,100,100,

@@ -15,7 +15,7 @@ namespace AbsoluteZero {
         /// <returns>The estimated value of the position.</returns>
         private Int32 Evaluate(Position position) {
             UInt64[] bitboard = position.Bitboard;
-            Single opening = PhaseCoefficient * Math.Min(position.Material[Colour.White], position.Material[Colour.Black]);
+            Single opening = position.GetPhase();
             Single endgame = 1 - opening;
 
             _pawnAttackBitboard[Colour.White] = (bitboard[Colour.White | Piece.Pawn] & NotAFileBitboard) >> 9
@@ -31,11 +31,10 @@ namespace AbsoluteZero {
                 UInt64 enemyPawnBitboard = bitboard[(1 - colour) | Piece.Pawn];
                 UInt64 allPawnBitboard = pawnBitboard | enemyPawnBitboard;
                 Int32 enemyKingSquare = Bit.Read(bitboard[(1 - colour) | Piece.King]);
-                Single value = position.Material[colour];
+                Single value = position.Value[colour];
 
                 // Evaluate king. 
                 Int32 square = Bit.Read(bitboard[colour | Piece.King]);
-                value += opening * KingOpeningPositionValue[colour][square] + endgame * KingEndgamePositionValue[colour][square];
                 value += opening * PawnNearKingValue * Bit.Count(PawnShieldBitboard[square] & pawnBitboard);
                 
                 if ((allPawnBitboard & Bit.File[square]) == 0)
@@ -67,7 +66,6 @@ namespace AbsoluteZero {
                 pieceBitboard = bitboard[colour | Piece.Knight];
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
-                    value += opening * KnightOpeningPositionValue[colour][square];
                     value += endgame * KnightToEnemyKingSpatialValue[square][enemyKingSquare];
 
                     UInt64 pseudoMoveBitboard = Attack.Knight(square);
@@ -79,15 +77,7 @@ namespace AbsoluteZero {
                 pieceBitboard = bitboard[colour | Piece.Queen];
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
-                    value += opening * QueenOpeningPositionValue[colour][square];
                     value += endgame * QueenToEnemyKingSpatialValue[square][enemyKingSquare];
-                }
-
-                // Evaluate rooks. 
-                pieceBitboard = bitboard[colour | Piece.Rook];
-                while (pieceBitboard != 0) {
-                    square = Bit.Pop(ref pieceBitboard);
-                    value += RookPositionValue[colour][square];
                 }
 
                 // Evaluate pawns.
@@ -95,7 +85,6 @@ namespace AbsoluteZero {
                 pieceBitboard = bitboard[colour | Piece.Pawn];
                 while (pieceBitboard != 0) {
                     square = Bit.Pop(ref pieceBitboard);
-                    value += PawnPositionValue[colour][square];
                     pawns++;
 
                     if ((ShortForwardFileBitboard[colour][square] & pawnBitboard) != 0)

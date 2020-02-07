@@ -41,10 +41,10 @@ namespace AbsoluteZero {
         public UInt64 OccupiedBitboard = 0;
 
         /// <summary>
-        /// The total material values for each colour. Material[c] gives the total 
-        /// material possessed by the colour c of the appropriate sign. 
+        /// The incremental static evaluation for each colour. Value[c] gives  
+        /// the material and positional possessed by the colour c. 
         /// </summary>
-        public Int32[] Material = new Int32[2];
+        public Int32[] Value = new Int32[2];
 
         /// <summary>
         /// The colour that is to make the next move. 
