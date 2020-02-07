@@ -20,7 +20,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The number of plies before the match is terminated as unresolved. 
         /// </summary>
-        public static Int32 HalfMovesLimit = 300;
+        public static Int32 HalfMovesLimit = 400;
 
         /// <summary>
         /// The material difference at which an unresolved match is given to the side 

@@ -169,10 +169,8 @@ namespace AbsoluteZero {
             // Perform hash probe. 
             _hashProbes++;
             Int32 hashMove = Move.Invalid;
-            HashEntry hashEntry;
 
-            if (_table.TryProbe(position.ZobristKey, out hashEntry)) {
-                hashMove = hashEntry.Move;
+            if (_table.TryProbe(position.ZobristKey, out HashEntry hashEntry)) {
                 if (hashEntry.Depth >= depth) {
                     Int32 hashType = hashEntry.Type;
                     Int32 hashValue = hashEntry.GetValue(ply);
@@ -181,6 +179,7 @@ namespace AbsoluteZero {
                         return hashValue;
                     }
                 }
+                hashMove = hashEntry.Move;
             }
 
             Int32 colour = position.SideToMove;
@@ -337,14 +336,49 @@ namespace AbsoluteZero {
             if (value > alpha)
                 alpha = value;
 
+            // Perform hash probe. 
+            _hashProbes++;
+            Int32 hashMove = Move.Invalid;
+
+            if (_table.TryProbe(position.ZobristKey, out HashEntry hashEntry)) {
+                Int32 hashType = hashEntry.Type;
+                Int32 hashValue = hashEntry.GetValue(ply);
+                if (hashType == HashEntry.Exact ||
+                    (hashType == HashEntry.Beta && hashValue >= beta) ||
+                    (hashType == HashEntry.Alpha && hashValue <= alpha)) {
+                    _hashCutoffs++;
+                    return hashValue;
+                }
+                if (Move.IsCapture(hashEntry.Move))
+                    hashMove = hashEntry.Move;
+            }
+
             // Initialize variables and generate the pseudo-legal moves to be 
             // considered. Perform basic move ordering and sort the moves. 
             Int32 colour = position.SideToMove;
             Int32[] moves = _generatedMoves[ply];
             Int32 movesCount = position.PseudoQuiescenceMoves(moves);
+            if (movesCount == 0) {
+                return alpha;
+            }
             for (Int32 i = 0; i < movesCount; i++)
                 _moveValues[i] = MoveOrderingValue(moves[i]);
+
+            // Perform hash move ordering. 
+            _hashMoveChecks++;
+            if (hashMove != Move.Invalid) {
+                for (Int32 i = 0; i < movesCount; i++) {
+                    if (moves[i] == hashMove) {
+                        _moveValues[i] = HashMoveValue;
+                        _hashMoveMatches++;
+                        break;
+                    }
+                }
+            }
+
             Sort(moves, _moveValues, movesCount);
+            Int32 bestType = HashEntry.Alpha;
+            Int32 bestMove = moves[0];
 
             // Go through the move list. 
             for (Int32 i = 0; i < movesCount; i++) {
@@ -365,16 +399,21 @@ namespace AbsoluteZero {
                         // Check for upper bound cutoff and lower bound improvement. 
                         if (value >= beta) {
                             position.Unmake(move);
+                            _table.Store(new HashEntry(position, 0, ply, move, value, HashEntry.Beta));
                             return value;
                         }
-                        if (value > alpha)
+                        if (value > alpha) {
                             alpha = value;
+                            bestMove = move;
+                            bestType = HashEntry.Exact;
+                        }
                     }
 
                     // Unmake the move. 
                     position.Unmake(move);
                 }
             }
+            _table.Store(new HashEntry(position, 0, ply, bestMove, alpha, bestType));
             return alpha;
         }
 
