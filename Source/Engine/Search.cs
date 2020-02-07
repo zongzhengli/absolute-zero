@@ -40,69 +40,79 @@ namespace AbsoluteZero {
             // Apply iterative deepening. The search is repeated with incrementally 
             // higher depths until it is terminated. 
             for (Int32 depth = 1; depth <= depthLimit; depth++) {
-                Int32 alpha = -Infinity;
+                Int32 pvsLimit = Math.Min(moves.Count, Restrictions.PrincipleVariations);
 
-                // Go through the move list. 
-                for (Int32 i = 0; i < moves.Count; i++) {
-                    _movesSearched++;
+                // Possibly search multiple times for multi PV.
+                for (Int32 pvs = 0; pvs < pvsLimit; pvs++) {
+                    Int32 alpha = -Infinity;
 
-                    Int32 value = alpha + 1;
-                    Int32 move = moves[i];
-                    Boolean causesCheck = position.CausesCheck(move);
-                    position.Make(move);
+                    // Go through the move list. 
+                    for (Int32 i = pvs; i < moves.Count; i++) {
+                        _movesSearched++;
 
-                    // Apply principal variation search with aspiration windows. The first move 
-                    // is searched with a window centered around the best value found from the 
-                    // most recent preceding search. If the result does not lie within the 
-                    // window, a re-search is initiated with an open window. 
-                    if (i == 0) {
-                        Int32 lower = _rootAlpha - AspirationWindow;
-                        Int32 upper = _rootAlpha + AspirationWindow;
+                        Int32 value = alpha + 1;
+                        Int32 move = moves[i];
+                        Boolean causesCheck = position.CausesCheck(move);
+                        position.Make(move);
 
-                        value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck);
-                        if (value <= lower || value >= upper) {
-                            TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
-                            value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
+                        // Apply principal variation search with aspiration windows. The first move 
+                        // is searched with a window centered around the best value found from the 
+                        // most recent preceding search. If the result does not lie within the 
+                        // window, a re-search is initiated with an open window. 
+                        if (i == 0) {
+                            Int32 lower = _rootAlpha - AspirationWindow;
+                            Int32 upper = _rootAlpha + AspirationWindow;
+
+                            value = -Search(position, depth - 1, 1, -upper, -lower, causesCheck);
+                            if (value <= lower || value >= upper) {
+                                TryTimeExtension(TimeControlsResearchThreshold, TimeControlsResearchExtension);
+                                value = -Search(position, depth - 1, 1, -Infinity, Infinity, causesCheck);
+                            }
+                        }
+
+                        // Subsequent moves are searched with a zero window search. If the result is 
+                        // better than the best value so far, a re-search is initiated with a wider 
+                        // window.
+                        else {
+                            value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
+                            if (value > alpha)
+                                value = -Search(position, depth - 1, 1, -Infinity, -alpha, causesCheck);
+                        }
+
+                        // Unmake the move and check for search termination. 
+                        position.Unmake(move);
+                        if (_abortSearch)
+                            goto exit;
+
+                        // Check for new best move. If the current move has the best value so far, 
+                        // it is moved to the front of the list. This ensures the best move is 
+                        // always the first move in the list, also gives a rough ordering of the 
+                        // moves, and so subsequent searches are more efficient. The principal 
+                        // variation is collected at this point. 
+                        if (value > alpha) {
+                            if (pvs == 0)
+                                _rootAlpha = value;
+                            alpha = value;
+                            moves.RemoveAt(i);
+                            moves.Insert(pvs, move);
+                            PrependPV(move, 0);
+                            _pv = GetPrincipalVariation();
+
+                            // Output principal variation for high depths. This happens on every depth 
+                            // increase and every time an improvement is found. 
+                            if (Restrictions.Output != OutputType.None &&
+                                Restrictions.PrincipleVariations == 1 &&
+                                depth > SingleVariationDepth)
+                                Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                         }
                     }
 
-                    // Subsequent moves are searched with a zero window search. If the result is 
-                    // better than the best value so far, a re-search is initiated with a wider 
-                    // window.
-                    else {
-                        value = -Search(position, depth - 1, 1, -alpha - 1, -alpha, causesCheck);
-                        if (value > alpha)
-                            value = -Search(position, depth - 1, 1, -Infinity, -alpha, causesCheck);
-                    }
-
-                    // Unmake the move and check for search termination. 
-                    position.Unmake(move);
-                    if (_abortSearch)
-                        goto exit;
-
-                    // Check for new best move. If the current move has the best value so far, 
-                    // it is moved to the front of the list. This ensures the best move is 
-                    // always the first move in the list, also gives a rough ordering of the 
-                    // moves, and so subsequent searches are more efficient. The principal 
-                    // variation is collected at this point. 
-                    if (value > alpha) {
-                        alpha = _rootAlpha = value;
-                        moves.RemoveAt(i);
-                        moves.Insert(0, move);
-                        PrependPV(move, 0);
-                        _pv = GetPrincipalVariation();
-
-                        // Output principal variation for high depths. This happens on every depth 
-                        // increase and every time an improvement is found. 
-                        if (Restrictions.Output != OutputType.None && depth > SingleVariationDepth)
-                            Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
-                    }
+                    // Output principal variation for low depths. This happens once for every 
+                    // depth since improvements are very frequent. 
+                    if (Restrictions.Output != OutputType.None &&
+                        (Restrictions.PrincipleVariations > 1 || depth <= SingleVariationDepth))
+                        Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                 }
-
-                // Output principal variation for low depths. This happens once for every 
-                // depth since improvements are very frequent. 
-                if (Restrictions.Output != OutputType.None && depth <= SingleVariationDepth)
-                    Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
 
                 // Check for early search termination. If there is no time extension and a 
                 // significiant proportion of time has already been used, so that completing 

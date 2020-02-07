@@ -33,6 +33,11 @@ namespace AbsoluteZero {
         public static Int64 Nodes;
 
         /// <summary>
+        /// The minimum number of principle variations to search when moving. 
+        /// </summary>
+        public static Int32 PrincipleVariations;
+
+        /// <summary>
         /// Whether to use time controls. 
         /// </summary>
         public static Boolean UseTimeControls;
@@ -66,7 +71,8 @@ namespace AbsoluteZero {
             TimeIncrement = new Int32[2];
             MoveTime = Int32.MaxValue;
             Depth = Zero.DepthLimit;
-            Nodes = 1000000000000;
+            Nodes = Int64.MaxValue;
+            PrincipleVariations = 1;
         }
     }
 }
