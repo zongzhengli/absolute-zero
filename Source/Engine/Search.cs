@@ -27,6 +27,8 @@ namespace AbsoluteZero {
             // Initialize variables to prepare for search. 
             Int32 colour = position.SideToMove;
             Int32 depthLimit = Math.Min(DepthLimit, Restrictions.Depth);
+            Int32 pvsLimit = Math.Min(moves.Count, Restrictions.PrincipalVariations);
+            Boolean multiPV = Restrictions.PrincipalVariations > 1;
             _timeLimit = Restrictions.MoveTime;
             _timeExtension = 0;
 
@@ -40,7 +42,6 @@ namespace AbsoluteZero {
             // Apply iterative deepening. The search is repeated with incrementally 
             // higher depths until it is terminated. 
             for (Int32 depth = 1; depth <= depthLimit; depth++) {
-                Int32 pvsLimit = Math.Min(moves.Count, Restrictions.PrincipalVariations);
 
                 // Possibly search multiple times for multi PV.
                 for (Int32 pvs = 0; pvs < pvsLimit; pvs++) {
@@ -97,21 +98,23 @@ namespace AbsoluteZero {
                             moves.Insert(pvs, move);
                             PrependPV(move, 0);
                             _pv = GetPrincipalVariation();
+                            
 
                             // Output principal variation for high depths. This happens on every depth 
                             // increase and every time an improvement is found. 
-                            if (Restrictions.Output != OutputType.None &&
-                                Restrictions.PrincipalVariations == 1 &&
-                                depth > SingleVariationDepth)
+                            if (Restrictions.Output != OutputType.None && !multiPV && depth > SingleVariationDepth)
                                 Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
                         }
                     }
 
                     // Output principal variation for low depths. This happens once for every 
                     // depth since improvements are very frequent. 
-                    if (Restrictions.Output != OutputType.None &&
-                        (Restrictions.PrincipalVariations > 1 || depth <= SingleVariationDepth))
-                        Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
+                    if (Restrictions.Output != OutputType.None && (multiPV || depth <= SingleVariationDepth)) {
+                        if (multiPV) 
+                            Terminal.OverwriteLineAt(Terminal.CursorTop + pvs, GetPVString(position, depth, alpha, _pv));
+                        else
+                            Terminal.WriteLine(GetPVString(position, depth, alpha, _pv));
+                    }
                 }
 
                 // Check for early search termination. If there is no time extension and a 
@@ -121,6 +124,8 @@ namespace AbsoluteZero {
                     goto exit;
             }
         exit:
+            if (multiPV)
+                Terminal.CursorTop += pvsLimit;
             _finalAlpha = _rootAlpha;
             return moves[0];
         }

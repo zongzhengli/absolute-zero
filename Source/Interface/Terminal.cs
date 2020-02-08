@@ -21,6 +21,14 @@ namespace AbsoluteZero {
         public const Int32 Height = 25;
 
         /// <summary>
+        /// The row position of the terminal window. 
+        /// </summary>
+        public static Int32 CursorTop {
+            get { return Console.CursorTop; }
+            set { Console.SetCursorPosition(0, value); }
+        }
+
+        /// <summary>
         /// The width of the buffer area. 
         /// </summary>
         private const Int32 BufferWidth = 300;
@@ -97,6 +105,24 @@ namespace AbsoluteZero {
         /// <param name="value">The value to write.</param>
         public static void WriteLine(String format, params Object[] values) {
             WriteLine(String.Format(format, values));
+        }
+
+        /// <summary>
+        /// Overwrites the text representation of the given objects, followed by the 
+        /// current line terminator, to the standard output stream using the given 
+        /// formatting, at the given row position. Moves back to previous position
+        /// after the write.
+        /// </summary>
+        /// <param name="top">The row position to write at.</param>
+        /// <param name="format">The format string.</param>
+        /// <param name="value">The value to write.</param>
+        public static void OverwriteLineAt(Int32 top, String format, params Object[] values) {
+            Int32 oldTop = CursorTop;
+            CursorTop = top;
+            String line = String.Format(format, values);
+            _text.AppendLine(line);
+            Console.WriteLine(line.PadRight(BufferWidth));
+            CursorTop = oldTop;
         }
 
         /// <summary>
