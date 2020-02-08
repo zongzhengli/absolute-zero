@@ -79,6 +79,12 @@
     <Compile Include="Source\Engine\Engine.cs" />
     <Compile Include="Source\Engine\Search.cs" />
     <Compile Include="Source\Core\Colour.cs" />
+    <Compile Include="Source\Interface\AnalysisBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Interface\AnalysisBox.Designer.cs">
+      <DependentUpon>AnalysisBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\Position\Declarations.cs" />
     <Compile Include="Source\Position\FEN.cs" />
     <Compile Include="Source\Position\Position.cs" />
@@ -136,6 +142,9 @@
     </Compile>
     <Compile Include="Source\Utilities\Random.cs" />
     <Compile Include="Source\Engine\Declarations.cs" />
+    <EmbeddedResource Include="Source\Interface\AnalysisBox.resx">
+      <DependentUpon>AnalysisBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\Interface\SelectionBox.resx">
       <DependentUpon>SelectionBox.cs</DependentUpon>
     </EmbeddedResource>

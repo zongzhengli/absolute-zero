@@ -2,7 +2,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -19,38 +18,47 @@ namespace AbsoluteZero {
         public const Int32 MenuHeight = 24;
 
         /// <summary>
+        /// The game associated with the window. 
+        /// </summary>
+        public Game Game {
+            get { return _game; }
+            set {
+                _game = value;
+                UpdateMenu();
+            }
+        }
+        private Game _game;
+
+        /// <summary>
+        /// The analysis control panel associated with the window. 
+        /// </summary>
+        public AnalysisBox AnalysisBox {
+            get { return _analysisBox; }
+            set {
+                _analysisBox = value;
+                UpdateMenu();
+            }
+        }
+        private AnalysisBox _analysisBox;
+
+        /// <summary>
         /// The target number of milliseconds between draw frames. 
         /// </summary>
         private const Int32 DrawInterval = 33;
 
         /// <summary>
-        /// The game associated with the window. 
-        /// </summary>
-        private Game _game;
-
-        /// <summary>
-        /// Constructs a window. 
-        /// </summary>
-        public Window() 
-            : this(null) { }
-
-        /// <summary>
         /// Constructs a Window for the specified Game.
         /// </summary>
         /// <param name="game">The game to associate with the window.</param>
-        public Window(Game game) {
+        public Window() {
             InitializeComponent();
 
             // Initialize properties and fields. 
             Icon = Resources.Icon;
             ClientSize = new Size(VisualPosition.Width, VisualPosition.Width + MenuHeight);
-            _game = game;
 
             // Initialize event handlers. 
-            MouseUp += (sender, e) => {
-                if (_game != null)
-                    _game.MouseUpHandler(e);
-            };
+            MouseUp += MouseUpHandler;
             Paint += DrawHandler;
 
             // Close the application when the window is closed. 
@@ -71,8 +79,16 @@ namespace AbsoluteZero {
             })) {
                 IsBackground = true
             }.Start();
+        }
 
-            UpdateMenu();
+        /// <summary>
+        /// Handles a mouse up event. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The mouse event.</param>
+        public void MouseUpHandler(Object sender, MouseEventArgs e) {
+            Game?.MouseUpHandler(e);
+            AnalysisBox?.WindowMouseUpHandler(e);
         }
 
         /// <summary>
@@ -89,8 +105,8 @@ namespace AbsoluteZero {
             // Translate down so the chessboard can be draw from (0, 0). 
             g.TranslateTransform(0, MenuHeight);
 
-            if (_game != null)
-                _game.Draw(g);
+            if (Game != null)
+                Game.Draw(g);
             else {
                 VisualPosition.DrawDarkSquares(g);
                 VisualPosition.DrawPieces(g);
@@ -101,25 +117,25 @@ namespace AbsoluteZero {
         /// Updates which menu components are enabled or checked. 
         /// </summary>
         private void UpdateMenu() {
-            Boolean gameIsNotNull = _game != null;
+            Boolean hasGame = Game != null;
 
             // Update File menu.
-            savePGNMenuItem.Enabled = gameIsNotNull;
-            enterFENMenuItem.Enabled = gameIsNotNull;
-            copyFENMenuItem.Enabled = gameIsNotNull;
+            savePGNMenuItem.Enabled = hasGame;
+            enterFENMenuItem.Enabled = hasGame;
+            copyFENMenuItem.Enabled = hasGame;
 
             // Update Game menu.
-            offerDrawMenuItem.Enabled = gameIsNotNull;
-            restartMenuItem.Enabled = gameIsNotNull;
-            undoMoveMenuItem.Enabled = gameIsNotNull;
+            offerDrawMenuItem.Enabled = hasGame;
+            restartMenuItem.Enabled = hasGame;
+            undoMoveMenuItem.Enabled = hasGame;
 
             // Update Display menu.
             rotateBoardMenuItem.Checked = VisualPosition.Rotated;
             animationsMenuItem.Checked = VisualPosition.Animations;
 
-            if (gameIsNotNull) {
-                Boolean hasHuman = _game.White is Human || _game.Black is Human;
-                Boolean hasEngine = _game.White is Engine || _game.Black is Engine;
+            if (hasGame) {
+                Boolean hasHuman = Game.White is Human || Game.Black is Human;
+                Boolean hasEngine = Game.White is Engine || Game.Black is Engine;
 
                 // Update File menu.
                 saveOuputMenuItem.Enabled = hasEngine;
@@ -152,7 +168,7 @@ namespace AbsoluteZero {
                 dialog.Title = "Save PGN";
                 dialog.Filter = "PGN File|*.pgn|Text File|*.txt";
                 if (dialog.ShowDialog() == DialogResult.OK)
-                    _game.SavePGN(dialog.FileName);
+                    Game.SavePGN(dialog.FileName);
             }
         }
 
@@ -176,12 +192,12 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The raised event.</param>
         private void EnterFENClick(Object sender, EventArgs e) {
-            if (_game != null) {
+            if (Game != null) {
                 String fen = InputBox.Show("Please enter the FEN string.");
                 if (fen.Length > 0) {
-                    _game.End();
-                    _game.Reset();
-                    _game.Start(fen);
+                    Game.End();
+                    Game.Reset();
+                    Game.Start(fen);
                 }
             }
         }
@@ -192,7 +208,7 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The raised event.</param>
         private void CopyFENClick(Object sender, EventArgs e) {
-            Clipboard.SetText(_game.GetFEN());
+            Clipboard.SetText(Game.GetFEN());
         }
 
         /// <summary>
@@ -201,8 +217,7 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The raised event.</param>
         private void OfferDrawClick(Object sender, EventArgs e) {
-            if (_game != null)
-                _game.OfferDraw();
+            Game?.OfferDraw();
         }
 
         /// <summary>
@@ -211,11 +226,9 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The raised event.</param>
         private void RestartClick(Object sender, EventArgs e) {
-            if (_game != null) {
-                _game.End();
-                _game.Reset();
-                _game.Start();
-            }
+            Game?.End();
+            Game?.Reset();
+            Game?.Start();
         }
 
         /// <summary>
@@ -224,8 +237,7 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The raised event.</param>
         private void UndoMoveClick(Object sender, EventArgs e) {
-            if (_game != null)
-                _game.UndoMove();
+            Game?.UndoMove();
         }
 
         /// <summary>
@@ -286,14 +298,14 @@ namespace AbsoluteZero {
         /// <param name="e">The raised event.</param>
         private void HashSizeClick(Object sender, EventArgs e) {
             while (true) {
-                Engine engine = _game.White as Engine ?? _game.Black as Engine;
+                Engine engine = Game.White as Engine ?? Game.Black as Engine;
                 String input = InputBox.Show("Please specify the hash size in megabytes.", engine.HashAllocation.ToString());
                 Int32 value;
                 if (Int32.TryParse(input, out value) && value > 0) {
-                    if (_game.White is Engine)
-                        (_game.White as Engine).HashAllocation = value;
-                    if (_game.Black is Engine)
-                        (_game.Black as Engine).HashAllocation = value;
+                    if (Game.White is Engine)
+                        (Game.White as Engine).HashAllocation = value;
+                    if (Game.Black is Engine)
+                        (Game.Black as Engine).HashAllocation = value;
                     return;
                 } else
                     MessageBox.Show("Input must be a positive integer.");

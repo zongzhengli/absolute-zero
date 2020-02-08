@@ -72,7 +72,7 @@ namespace AbsoluteZero {
             //fen = "5k//4pPp/3pP1P/2pP/2P3K w";// pawn endgame mate in 19
             //Perft.Iterate(new Position(fen), 5);
 
-            Start(new Position(fen));
+            Start(Position.Create(fen));
         }
 
         /// <summary>

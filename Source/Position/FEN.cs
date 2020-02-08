@@ -13,13 +13,16 @@ namespace AbsoluteZero {
         /// that of the FEN string. 
         /// </summary>
         /// <param name="fen">The FEN string to parse.</param>
-        private void ParseFen(String fen) {
+        /// <returns>Whether the FEN string was parsed successfully.</returns>
+        private Boolean TryParseFen(String fen) {
 
             // Clear squares. 
             Array.Clear(Square, 0, Square.Length);
 
             // Split FEN into terms based on whitespace. 
             String[] terms = fen.Split(new Char[0], StringSplitOptions.RemoveEmptyEntries);
+            if (terms.Length < 2)
+                return false;
 
             Int32 file = 0;
             Int32 rank = 0;
@@ -33,61 +36,100 @@ namespace AbsoluteZero {
 
                     // Parse number denoting blank squares. 
                     default:
+                        if (uc > '8' || uc < '0')
+                            return false;
                         file += uc - '0';
                         break;
 
                     // Parse separator denoting new rank. 
                     case '/':
                         file = 0;
-                        rank++;
+                        if (++rank > 7)
+                            return false;
                         break;
 
                     // Parse piece abbreviations. 
                     case 'K':
-                        Square[file++ + rank * 8] = colour | Piece.King;
+                        Square[file + rank * 8] = colour | Piece.King;
+                        if (file++ > 7)
+                            return false;
                         break;
                     case 'Q':
-                        Square[file++ + rank * 8] = colour | Piece.Queen;
+                        Square[file + rank * 8] = colour | Piece.Queen;
+                        if (file++ > 7)
+                            return false;
                         break;
                     case 'R':
-                        Square[file++ + rank * 8] = colour | Piece.Rook;
+                        Square[file + rank * 8] = colour | Piece.Rook;
+                        if (file++ > 7)
+                            return false;
                         break;
                     case 'B':
-                        Square[file++ + rank * 8] = colour | Piece.Bishop;
+                        Square[file + rank * 8] = colour | Piece.Bishop;
+                        if (file++ > 7)
+                            return false;
                         break;
                     case 'N':
-                        Square[file++ + rank * 8] = colour | Piece.Knight;
+                        Square[file + rank * 8] = colour | Piece.Knight;
+                        if (file++ > 7)
+                            return false;
                         break;
                     case 'P':
-                        Square[file++ + rank * 8] = colour | Piece.Pawn;
+                        Square[file + rank * 8] = colour | Piece.Pawn;
+                        if (file++ > 7)
+                            return false;
                         break;
                 }
             }
 
             // Determine side to move. 
-            SideToMove = (terms[1] == "w") ? Colour.White : Colour.Black;
+            switch (terms[1]) {
+                case "w":
+                    SideToMove = Colour.White;
+                    break;
+                case "b":
+                    SideToMove = Colour.Black;
+                    break;
+                default:
+                    return false;
+            }
 
             // Determine castling rights. 
-            if (terms.Length > 2) {
-                if (terms[2].Contains("Q"))
-                    CastleQueenside[Colour.White] = 1;
-                if (terms[2].Contains("K"))
-                    CastleKingside[Colour.White] = 1;
-                if (terms[2].Contains("q"))
-                    CastleQueenside[Colour.Black] = 1;
-                if (terms[2].Contains("k"))
-                    CastleKingside[Colour.Black] = 1;
+            if (terms.Length > 2 && terms[2] != "-") {
+                foreach (Char c in terms[2]) {
+                    switch (c) {
+                        case 'Q':
+                            CastleQueenside[Colour.White] = 1;
+                            break;
+                        case 'K':
+                            CastleKingside[Colour.White] = 1;
+                            break;
+                        case 'q':
+                            CastleQueenside[Colour.Black] = 1;
+                            break;
+                        case 'k':
+                            CastleKingside[Colour.Black] = 1;
+                            break;
+                        default:
+                            return false;
+                    }
+                }
             }
 
             // Determine en passant square. 
-            if (terms.Length > 3)
-                if (terms[3] != "-")
-                    EnPassantSquare = SquareAt(terms[3]);
+            if (terms.Length > 3 && terms[3] != "-") {
+                EnPassantSquare = SquareAt(terms[3]);
+                if (EnPassantSquare > 63 || EnPassantSquare < 0)
+                    return false;
+            }
 
             // Determine fifty-moves clock and plies advanced. 
             if (terms.Length > 5) {
-                FiftyMovesClock = Int32.Parse(terms[4]);
-                Int32 moveNumber = Int32.Parse(terms[5]);
+                if (!Int32.TryParse(terms[4], out FiftyMovesClock) || FiftyMovesClock < 0)
+                    return false;
+                Int32 moveNumber;
+                if (!Int32.TryParse(terms[5], out moveNumber) || moveNumber < 1)
+                    return false;
                 HalfMoves = 2 * (moveNumber - 1) + SideToMove;
                 HalfMoves = Math.Max(0, HalfMoves);
                 FiftyMovesClock = Math.Min(FiftyMovesClock, HalfMoves);
@@ -113,6 +155,8 @@ namespace AbsoluteZero {
             // Initialize Zobrist key and history. 
             ZobristKey = GetZobristKey();
             ZobristKeyHistory[HalfMoves] = ZobristKey;
+
+            return true;
         }
 
         /// <summary>

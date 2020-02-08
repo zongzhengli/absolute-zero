@@ -1,5 +1,6 @@
 ﻿using AbsoluteZero.Properties;
 using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace AbsoluteZero {
@@ -36,11 +37,30 @@ namespace AbsoluteZero {
                     Restrictions.MoveTime = 3000;
 
                 // Display the GUI window and hide this window. 
-                new Window(new Game(white, black)).Show();
+                new Window() { Game = new Game(white, black) }.Show();
                 Visible = false;
                 ShowInTaskbar = false;
             } else
                 MessageBox.Show("Please select a player for each side.");
+        }
+
+        /// <summary>
+        /// Handles the Analysis Mode button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The mouse event.</param>
+        private void AnalysisModeClick(Object sender, EventArgs e) {
+            AnalysisBox analysisBox = new AnalysisBox();
+
+            new Thread(new ThreadStart(() => {
+                Application.Run(new Window() { AnalysisBox = analysisBox });
+            })) {
+                IsBackground = true
+            }.Start();
+
+            analysisBox.Show();
+            Visible = false;
+            ShowInTaskbar = false;
         }
     }
 }

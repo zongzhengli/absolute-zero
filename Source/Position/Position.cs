@@ -10,23 +10,23 @@ namespace AbsoluteZero {
     public sealed partial class Position : IEquatable<Position> {
 
         /// <summary>
-        /// Constructs a position with the given FEN string. If the FEN string is 
-        /// invalid the start position is used. 
-        /// </summary>
-        /// <param name="fen">The FEN of the position.</param>
-        public Position(String fen) {
-            try {
-                ParseFen(fen);
-            } catch {
-                ParseFen(StartingFEN);
-            }
-        }
-
-        /// <summary>
         /// Constructs a position with an invalid state. This constructor is used for 
         /// cloning. 
         /// </summary>
         private Position() { }
+
+        /// <summary>
+        /// Returns the position for the given FEN string. If the FEN string is 
+        /// invalid null is returned.
+        /// </summary>
+        /// <param name="fen">The FEN of the position.</param>
+        /// <returns>The position for the given FEN string.</returns>
+        public static Position Create(String fen) {
+            Position position = new Position();
+            if (position.TryParseFen(fen))
+                return position;
+            return null;
+        }
 
         /// <summary>
         /// Returns whether the position is equal to another position.  

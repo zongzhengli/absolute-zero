@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 
@@ -12,12 +13,30 @@ namespace AbsoluteZero {
         /// <summary>
         /// The offset for centering pieces on squares when drawing.
         /// </summary>
-        private static readonly Point PieceOffset = new Point(-4, 2);
+        public static readonly Point PieceOffset = new Point(-4, 2);
 
         /// <summary>
         /// The font for drawing pieces. 
         /// </summary>
-        private static readonly Font PieceFont = new Font("Tahoma", 30);
+        public static readonly Font PieceFont = new Font("Tahoma", 30);
+
+        /// <summary>
+        /// The mapping from piece to Unicode string.
+        /// </summary>
+        private static readonly Dictionary<Int32, String> PieceString = new Dictionary<Int32, string> {
+            { Colour.White | Piece.King, "\u2654" },
+            { Colour.White | Piece.Queen, "\u2655" },
+            { Colour.White | Piece.Rook, "\u2656" },
+            { Colour.White | Piece.Bishop, "\u2657" },
+            { Colour.White | Piece.Knight, "\u2658" },
+            { Colour.White | Piece.Pawn, "\u2659" },
+            { Colour.Black | Piece.King, "\u265A" },
+            { Colour.Black | Piece.Queen, "\u265B" },
+            { Colour.Black | Piece.Rook, "\u265C" },
+            { Colour.Black | Piece.Bishop, "\u265D" },
+            { Colour.Black | Piece.Knight, "\u265E" },
+            { Colour.Black | Piece.Pawn, "\u265F" },
+        };
 
         /// <summary>
         /// The brush for drawing pieces. 
@@ -27,7 +46,10 @@ namespace AbsoluteZero {
         /// <summary>
         /// The piece to represent. 
         /// </summary>
-        private Int32 _piece;
+        public Int32 ActualPiece {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// The real location of the visual piece. 
@@ -46,7 +68,7 @@ namespace AbsoluteZero {
         /// <param name="x">The x coodinate.</param>
         /// <param name="y">The y coodinate.</param>
         public VisualPiece(Int32 piece, Int32 x, Int32 y) {
-            this._piece = piece;
+            this.ActualPiece = piece;
             _real = new Point(x, y);
             _dynamic = new PointF(x, y);
         }
@@ -56,38 +78,12 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="g">The graphics surface to draw on.</param>
         public void Draw(Graphics g) {
-            Boolean isWhite = (_piece & Colour.Mask) == Colour.White;
-
             PointF location = new PointF(_dynamic.X, _dynamic.Y);
             if (VisualPosition.Rotated) {
                 location.X = VisualPosition.SquareWidth * 7 - location.X;
                 location.Y = VisualPosition.SquareWidth * 7 - location.Y;
             }
-            location.X += PieceOffset.X;
-            location.Y += PieceOffset.Y;
-
-            switch (_piece & Piece.Mask) {
-                case Piece.Empty:
-                    break;
-                case Piece.Pawn:
-                    g.DrawString(isWhite ? "\u2659" : "\u265F", PieceFont, PieceBrush, location);
-                    break;
-                case Piece.Rook:
-                    g.DrawString(isWhite ? "\u2656" : "\u265C", PieceFont, PieceBrush, location);
-                    break;
-                case Piece.Knight:
-                    g.DrawString(isWhite ? "\u2658" : "\u265E", PieceFont, PieceBrush, location);
-                    break;
-                case Piece.Bishop:
-                    g.DrawString(isWhite ? "\u2657" : "\u265D", PieceFont, PieceBrush, location);
-                    break;
-                case Piece.King:
-                    g.DrawString(isWhite ? "\u2654" : "\u265A", PieceFont, PieceBrush, location);
-                    break;
-                case Piece.Queen:
-                    g.DrawString(isWhite ? "\u2655" : "\u265B", PieceFont, PieceBrush, location);
-                    break;
-            }
+            DrawAt(g, ActualPiece, location, PieceBrush);
         }
 
         /// <summary>
@@ -95,7 +91,7 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="promotion">The new piece to represent.</param>
         public void Promote(Int32 promotion) {
-            _piece = promotion;
+            ActualPiece = promotion;
         }
 
         /// <summary>
@@ -141,6 +137,21 @@ namespace AbsoluteZero {
         /// <returns>Whether the visual piece is at the given location.</returns>
         public Boolean IsAt(Int32 x, Int32 y) {
             return _real.X == x && _real.Y == y;
+        }
+
+        /// <summary>
+        /// Draws the piece at the given location. 
+        /// </summary>
+        /// <param name="g">The graphics surface to draw on.</param>
+        /// <param name="piece">The piece to draw.</param>
+        /// <param name="location">The location to draw at.</param>
+        /// <param name="brush">The brush to draw with.</param>
+        public static void DrawAt(Graphics g, Int32 piece, PointF location, Brush brush) {
+            if (piece != Piece.Empty) {
+                location.X += PieceOffset.X;
+                location.Y += PieceOffset.Y;
+                g.DrawString(PieceString[piece], PieceFont, brush, location);
+            }
         }
     }
 }

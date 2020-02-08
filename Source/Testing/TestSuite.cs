@@ -67,7 +67,7 @@ namespace AbsoluteZero {
                         id = id.Remove(IDWidthLimit) + "..";
 
                     // Set the position and invoke a search on it. 
-                    Position position = new Position(fen);
+                    Position position = Position.Create(fen);
                     VisualPosition.Set(position);
                     engine.Reset();
 

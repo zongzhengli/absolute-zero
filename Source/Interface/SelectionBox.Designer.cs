@@ -33,10 +33,11 @@
             // promptLabel
             // 
             this.promptLabel.AutoSize = true;
-            this.promptLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.promptLabel.Location = new System.Drawing.Point(9, 28);
+            this.promptLabel.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.promptLabel.Location = new System.Drawing.Point(9, 17);
+            this.promptLabel.MaximumSize = new System.Drawing.Size(274, 0);
             this.promptLabel.Name = "promptLabel";
-            this.promptLabel.Size = new System.Drawing.Size(75, 15);
+            this.promptLabel.Size = new System.Drawing.Size(84, 15);
             this.promptLabel.TabIndex = 0;
             this.promptLabel.Text = "promptLabel";
             // 
@@ -51,6 +52,7 @@
             // 
             // button
             // 
+            this.button.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button.Location = new System.Drawing.Point(190, 85);
             this.button.Name = "button";
             this.button.Size = new System.Drawing.Size(85, 25);
@@ -62,7 +64,7 @@
             // responseBox
             // 
             this.responseBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.responseBox.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.responseBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.responseBox.FormattingEnabled = true;
             this.responseBox.Location = new System.Drawing.Point(10, 86);
             this.responseBox.Name = "responseBox";

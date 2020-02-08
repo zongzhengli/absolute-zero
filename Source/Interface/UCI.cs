@@ -18,7 +18,7 @@ namespace AbsoluteZero {
         public static void Run() {
             Restrictions.Output = OutputType.UCI;
             Engine engine = new Engine();
-            Position position = new Position(Position.StartingFEN);
+            Position position = Position.Create(Position.StartingFEN);
 
             String command;
             while ((command = Console.ReadLine()) != null) {
@@ -50,7 +50,7 @@ namespace AbsoluteZero {
                         String fen = Position.StartingFEN;
                         if (terms[1] != "startpos")
                             fen = command.Substring(command.IndexOf("fen") + 4);
-                        position = new Position(fen);
+                        position = Position.Create(fen);
 
                         Int32 movesIndex = terms.IndexOf("moves");
                         if (movesIndex >= 0)

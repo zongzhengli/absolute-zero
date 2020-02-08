@@ -8,6 +8,7 @@ Absolute Zero is a bitboard chess engine written in C#. It was developed from sc
 General features:
 - Runs with own GUI by default
 - Runs in UCI/command-line mode with -u argument
+- Provides analysis mode with multi PV in the GUI
 - Accepts perft and divide commands in command-line mode
 - Bitboard chess engine that runs in 64-bit when possible
 
@@ -24,6 +25,7 @@ Search features:
 - Draw detection
 - Mate distance pruning
 - Time control heuristics
+- Multi PV
 
 Evaluation features:
 - Phase interpolation

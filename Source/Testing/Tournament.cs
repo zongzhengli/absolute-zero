@@ -46,7 +46,7 @@ namespace AbsoluteZero {
                     sw.Flush();
                     experimental.Reset();
                     standard.Reset();
-                    Position position = new Position(epd[Random.Int32(epd.Count - 1)]);
+                    Position position = Position.Create(epd[Random.Int32(epd.Count - 1)]);
                     MatchResult result = Match.Play(experimental, standard, position, MatchOptions.RandomizeColour);
 
                     // Write the match result. 

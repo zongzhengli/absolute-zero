@@ -22,12 +22,7 @@ namespace AbsoluteZero {
         /// The colour of dark squares on the chessboard. 
         /// </summary>
         public static readonly Color DarkColor = Color.FromArgb(215, 215, 215);
-
-        /// <summary>
-        /// The brush for drawing light squares on the chessboard. 
-        /// </summary>
-        private static readonly SolidBrush LightBrush = new SolidBrush(LightColor);
-
+        
         /// <summary>
         /// The brush for drawing dark squares on the chessboard. 
         /// </summary>
