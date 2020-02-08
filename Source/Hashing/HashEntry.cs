@@ -123,7 +123,7 @@ namespace AbsoluteZero {
         public HashEntry(Position position, Int32 depth, Int32 ply, Int32 move, Int32 value, Int32 type) {
             Key = position.ZobristKey;
             Move = move;
-            if (Math.Abs(value) > Zero.NearCheckmateValue)
+            if (Math.Abs(value) > Engine.NearCheckmateValue)
                 value += Math.Sign(value) * ply;
             Misc = type | ((depth + DepthNormal) << DepthShift) | (value + ValueNormal) << ValueShift;
         }
@@ -136,7 +136,7 @@ namespace AbsoluteZero {
         /// <returns>The value associated with the hash entry.</returns>
         public Int32 GetValue(Int32 ply) {
             Int32 value = (Misc >> ValueShift) - ValueNormal;
-            if (Math.Abs(value) > Zero.NearCheckmateValue)
+            if (Math.Abs(value) > Engine.NearCheckmateValue)
                 return value - Math.Sign(value) * ply;
             return value;
         }

@@ -10,14 +10,14 @@ namespace AbsoluteZero {
     /// <summary>
     /// Provides methods for UCI/command-line parsing. 
     /// </summary>
-    public static class Universal {
+    public static class UCI {
 
         /// <summary>
         /// Executes the parsing. 
         /// </summary>
         public static void Run() {
-            Restrictions.Output = OutputType.Universal;
-            IEngine engine = new Zero();
+            Restrictions.Output = OutputType.UCI;
+            Engine engine = new Engine();
             Position position = new Position(Position.StartingFEN);
 
             String command;
@@ -33,7 +33,7 @@ namespace AbsoluteZero {
                     case "uci":
                         Terminal.WriteLine("id name " + engine.Name);
                         Terminal.WriteLine("id author Zong Zheng Li");
-                        Terminal.WriteLine("option name Hash type spin default " + Zero.DefaultHashAllocation + " min 1 max 2047");
+                        Terminal.WriteLine("option name Hash type spin default " + Engine.DefaultHashAllocation + " min 1 max 2047");
                         Terminal.WriteLine("uciok");
                         break;
 

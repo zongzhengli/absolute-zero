@@ -5,10 +5,10 @@ using System.Drawing;
 namespace AbsoluteZero {
 
     /// <summary>
-    /// Encapsulates the main IEngine interface of the Absolute Zero chess
+    /// Encapsulates the main IPlayer interface of the Absolute Zero chess
     /// engine. 
     /// </summary>
-    public sealed partial class Zero : IEngine {
+    public sealed partial class Engine : IPlayer {
 
         /// <summary>
         /// The number of nodes visited during the most recent search. 
@@ -62,7 +62,7 @@ namespace AbsoluteZero {
         /// <param name="position">The position to analyse.</param>
         /// <returns>The best move as determined by the engine.</returns>
         public Int32 GetMove(Position position) {
-            if (Restrictions.Output == OutputType.Standard) {
+            if (Restrictions.Output == OutputType.GUI) {
                 Terminal.WriteLine(PVFormat, "Depth", "Value", "Principal Variation");
                 Terminal.WriteLine("-----------------------------------------------------------------------");
             }
@@ -92,7 +92,7 @@ namespace AbsoluteZero {
             _stopwatch.Stop();
             Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
 
-            if (Restrictions.Output == OutputType.Standard) {
+            if (Restrictions.Output == OutputType.GUI) {
                 Terminal.WriteLine("-----------------------------------------------------------------------");
                 Terminal.WriteLine("FEN: " + position.GetFEN());
                 Terminal.WriteLine();

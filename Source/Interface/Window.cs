@@ -119,7 +119,7 @@ namespace AbsoluteZero {
 
             if (gameIsNotNull) {
                 Boolean hasHuman = _game.White is Human || _game.Black is Human;
-                Boolean hasEngine = _game.White is IEngine || _game.Black is IEngine;
+                Boolean hasEngine = _game.White is Engine || _game.Black is Engine;
 
                 // Update File menu.
                 saveOuputMenuItem.Enabled = hasEngine;
@@ -286,14 +286,14 @@ namespace AbsoluteZero {
         /// <param name="e">The raised event.</param>
         private void HashSizeClick(Object sender, EventArgs e) {
             while (true) {
-                IEngine engine = _game.White as IEngine ?? _game.Black as IEngine;
+                Engine engine = _game.White as Engine ?? _game.Black as Engine;
                 String input = InputBox.Show("Please specify the hash size in megabytes.", engine.HashAllocation.ToString());
                 Int32 value;
                 if (Int32.TryParse(input, out value) && value > 0) {
-                    if (_game.White is IEngine)
-                        (_game.White as IEngine).HashAllocation = value;
-                    if (_game.Black is IEngine)
-                        (_game.Black as IEngine).HashAllocation = value;
+                    if (_game.White is Engine)
+                        (_game.White as Engine).HashAllocation = value;
+                    if (_game.Black is Engine)
+                        (_game.Black as Engine).HashAllocation = value;
                     return;
                 } else
                     MessageBox.Show("Input must be a positive integer.");

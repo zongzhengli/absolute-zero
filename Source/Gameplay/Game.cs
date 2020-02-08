@@ -118,7 +118,7 @@ namespace AbsoluteZero {
                         _message = "Draw by insufficient material!";
                         _state = GameState.Draw;
                     }
-                    if (player is IEngine && player.AcceptsDraw) {
+                    if (player is Engine && player.AcceptsDraw) {
                         if (position.FiftyMovesClock >= 100) {
                             _message = "Draw by fifty-move rule!";
                             _state = GameState.Draw;
@@ -184,7 +184,7 @@ namespace AbsoluteZero {
         /// Offers a draw to the engine if applicable. 
         /// </summary>
         public void OfferDraw() {
-            IPlayer offeree = White is IEngine ? White : Black;
+            IPlayer offeree = White is Engine ? White : Black;
             if (offeree.AcceptsDraw) {
                 End();
                 _message = "Draw by agreement!";

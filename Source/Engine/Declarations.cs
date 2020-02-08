@@ -10,7 +10,7 @@ namespace AbsoluteZero {
     /// Encapsulates the declarations component of the Absolute Zero chess 
     /// engine. 
     /// </summary>
-    public sealed partial class Zero : IEngine {
+    public sealed partial class Engine : IPlayer {
 
         // Miscellaneous constants. 
         public static readonly String Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
@@ -126,7 +126,7 @@ namespace AbsoluteZero {
         private static readonly UInt64[] _minorAttackBitboard = new UInt64[2];
         private static readonly UInt64[] _pawnAttackBitboard = new UInt64[2];
 
-        static Zero() {
+        static Engine() {
             
             // Initialize piece values. The king's value is only used for static 
             // exchange evaluation. 
@@ -214,7 +214,7 @@ namespace AbsoluteZero {
             }
         }
 
-        public Zero() {
+        public Engine() {
             for (Int32 i = 0; i < _generatedMoves.Length; i++)
                 _generatedMoves[i] = new Int32[MovesLimit];
             for (Int32 i = 0; i < _pvMoves.Length; i++)

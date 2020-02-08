@@ -107,7 +107,7 @@ namespace AbsoluteZero {
                     Bitboard[colour] |= 1UL << square;
                     OccupiedBitboard |= 1UL << square;
                     if ((Square[square] & Piece.Mask) != Piece.King)
-                        Material[colour] += Zero.PieceValue[Square[square]];
+                        Material[colour] += Engine.PieceValue[Square[square]];
                 }
 
             // Initialize Zobrist key and history. 

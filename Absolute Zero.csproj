@@ -76,40 +76,39 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Source\Engine\Zero.cs" />
+    <Compile Include="Source\Engine\Engine.cs" />
     <Compile Include="Source\Engine\Search.cs" />
-    <Compile Include="Source\Chess\Core\Colour.cs" />
-    <Compile Include="Source\Chess\Position\Declarations.cs" />
-    <Compile Include="Source\Chess\Position\FEN.cs" />
-    <Compile Include="Source\Chess\Position\Position.cs" />
-    <Compile Include="Source\Chess\Position\MakeUnmake.cs" />
-    <Compile Include="Source\Chess\Position\MoveGeneration.cs" />
-    <Compile Include="Source\Chess\Position\ChessLogic.cs" />
-    <Compile Include="Source\Gameplay\IEngine.cs" />
-    <Compile Include="Source\Chess\Hashing\HashTable.cs" />
+    <Compile Include="Source\Core\Colour.cs" />
+    <Compile Include="Source\Position\Declarations.cs" />
+    <Compile Include="Source\Position\FEN.cs" />
+    <Compile Include="Source\Position\Position.cs" />
+    <Compile Include="Source\Position\MakeUnmake.cs" />
+    <Compile Include="Source\Position\MoveGeneration.cs" />
+    <Compile Include="Source\Position\Chess.cs" />
+    <Compile Include="Source\Hashing\HashTable.cs" />
     <Compile Include="Source\Testing\Elo.cs" />
     <Compile Include="Source\Testing\Match.cs" />
-    <Compile Include="Source\Chess\Hashing\Zobrist.cs" />
+    <Compile Include="Source\Hashing\Zobrist.cs" />
     <Compile Include="Source\Visuals\VisualPiece.cs" />
     <Compile Include="Source\Testing\Tournament.cs" />
     <Compile Include="Source\Gameplay\Restrictions.cs" />
-    <Compile Include="Source\Interface\Universal.cs" />
-    <Compile Include="Source\Chess\Bitboard\Attack.cs" />
+    <Compile Include="Source\Interface\UCI.cs" />
+    <Compile Include="Source\Core\Attack.cs" />
     <Compile Include="Source\Testing\Perft.cs" />
     <Compile Include="Source\Testing\TestSuite.cs" />
-    <Compile Include="Source\Chess\Bitboard\Bit.cs" />
+    <Compile Include="Source\Core\Bit.cs" />
     <Compile Include="Source\Engine\Evaluation.cs" />
     <Compile Include="Source\Interface\Launch.cs" />
     <Compile Include="Source\Utilities\Stringify.cs" />
     <Compile Include="Source\Utilities\Native.cs" />
-    <Compile Include="Source\Chess\Core\Piece.cs" />
+    <Compile Include="Source\Core\Piece.cs" />
     <Compile Include="Source\Interface\SelectionBox.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Source\Interface\SelectionBox.Designer.cs">
       <DependentUpon>SelectionBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\Chess\Hashing\HashEntry.cs" />
+    <Compile Include="Source\Hashing\HashEntry.cs" />
     <Compile Include="Source\Interface\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,7 +125,7 @@
     </Compile>
     <Compile Include="Source\Gameplay\Game.cs" />
     <Compile Include="Source\Gameplay\Human.cs" />
-    <Compile Include="Source\Chess\Core\Move.cs" />
+    <Compile Include="Source\Core\Move.cs" />
     <Compile Include="Source\Gameplay\IPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Interface\Settings.cs">

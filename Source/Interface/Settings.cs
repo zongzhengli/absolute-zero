@@ -26,8 +26,8 @@ namespace AbsoluteZero {
 
             // Open the GUI interface only if both players have been chosen. 
             if ((whiteHuman.Checked || whiteComputer.Checked) && (blackHuman.Checked || blackComputer.Checked)) {
-                IPlayer white = whiteHuman.Checked ? new Human() : new Zero() as IPlayer;
-                IPlayer black = blackHuman.Checked ? new Human() : new Zero() as IPlayer;
+                IPlayer white = whiteHuman.Checked ? new Human() : new Engine() as IPlayer;
+                IPlayer black = blackHuman.Checked ? new Human() : new Engine() as IPlayer;
 
                 // If both players are human there's no need for the Engine Output window. 
                 if (white is Human && black is Human)

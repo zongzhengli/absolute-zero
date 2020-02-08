@@ -7,7 +7,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Encapsulates the search component of the Absolute Zero chess engine. 
     /// </summary>
-    public sealed partial class Zero : IEngine {
+    public sealed partial class Engine : IPlayer {
 
         /// <summary>
         /// Returns the best move for the given position as determined by an 
@@ -51,7 +51,7 @@ namespace AbsoluteZero {
                     for (Int32 i = pvs; i < moves.Count; i++) {
                         _movesSearched++;
 
-                        Int32 value = alpha + 1;
+                        Int32 value;
                         Int32 move = moves[i];
                         Boolean causesCheck = position.CausesCheck(move);
                         position.Make(move);
@@ -98,7 +98,6 @@ namespace AbsoluteZero {
                             moves.Insert(pvs, move);
                             PrependPV(move, 0);
                             _pv = GetPrincipalVariation();
-                            
 
                             // Output principal variation for high depths. This happens on every depth 
                             // increase and every time an improvement is found. 
@@ -373,9 +372,8 @@ namespace AbsoluteZero {
             Int32 colour = position.SideToMove;
             Int32[] moves = _generatedMoves[ply];
             Int32 movesCount = position.PseudoQuiescenceMoves(moves);
-            if (movesCount == 0) {
+            if (movesCount == 0)
                 return alpha;
-            }
             for (Int32 i = 0; i < movesCount; i++)
                 _moveValues[i] = MoveOrderingValue(moves[i]);
 
@@ -447,7 +445,7 @@ namespace AbsoluteZero {
             switch (Restrictions.Output) {
 
                 // Return standard output. 
-                case OutputType.Standard:
+                case OutputType.GUI:
                     String depthString = depth.ToString();
                     String valueString = isMate ? (value > 0 ? "+Mate " : "-Mate ") + movesToMate :
                                                   (value / 100.0).ToString("+0.00;-0.00");
@@ -456,7 +454,7 @@ namespace AbsoluteZero {
                     return String.Format(PVFormat, depthString, valueString, movesString);
 
                 // Return UCI output. 
-                case OutputType.Universal:
+                case OutputType.UCI:
                     String score = isMate ? "mate " + (value < 0 ? "-" : "") + movesToMate :
                                             "cp " + value;
                     Double elapsed = _stopwatch.Elapsed.TotalMilliseconds;

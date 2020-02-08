@@ -35,7 +35,7 @@ namespace AbsoluteZero {
 
             // Perform testing on a background thread. 
             new Thread(new ThreadStart(() => {
-                IEngine engine = new Zero();
+                Engine engine = new Engine();
                 Restrictions.Output = OutputType.None;
                 Int32 totalPositions = 0;
                 Int32 totalSolved = 0;

@@ -80,7 +80,7 @@ namespace AbsoluteZero {
                             case "uci":
                             case "-uci":
                             case "-u":
-                                run = () => { Universal.Run(); };
+                                run = () => { UCI.Run(); };
                                 break;
 
                             // Tournament mode. 

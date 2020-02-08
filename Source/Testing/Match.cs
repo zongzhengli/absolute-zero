@@ -26,7 +26,7 @@ namespace AbsoluteZero {
         /// The material difference at which an unresolved match is given to the side 
         /// with more material. 
         /// </summary>
-        public static Int32 MaterialLimit = Zero.PieceValue[Piece.Bishop] + Zero.PieceValue[Piece.Pawn];
+        public static Int32 MaterialLimit = Engine.PieceValue[Piece.Bishop] + Engine.PieceValue[Piece.Pawn];
 
         /// <summary>
         /// Facilitates play between the two engines for the given position with the 
@@ -37,7 +37,7 @@ namespace AbsoluteZero {
         /// <param name="position">The position the match is played on.</param>
         /// <param name="option">The match option specifying the conditions of the match.</param>
         /// <returns>The result of the match from white's perspective.</returns>
-        public static MatchResult Play(IEngine white, IEngine black, Position position, MatchOptions option = MatchOptions.None) {
+        public static MatchResult Play(Engine white, Engine black, Position position, MatchOptions option = MatchOptions.None) {
 
             // If randomize colour is given as the match option, give a 50% chance of 
             // of swapping white and black. The result is still returned from the 

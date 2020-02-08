@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Encapsulates the evaluation component of the Absolute Zero chess engine. 
     /// </summary>
-    public sealed partial class Zero : IEngine {
+    public sealed partial class Engine : IPlayer {
 
         /// <summary>
         /// Returns the estimated value of the given position as determined by static 

@@ -5,7 +5,7 @@ namespace AbsoluteZero {
     /// <summary>
     /// Specifies the output type.
     /// </summary>
-    public enum OutputType { Standard, Universal, None }
+    public enum OutputType { GUI, UCI, None }
 
     /// <summary>
     /// Defines restrictions for engines in standard games. 
@@ -15,7 +15,7 @@ namespace AbsoluteZero {
         /// <summary>
         /// The output type.
         /// </summary>
-        public static OutputType Output = OutputType.Standard;
+        public static OutputType Output = OutputType.GUI;
 
         /// <summary>
         /// The maximum number of milliseconds to use when moving. 
@@ -70,7 +70,7 @@ namespace AbsoluteZero {
             TimeControl = new Int32[2];
             TimeIncrement = new Int32[2];
             MoveTime = Int32.MaxValue;
-            Depth = Zero.DepthLimit;
+            Depth = Engine.DepthLimit;
             Nodes = Int64.MaxValue;
         }
     }

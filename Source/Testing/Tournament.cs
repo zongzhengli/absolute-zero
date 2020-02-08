@@ -29,10 +29,8 @@ namespace AbsoluteZero {
         /// </summary>
         /// <param name="epd">A list of positions to play in EPD format.</param>
         public static void Run(List<String> epd) {
-            IEngine experimental = new Zero() {
-                IsExperimental = true
-            };
-            IEngine standard = new Zero();
+            Engine experimental = new Engine() { IsExperimental = true };
+            Engine standard = new Engine();
 
             Restrictions.Output = OutputType.None;
             Int32 wins = 0;
