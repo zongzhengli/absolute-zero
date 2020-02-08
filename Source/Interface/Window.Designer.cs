@@ -166,19 +166,21 @@
             this.searchTimeMenuItem.Name = "searchTimeMenuItem";
             this.searchTimeMenuItem.Size = new System.Drawing.Size(180, 22);
             this.searchTimeMenuItem.Text = "Time";
-            this.searchTimeMenuItem.Click += new System.EventHandler(this.SearchNodesClick);
+            this.searchTimeMenuItem.Click += new System.EventHandler(this.SearchTimeClick);
             // 
             // searchDepthMenuItem
             // 
             this.searchDepthMenuItem.Name = "searchDepthMenuItem";
             this.searchDepthMenuItem.Size = new System.Drawing.Size(180, 22);
             this.searchDepthMenuItem.Text = "Depth";
+            this.searchDepthMenuItem.Click += new System.EventHandler(this.SearchDepthClick);
             // 
             // searchNodesMenuItem
             // 
             this.searchNodesMenuItem.Name = "searchNodesMenuItem";
             this.searchNodesMenuItem.Size = new System.Drawing.Size(180, 22);
             this.searchNodesMenuItem.Text = "Nodes";
+            this.searchNodesMenuItem.Click += new System.EventHandler(this.SearchNodesClick);
             // 
             // hashSizeMenuItem
             // 

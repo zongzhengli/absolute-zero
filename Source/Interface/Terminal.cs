@@ -29,11 +29,6 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// The width of the buffer area. 
-        /// </summary>
-        private const Int32 BufferWidth = 300;
-
-        /// <summary>
         /// The text that has been processed. 
         /// </summary>
         private static StringBuilder _text = new StringBuilder();
@@ -45,7 +40,6 @@ namespace AbsoluteZero {
             try {
                 Console.Title = "Engine Terminal";
                 Console.SetWindowSize(Width, Height);
-                Console.BufferWidth = BufferWidth;
             } catch { }
         }
 
@@ -119,9 +113,7 @@ namespace AbsoluteZero {
         public static void OverwriteLineAt(Int32 top, String format, params Object[] values) {
             Int32 oldTop = CursorTop;
             CursorTop = top;
-            String line = String.Format(format, values);
-            _text.AppendLine(line);
-            Console.WriteLine(line.PadRight(BufferWidth));
+            WriteLine(String.Format(format, values));
             CursorTop = oldTop;
         }
 
