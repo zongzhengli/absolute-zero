@@ -113,7 +113,9 @@ namespace AbsoluteZero {
         public static void OverwriteLineAt(Int32 top, String format, params Object[] values) {
             Int32 oldTop = CursorTop;
             CursorTop = top;
-            WriteLine(String.Format(format, values));
+            String line = String.Format(format, values);
+            _text.AppendLine(line);
+            Console.WriteLine(line.PadRight(Console.WindowWidth));
             CursorTop = oldTop;
         }
 
