@@ -31,9 +31,9 @@ namespace AbsoluteZero {
         public const Int32 MovesLimit = 256;
         public const Int32 DefaultHashAllocation = 64;
         public const Int32 NodeResolution = 1000;
-        public const Int32 CheckmateValue = 10000;
+        public const Int32 CheckmateValue = 100000;
         public const Int32 NearCheckmateValue = CheckmateValue - PlyLimit;
-        public const Int32 Infinity = 30000;
+        public const Int32 Infinity = 110000;
 
         public Int32 AspirationWindow = 17;
         public Int32 NullMoveReduction = 3;

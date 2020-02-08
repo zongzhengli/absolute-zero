@@ -64,7 +64,7 @@ namespace AbsoluteZero {
         /// The value for normalizing the value in the miscellaneous field. Adding 
         /// this factor will guarantee a positive value. 
         /// </summary>
-        private const Int32 ValueNormal = Int16.MaxValue;
+        private const Int32 ValueNormal = Engine.Infinity;
 
         /// <summary>
         /// The mask for extracting the unshifted type from the miscellaneous field.
