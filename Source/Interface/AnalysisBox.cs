@@ -304,7 +304,8 @@ namespace AbsoluteZero {
                 searchButton.Enabled = _isSearching ||
                     (Bit.Count(_position.Bitboard[Colour.White | Piece.King]) == 1 &&
                     Bit.Count(_position.Bitboard[Colour.Black | Piece.King]) == 1 &&
-                    !_position.InCheck(1 - _position.SideToMove));
+                    !_position.InCheck(1 - _position.SideToMove) &&
+                    _position.LegalMoves().Count > 0);
             }));
         }
 
