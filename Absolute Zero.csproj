@@ -77,6 +77,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Source\Engine\Engine.cs" />
+    <Compile Include="Source\Engine\PV.cs" />
     <Compile Include="Source\Engine\Search.cs" />
     <Compile Include="Source\Core\Colour.cs" />
     <Compile Include="Source\Interface\AnalysisBox.cs">

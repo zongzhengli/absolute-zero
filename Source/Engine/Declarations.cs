@@ -102,7 +102,6 @@ namespace AbsoluteZero {
         private Int32[] _pvLength = new Int32[PlyLimit];
         private Int32[][] _killerMoves = new Int32[PlyLimit][];
         private Single[] _moveValues = new Single[MovesLimit];
-        private List<Int32> _pv = new List<Int32>();
         private Stopwatch _stopwatch = new Stopwatch();
         private Boolean _abortSearch = true;
         private Double _timeLimit;

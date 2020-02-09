@@ -24,9 +24,24 @@ namespace AbsoluteZero {
         private const String CrossString = "\u2715";
 
         /// <summary>
+        /// The Unicode string for the curved arrow.
+        /// </summary>
+        private const String ArrowString = "\u293A";
+
+        /// <summary>
+        /// Special value used in place of a piece to denote curved arrow selection.
+        /// </summary>
+        private const Int32 ArrowCode = -1;
+
+        /// <summary>
         /// The font for drawing the X. 
         /// </summary>
         private static readonly Font CrossFont = new Font("Tahoma", 20);
+
+        /// <summary>
+        /// The font for drawing the curved arrow. 
+        /// </summary>
+        private static readonly Font ArrowFont = new Font("Tahoma", 30);
 
         /// <summary>
         /// The brush for drawing pieces that can be selected. 
@@ -44,13 +59,19 @@ namespace AbsoluteZero {
         private static readonly SolidBrush SelectionBrush = new SolidBrush(Color.White);
 
         /// <summary>
+        /// The brush used to paint the piece selection background in the main window. 
+        /// </summary>
+        private static readonly SolidBrush WindowSelectionBrush = new SolidBrush(Color.White);
+
+        /// <summary>
         /// Mapping from piece to location and area for that piece used to
         /// implement piece selection in the control panel. The location of
         /// the rectangle is where the piece will be drawn. the area of the
         /// rectangle is the mouse hitbox and selection background.
         /// </summary>
         private readonly Dictionary<Int32, Rectangle> SelectionPieces = new Dictionary<Int32, Rectangle> {
-            { Piece.Empty, new Rectangle(10, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
+            { ArrowCode, new Rectangle(10, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
+            { Piece.Empty, new Rectangle(10, 60, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
             { Colour.White | Piece.King, new Rectangle(60, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
             { Colour.White | Piece.Queen, new Rectangle(110, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
             { Colour.White | Piece.Rook, new Rectangle(160, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
@@ -81,14 +102,24 @@ namespace AbsoluteZero {
         private Engine _engine = new Engine();
 
         /// <summary>
-        /// The best move as determined by the most recent search.
+        /// The principal variation from the most recent search.
         /// </summary>
-        private Int32 _pvMove = TMove.Invalid;
+        private List<Int32> _pv = new List<Int32>();
+
+        /// <summary>
+        /// The index in the principal variation to play at.
+        /// </summary>
+        private Int32 _pvIndex = 0;
 
         /// <summary>
         /// The selected piece in the control panel.
         /// </summary>
-        private Int32 _selectedPiece = Piece.Empty;
+        private Int32 _selectedPiece = ArrowCode;
+
+        /// <summary>
+        /// The selected square to move in the control panel.
+        /// </summary>
+        private Int32 _selectedSquare = Position.InvalidSquare;
 
         /// <summary>
         /// Whether the engine is currently searching the position.
@@ -142,11 +173,30 @@ namespace AbsoluteZero {
             foreach (KeyValuePair<Int32, Rectangle> pair in SelectionPieces) {
                 if (pair.Key == _selectedPiece)
                     g.FillRectangle(SelectionBrush, pair.Value);
-                if (pair.Key == Piece.Empty)
-                    g.DrawString(CrossString, CrossFont, brush, 17, 18);
-                else
-                    VisualPiece.DrawAt(g, pair.Key, pair.Value.Location, brush);
+
+                switch (pair.Key) {
+                    default:
+                        VisualPiece.DrawAt(g, pair.Key, pair.Value.Location, brush);
+                        break;
+                    case Piece.Empty:
+                        g.DrawString(CrossString, CrossFont, brush, 17, 68);
+                        break;
+                    case ArrowCode:
+                        g.DrawString(ArrowString, ArrowFont, brush, 12, 8);
+                        break;
+                }
             }
+        }
+
+        /// <summary>
+        /// Draw the main window. 
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
+        public void DrawWindow(Graphics g) {
+            VisualPosition.DrawDarkSquares(g);
+            if (_selectedSquare != Position.InvalidSquare)
+                VisualPosition.DrawSquare(g, WindowSelectionBrush, _selectedSquare);
+            VisualPosition.DrawPieces(g);
         }
 
         /// <summary>
@@ -155,9 +205,11 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The mouse event.</param>
         public void MouseUpHandler(Object sender, MouseEventArgs e) {
-            foreach (KeyValuePair<Int32, Rectangle> pair in SelectionPieces)
-                if (pair.Value.Contains(e.Location))
-                    _selectedPiece = pair.Key;
+            if (!_isSearching) {
+                foreach (KeyValuePair<Int32, Rectangle> pair in SelectionPieces)
+                    if (pair.Value.Contains(e.Location))
+                        _selectedPiece = pair.Key;
+            }
         }
 
         /// <summary>
@@ -173,28 +225,51 @@ namespace AbsoluteZero {
                 return;
             }
             Int32 square = VisualPosition.SquareAt(e.Location);
+
+            if (_selectedPiece == ArrowCode) {
+                if (_selectedSquare == Position.InvalidSquare) {
+                    if (_position.Square[square] != Piece.Empty)
+                        _selectedSquare = square;
+                } else if (_selectedSquare == square) {
+                    _selectedSquare = Position.InvalidSquare;
+                } else {
+                    Int32 initialSquare = _selectedSquare;
+                    SetPieceAt(_position.Square[initialSquare], square);
+                    SetPieceAt(Piece.Empty, initialSquare);
+                    _selectedSquare = Position.InvalidSquare;
+                    UpdatePosition(_position);
+                    VisualPosition.Make(TMove.Create(_position, initialSquare, square));
+                }
+            } else {
+                SetPieceAt(_selectedPiece, square);
+                UpdatePosition(_position);
+                VisualPosition.Set(_position);
+            }
+        }
+
+        private void SetPieceAt(Int32 piece, Int32 square) {
             Int32 previousPiece = _position.Square[square];
-            Int32 colour = _selectedPiece & Colour.Mask;
+            Int32 colour = piece & Colour.Mask;
 
-            for (Int32 piece = Colour.White; piece <= Piece.Max; piece++)
-                _position.Bitboard[piece] &= ~(1UL << square);
+            for (Int32 p = Colour.White; p <= Piece.Max; p++)
+                _position.Bitboard[p] &= ~(1UL << square);
 
-            if (_selectedPiece == Piece.Empty) {
+            if (piece == Piece.Empty) {
                 _position.Square[square] = Piece.Empty;
-                _position.Bitboard[_selectedPiece] &= ~(1UL << square);
+                _position.Bitboard[piece] &= ~(1UL << square);
                 _position.OccupiedBitboard &= ~(1UL << square);
             } else {
-                _position.Square[square] = _selectedPiece;
+                _position.Square[square] = piece;
                 _position.Bitboard[colour] |= 1UL << square;
-                _position.Bitboard[_selectedPiece] |= 1UL << square;
+                _position.Bitboard[piece] |= 1UL << square;
                 _position.OccupiedBitboard |= 1UL << square;
             }
 
             if ((previousPiece & Piece.Mask) != Piece.King)
                 _position.Material[previousPiece & Colour.Mask] -= Engine.PieceValue[previousPiece];
-            if ((_selectedPiece & Piece.Mask) != Piece.King)
-                _position.Material[colour] += Engine.PieceValue[_selectedPiece];
-            
+            if ((piece & Piece.Mask) != Piece.King)
+                _position.Material[colour] += Engine.PieceValue[piece];
+
             _position.ZobristKey = _position.GetZobristKey();
             _position.ZobristKeyHistory[_position.HalfMoves] = _position.ZobristKey;
 
@@ -218,9 +293,6 @@ namespace AbsoluteZero {
                     _position.Square[60] == (Colour.White | Piece.King) &&
                     _position.Square[63] == (Colour.White | Piece.Rook) ? 1 : 0;
             }
-
-            UpdatePosition(_position);
-            VisualPosition.Set(_position);
         }
 
         /// <summary>
@@ -284,15 +356,17 @@ namespace AbsoluteZero {
                 return;
             }
             _isSearching = true;
-            _pvMove = TMove.Invalid;
+            _pv.Clear();
+            _pvIndex = 0;
+            _selectedSquare = Position.InvalidSquare;
             UpdateGuiState();
             Position positionClone = _position.DeepClone();
 
             new Thread(new ThreadStart(() => {
-                Int32 move = _engine.GetMove(positionClone);
+                _engine.GetMove(positionClone);
                 _isSearching = false;
                 if (positionClone.ZobristKey == _position.ZobristKey)
-                    _pvMove = move;
+                    _pv = _engine.PrincipalVariation;
                 UpdateGuiState();
             })) {
                 IsBackground = true
@@ -300,17 +374,27 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Handles the play PV button click. 
+        /// Handles the previous button click. 
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The mouse event.</param>
-        private void PlayPVClick(Object sender, EventArgs e) {
-            Int32 move = _pvMove;
-            if (move != TMove.Invalid) {
-                _position.Make(move);
-                UpdatePosition(_position);
-                VisualPosition.Make(move);
-            }
+        private void PreviousClick(object sender, EventArgs e) {
+            Int32 move = _pv[--_pvIndex];
+            _position.Unmake(move);
+            UpdateGuiState();
+            VisualPosition.Unmake(move);
+        }
+
+        /// <summary>
+        /// Handles the next button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The mouse event.</param>
+        private void NextClick(Object sender, EventArgs e) {
+            Int32 move = _pv[_pvIndex++];
+            _position.Make(move);
+            UpdateGuiState();
+            VisualPosition.Make(move);
         }
 
         /// <summary>
@@ -368,8 +452,11 @@ namespace AbsoluteZero {
             trackBar.Invoke(new MethodInvoker(delegate {
                 trackBar.Enabled = !_isSearching;
             }));
-            playPVButton.Invoke(new MethodInvoker(delegate {
-                playPVButton.Enabled = _pvMove != TMove.Invalid;
+            previousButton.Invoke(new MethodInvoker(delegate {
+                previousButton.Enabled = _pvIndex > 0;
+            }));
+            nextButton.Invoke(new MethodInvoker(delegate {
+                nextButton.Enabled = _pvIndex < _pv.Count;
             }));
             resetBoardButton.Invoke(new MethodInvoker(delegate {
                 resetBoardButton.Enabled =
@@ -387,7 +474,8 @@ namespace AbsoluteZero {
         /// <param name="position">The position to update to.</param>
         private void UpdatePosition(Position position) {
             _position = position;
-            _pvMove = TMove.Invalid;
+            _pv.Clear();
+            _pvIndex = 0;
             UpdateGuiState();
         }
     }

@@ -63,6 +63,7 @@ namespace AbsoluteZero {
         /// <returns>The best move as determined by the engine.</returns>
         public Int32 GetMove(Position position) {
             if (Restrictions.Output == OutputType.GUI) {
+                Terminal.Clear();
                 Terminal.WriteLine(PVFormat, "Depth", "Value", "Principal Variation");
                 Terminal.WriteLine("-----------------------------------------------------------------------");
             }
@@ -133,6 +134,14 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// The principal variation of the most recent search.
+        /// </summary>
+        public List<Int32> PrincipalVariation {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Returns the principal variation of the most recent search.
         /// </summary>
         /// <returns>The principal variation of the most recent search.</returns>
@@ -147,15 +156,6 @@ namespace AbsoluteZero {
         /// Draws the player's graphical elements. 
         /// </summary>
         /// <param name="g">The drawing surface.</param>
-        public void Draw(Graphics g) {
-            if (!_abortSearch) {
-                List<Int32> pv = _pv;
-                for (Int32 i = 0; i < pv.Count; i++) {
-                    Pen pen = (i % 2 == 0) ? ArrowPen : EnemyArrowPen;
-                    Brush brush = (i % 2 == 0) ? LabelBrush : EnemyLabelBrush;
-                    VisualPosition.DrawArrow(g, pen, pv[i], brush, (i + 1).ToString());
-                }
-            }
-        }
+        public void Draw(Graphics g) { }
     }
 }

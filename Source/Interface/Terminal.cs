@@ -127,6 +127,13 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Clears the output in the terminal.
+        /// </summary>
+        public static void Clear() {
+            Console.Clear();
+        }
+
+        /// <summary>
         /// Writes all the text that has been written to the standard output stream 
         /// to a file with the specified path. 
         /// </summary>

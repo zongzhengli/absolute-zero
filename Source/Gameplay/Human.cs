@@ -31,6 +31,7 @@ namespace AbsoluteZero {
         /// Whether the player is to stop deciding on a move. 
         /// </summary>
         private Boolean _stop = false;
+
         /// <summary>
         /// The initial square for the player's move.
         /// </summary>

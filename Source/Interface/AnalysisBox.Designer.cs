@@ -32,8 +32,9 @@
             this.fenTextBox = new System.Windows.Forms.TextBox();
             this.pvsTextBox = new System.Windows.Forms.TextBox();
             this.pvsLabel = new System.Windows.Forms.Label();
-            this.playPVButton = new System.Windows.Forms.Button();
+            this.nextButton = new System.Windows.Forms.Button();
             this.resetBoardButton = new System.Windows.Forms.Button();
+            this.previousButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).BeginInit();
             this.whitePanel.SuspendLayout();
             this.SuspendLayout();
@@ -139,18 +140,18 @@
             this.pvsLabel.TabIndex = 8;
             this.pvsLabel.Text = "PVs";
             // 
-            // playPVButton
+            // nextButton
             // 
-            this.playPVButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.playPVButton.Enabled = false;
-            this.playPVButton.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.playPVButton.Location = new System.Drawing.Point(470, 80);
-            this.playPVButton.Name = "playPVButton";
-            this.playPVButton.Size = new System.Drawing.Size(94, 27);
-            this.playPVButton.TabIndex = 9;
-            this.playPVButton.Text = "Play PV";
-            this.playPVButton.UseVisualStyleBackColor = true;
-            this.playPVButton.Click += new System.EventHandler(this.PlayPVClick);
+            this.nextButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.nextButton.Enabled = false;
+            this.nextButton.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nextButton.Location = new System.Drawing.Point(520, 80);
+            this.nextButton.Name = "nextButton";
+            this.nextButton.Size = new System.Drawing.Size(45, 27);
+            this.nextButton.TabIndex = 9;
+            this.nextButton.Text = ">>";
+            this.nextButton.UseVisualStyleBackColor = true;
+            this.nextButton.Click += new System.EventHandler(this.NextClick);
             // 
             // resetBoardButton
             // 
@@ -165,13 +166,27 @@
             this.resetBoardButton.UseVisualStyleBackColor = true;
             this.resetBoardButton.Click += new System.EventHandler(this.ResetBoardClick);
             // 
+            // previousButton
+            // 
+            this.previousButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.previousButton.Enabled = false;
+            this.previousButton.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previousButton.Location = new System.Drawing.Point(469, 80);
+            this.previousButton.Name = "previousButton";
+            this.previousButton.Size = new System.Drawing.Size(45, 27);
+            this.previousButton.TabIndex = 11;
+            this.previousButton.Text = "<<";
+            this.previousButton.UseVisualStyleBackColor = true;
+            this.previousButton.Click += new System.EventHandler(this.PreviousClick);
+            // 
             // AnalysisBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 117);
+            this.Controls.Add(this.previousButton);
             this.Controls.Add(this.resetBoardButton);
-            this.Controls.Add(this.playPVButton);
+            this.Controls.Add(this.nextButton);
             this.Controls.Add(this.pvsLabel);
             this.Controls.Add(this.fenTextBox);
             this.Controls.Add(this.clearBoardButton);
@@ -206,7 +221,8 @@
         private System.Windows.Forms.TextBox fenTextBox;
         private System.Windows.Forms.TextBox pvsTextBox;
         private System.Windows.Forms.Label pvsLabel;
-        private System.Windows.Forms.Button playPVButton;
+        private System.Windows.Forms.Button nextButton;
         private System.Windows.Forms.Button resetBoardButton;
+        private System.Windows.Forms.Button previousButton;
     }
 }

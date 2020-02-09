@@ -107,7 +107,9 @@ namespace AbsoluteZero {
 
             if (Game != null)
                 Game.Draw(g);
-            else {
+            else if (AnalysisBox != null) {
+                AnalysisBox.DrawWindow(g);
+            } else {
                 VisualPosition.DrawDarkSquares(g);
                 VisualPosition.DrawPieces(g);
             }
@@ -150,12 +152,7 @@ namespace AbsoluteZero {
                 searchNodesMenuItem.Enabled = hasEngine;
                 hashSizeMenuItem.Enabled = hasEngine;
                 multiPVMenuItem.Enabled = hasEngine;
-
-                // Update Display menu.
-                arrowsMenuItem.Enabled = hasEngine;
-                arrowsMenuItem.Checked = VisualPosition.DrawArrows && hasEngine;
-            } else
-                arrowsMenuItem.Checked = VisualPosition.DrawArrows;
+            }
         }
 
         /// <summary>
@@ -346,16 +343,6 @@ namespace AbsoluteZero {
         /// <param name="e">The raised event.</param>
         private void AnimationsClick(Object sender, EventArgs e) {
             VisualPosition.Animations ^= true;
-            UpdateMenu();
-        }
-
-        /// <summary>
-        /// Handles the Arrows button click. 
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The raised event.</param>
-        private void ArrowsClick(Object sender, EventArgs e) {
-            VisualPosition.DrawArrows ^= true;
             UpdateMenu();
         }
 
