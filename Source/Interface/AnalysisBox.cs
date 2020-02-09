@@ -179,10 +179,10 @@ namespace AbsoluteZero {
                         VisualPiece.DrawAt(g, pair.Key, pair.Value.Location, brush);
                         break;
                     case Piece.Empty:
-                        g.DrawString(CrossString, CrossFont, brush, 17, 68);
+                        g.DrawString(CrossString, CrossFont, brush, 17, 69);
                         break;
                     case ArrowCode:
-                        g.DrawString(ArrowString, ArrowFont, brush, 12, 8);
+                        g.DrawString(ArrowString, ArrowFont, brush, 11, 7);
                         break;
                 }
             }
