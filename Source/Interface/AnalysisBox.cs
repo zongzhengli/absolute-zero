@@ -14,14 +14,6 @@ namespace AbsoluteZero {
     partial class AnalysisBox : Form {
 
         /// <summary>
-        /// A reference to an instance of this class if it is active.
-        /// </summary>
-        public static AnalysisBox Instance {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// The target number of milliseconds between draw frames. 
         /// </summary>
         private const Int32 DrawInterval = 33;
@@ -37,15 +29,26 @@ namespace AbsoluteZero {
         private static readonly Font CrossFont = new Font("Tahoma", 20);
 
         /// <summary>
-        /// The brush for drawing pieces. 
+        /// The brush for drawing pieces that can be selected. 
         /// </summary>
-        private static readonly Brush PieceBrush = new SolidBrush(Color.Black);
+        private static readonly Brush EnabledPieceBrush = new SolidBrush(Color.Black);
+
+        /// <summary>
+        /// The brush for drawing pieces that can't be selected. 
+        /// </summary>
+        private static readonly Brush DisabledPieceBrush = new SolidBrush(Color.Gray);
 
         /// <summary>
         /// The brush used to paint the piece selection background. 
         /// </summary>
         private static readonly SolidBrush SelectionBrush = new SolidBrush(Color.White);
 
+        /// <summary>
+        /// Mapping from piece to location and area for that piece used to
+        /// implement piece selection in the control panel. The location of
+        /// the rectangle is where the piece will be drawn. the area of the
+        /// rectangle is the mouse hitbox and selection background.
+        /// </summary>
         private readonly Dictionary<Int32, Rectangle> SelectionPieces = new Dictionary<Int32, Rectangle> {
             { Piece.Empty, new Rectangle(10, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
             { Colour.White | Piece.King, new Rectangle(60, 10, VisualPosition.SquareWidth, VisualPosition.SquareWidth) },
@@ -62,14 +65,34 @@ namespace AbsoluteZero {
             { Colour.Black | Piece.Pawn, new Rectangle(310, 60, VisualPosition.SquareWidth, VisualPosition.SquareWidth) }
         };
 
+        /// <summary>
+        /// The Zobrist key of the starting position.
+        /// </summary>
+        private readonly UInt64 StartingPositionKey;
+
+        /// <summary>
+        /// The position to search.
+        /// </summary>
         private Position _position = Position.Create(Position.StartingFEN);
 
+        /// <summary>
+        /// The engine used to search the position.
+        /// </summary>
         private Engine _engine = new Engine();
 
+        /// <summary>
+        /// The best move as determined by the most recent search.
+        /// </summary>
         private Int32 _pvMove = TMove.Invalid;
 
+        /// <summary>
+        /// The selected piece in the control panel.
+        /// </summary>
         private Int32 _selectedPiece = Piece.Empty;
 
+        /// <summary>
+        /// Whether the engine is currently searching the position.
+        /// </summary>
         private Boolean _isSearching = false;
 
         /// <summary>
@@ -88,7 +111,7 @@ namespace AbsoluteZero {
             };
 
             BackColor = VisualPosition.LightColor;
-            Instance = this;
+            StartingPositionKey = _position.ZobristKey;
             VisualPosition.Set(_position);
             Restrictions.PrincipalVariations = 16;
 
@@ -114,13 +137,15 @@ namespace AbsoluteZero {
             g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
             g.CompositingQuality = CompositingQuality.HighSpeed;
 
+            Brush brush = _isSearching ? DisabledPieceBrush : EnabledPieceBrush;
+
             foreach (KeyValuePair<Int32, Rectangle> pair in SelectionPieces) {
                 if (pair.Key == _selectedPiece)
                     g.FillRectangle(SelectionBrush, pair.Value);
                 if (pair.Key == Piece.Empty)
-                    g.DrawString(CrossString, CrossFont, PieceBrush, 17, 18);
+                    g.DrawString(CrossString, CrossFont, brush, 17, 18);
                 else
-                    VisualPiece.DrawAt(g, pair.Key, pair.Value.Location, PieceBrush);
+                    VisualPiece.DrawAt(g, pair.Key, pair.Value.Location, brush);
             }
         }
 
@@ -144,6 +169,9 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The mouse event.</param>
         public void WindowMouseUpHandler(MouseEventArgs e) {
+            if (_isSearching) {
+                return;
+            }
             Int32 square = VisualPosition.SquareAt(e.Location);
             Int32 previousPiece = _position.Square[square];
             Int32 colour = _selectedPiece & Colour.Mask;
@@ -201,11 +229,13 @@ namespace AbsoluteZero {
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The mouse event.</param>
         private void FenTextBoxChanged(Object sender, EventArgs e) {
-            Position position = Position.Create(fenTextBox.Text);
-            if (position != null) {
-                _position = position;
-                UpdateSearchButton();
-                VisualPosition.Set(_position);
+            if (fenTextBox.Focused) {
+                Position position = Position.Create(fenTextBox.Text);
+                if (position != null) {
+                    _position = position;
+                    UpdateGuiStateWithoutFenTextBox();
+                    VisualPosition.Set(_position);
+                }
             }
         }
 
@@ -217,7 +247,7 @@ namespace AbsoluteZero {
         private void WhiteRadioChecked(Object sender, EventArgs e) {
             if (whiteRadio.Checked) {
                 _position.SideToMove = Colour.White;
-                UpdateFenTextBox();
+                UpdateGuiState();
             }
         }
 
@@ -229,7 +259,7 @@ namespace AbsoluteZero {
         private void BlackRadioChecked(Object sender, EventArgs e) {
             if (blackRadio.Checked) {
                 _position.SideToMove = Colour.Black;
-                UpdateFenTextBox();
+                UpdateGuiState();
             }
         }
 
@@ -255,8 +285,7 @@ namespace AbsoluteZero {
             }
             _isSearching = true;
             _pvMove = TMove.Invalid;
-            UpdateSearchButton();
-            UpdatePlayPVButton();
+            UpdateGuiState();
             Position positionClone = _position.DeepClone();
 
             new Thread(new ThreadStart(() => {
@@ -264,8 +293,7 @@ namespace AbsoluteZero {
                 _isSearching = false;
                 if (positionClone.ZobristKey == _position.ZobristKey)
                     _pvMove = move;
-                UpdateSearchButton();
-                UpdatePlayPVButton();
+                UpdateGuiState();
             })) {
                 IsBackground = true
             }.Start();
@@ -286,6 +314,16 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
+        /// Handles the Reset Board button click. 
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The mouse event.</param>
+        private void ResetBoardClick(Object sender, EventArgs e) {
+            UpdatePosition(Position.Create(Position.StartingFEN));
+            VisualPosition.Set(_position);
+        }
+
+        /// <summary>
         /// Handles the Clear Board button click. 
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
@@ -296,9 +334,21 @@ namespace AbsoluteZero {
         }
 
         /// <summary>
-        /// Updates the Search button state.
+        /// Updates the state of GUI elements.
         /// </summary>
-        private void UpdateSearchButton() {
+        private void UpdateGuiState() {
+            UpdateGuiStateWithoutFenTextBox();
+            fenTextBox.Invoke(new MethodInvoker(delegate {
+                fenTextBox.Enabled = !_isSearching;
+                fenTextBox.Text = _position.GetFEN();
+            }));
+        }
+
+        /// <summary>
+        /// Updates the state of GUI elements except for the FEN text box
+        /// to avoid listener loop issues. 
+        /// </summary>
+        private void UpdateGuiStateWithoutFenTextBox() {
             searchButton.Invoke(new MethodInvoker(delegate {
                 searchButton.Text = _isSearching ? "Stop" : "Search";
                 searchButton.Enabled = _isSearching ||
@@ -307,37 +357,27 @@ namespace AbsoluteZero {
                     !_position.InCheck(1 - _position.SideToMove) &&
                     _position.LegalMoves().Count > 0);
             }));
-        }
-
-        /// <summary>
-        /// Updates the FEN text box state.
-        /// </summary>
-        private void UpdateFenTextBox() {
-            fenTextBox.Invoke(new MethodInvoker(delegate {
-                fenTextBox.TextChanged -= FenTextBoxChanged;
-                fenTextBox.Text = _position.GetFEN();
-                fenTextBox.TextChanged += FenTextBoxChanged;
-            }));
-        }
-
-        /// <summary>
-        /// Updates the White and Black radio button states.
-        /// </summary>
-        private void UpdateColourRadioButtons() {
             whiteRadio.Invoke(new MethodInvoker(delegate {
+                whiteRadio.Enabled = !_isSearching;
                 whiteRadio.Checked = _position.SideToMove == Colour.White;
             }));
             blackRadio.Invoke(new MethodInvoker(delegate {
+                blackRadio.Enabled = !_isSearching;
                 blackRadio.Checked = _position.SideToMove == Colour.Black;
             }));
-        }
-
-        /// <summary>
-        /// Updates the Play PV button state.
-        /// </summary>
-        private void UpdatePlayPVButton() {
+            trackBar.Invoke(new MethodInvoker(delegate {
+                trackBar.Enabled = !_isSearching;
+            }));
             playPVButton.Invoke(new MethodInvoker(delegate {
                 playPVButton.Enabled = _pvMove != TMove.Invalid;
+            }));
+            resetBoardButton.Invoke(new MethodInvoker(delegate {
+                resetBoardButton.Enabled =
+                    !_isSearching && _position.ZobristKey != StartingPositionKey;
+            }));
+            clearBoardButton.Invoke(new MethodInvoker(delegate {
+                clearBoardButton.Enabled =
+                    !_isSearching && _position.OccupiedBitboard != 0;
             }));
         }
 
@@ -348,10 +388,7 @@ namespace AbsoluteZero {
         private void UpdatePosition(Position position) {
             _position = position;
             _pvMove = TMove.Invalid;
-            UpdateSearchButton();
-            UpdateFenTextBox();
-            UpdatePlayPVButton();
-            UpdateColourRadioButtons();
+            UpdateGuiState();
         }
     }
 }
