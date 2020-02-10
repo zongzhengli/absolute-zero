@@ -111,7 +111,7 @@ namespace AbsoluteZero {
         private Int32 _rootAlpha = 0;
         private Int64 _totalNodes;
         private Int64 _quiescenceNodes;
-        private Int32 _referenceNodes;
+        private Int64 _referenceNodes;
         private Int64 _hashProbes;
         private Int64 _hashCutoffs;
         private Int64 _hashMoveChecks;
